@@ -1,0 +1,19 @@
+FROM node:current-alpine3.20
+
+WORKDIR /var/www/web
+
+COPY package*.json ./
+
+RUN npm install --legacy-peer-deps
+
+COPY . .
+
+RUN npx prisma generate
+
+RUN npm run build
+
+COPY ./src/utils/reset-password-template.html ./dist/utils/reset-password-template.html
+
+EXPOSE 3001 
+
+CMD ["npm", "run", "start:prod"]
