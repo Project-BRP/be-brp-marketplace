@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { appLogger } from '../configs/logger';
 import type { IAuthDTO } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
-import { ActiveTokenRepository, UserRepository } from '../repositories';
+import { UserRepository } from '../repositories';
 import { errorResponse, JwtToken } from '../utils';
 import { cookieExtractor } from '../utils/cookie-extractor';
 
@@ -30,14 +30,6 @@ export const authMiddleware = async (
     }
 
     token = authheader.split(' ')[1];
-  }
-
-  const activeToken = await ActiveTokenRepository.get();
-
-  if (activeToken !== token) {
-    appLogger.error('Invalid Token!');
-
-    return errorResponse(res, new ResponseError(401, 'Unauthorized!'));
   }
 
   if (!token) {

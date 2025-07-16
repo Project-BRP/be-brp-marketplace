@@ -12,8 +12,8 @@
     "format": "prettier --write src/**/*.ts",
     "up:dev": "sudo docker-compose --env-file .env.development -f docker-compose.dev.yml up -d --build",
     "up:prod": "sudo docker-compose --env-file .env.production -f docker-compose.prod.yml up -d --build",
-    "down:dev": "sudo docker-compose --env-file .env.development -f docker-compose.dev.yml down",
-    "down:prod": "sudo docker-compose --env-file .env.production -f docker-compose.prod.yml down",
+    "deploy:dev": "sudo docker-compose --env-file .env.development -f docker-compose.dev.yml down",
+    "deploy:prod": "sudo docker-compose --env-file .env.production -f docker-compose.prod.yml down",
     "migrate:dev": "dotenv -e .env.development -- prisma migrate dev",
     "migrate:prod": "dotenv -e .env.production -- prisma migrate dev",
     "seed:all": "dotenv -e .env.development ts-node prisma/seeders/index.ts all",
@@ -21,9 +21,7 @@
     "seed:categories": "dotenv -e .env.development ts-node prisma/seeders/index.ts categories",
     "seed:articles": "dotenv -e .env.development ts-node prisma/seeders/index.ts articles",
     "start:dev": "cross-env NODE_ENV=development ts-node dist/index.js",
-    "start:prod": "cross-env NODE_ENV=production ts-node dist/index.js",
-    "deploy:dev": "pm2 startOrRestart ecosystem.config.js --env development --update-env",
-    "deploy:prod": "pm2 startOrRestart ecosystem.config.js --env production --update-env"
+    "start:prod": "cross-env NODE_ENV=production ts-node dist/index.js"
   },
   "lint-staged": {
     "*.ts": [
@@ -35,7 +33,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@prisma/client": "^6.12.0",
+    "@prisma/client": "^5.22.0",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "cookie-parser": "^1.4.7",
@@ -91,7 +89,7 @@
     "lint-staged": "^15.3.0",
     "nodemon": "^3.1.9",
     "prettier": "^3.4.2",
-    "prisma": "^6.12.0",
+    "prisma": "^5.22.0",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
