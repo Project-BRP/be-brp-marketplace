@@ -56,7 +56,7 @@ export class AuthService {
     const emailVerificationToken =
       JwtToken.generateEmailVerificationToken(payload);
 
-    const verificationLink = `http://localhost:3001/api/auth/verify-email/${emailVerificationToken}`;
+    const verificationLink = `${CLIENT_URL_CURRENT}/sign-up/${emailVerificationToken}`;
 
     const templatePath = path.join(
       __dirname,

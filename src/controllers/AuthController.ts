@@ -53,7 +53,7 @@ export class AuthController {
       });
 
       // jika memutuskan menggunakan header, hapus set cookie diatas
-      successResponse(res, 200, 'Verifikasi email berhasil', response);
+      successResponse(res, 200, 'Verifikasi email berhasil');
     } catch (error) {
       next(error);
     }
