@@ -11,7 +11,7 @@ authRoute.post(
   RateLimiter.registerLimiter,
   AuthController.register,
 );
-authRoute.get(
+authRoute.post(
   '/verify-email/:token',
   RateLimiter.verifyEmailLimiter,
   AuthController.verifyEmail,

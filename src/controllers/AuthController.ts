@@ -27,7 +27,7 @@ export class AuthController {
       const request = req.body as IRegisterRequest;
       const response = await AuthService.register(request);
 
-      successResponse(res, 201, 'Email verifikasi berhasil dikirim', response);
+      successResponse(res, 200, 'Email verifikasi berhasil dikirim', response);
     } catch (error) {
       next(error);
     }
@@ -53,7 +53,7 @@ export class AuthController {
       });
 
       // jika memutuskan menggunakan header, hapus set cookie diatas
-      successResponse(res, 200, 'Verifikasi email berhasil');
+      successResponse(res, 201, 'Verifikasi email berhasil');
     } catch (error) {
       next(error);
     }
@@ -210,7 +210,7 @@ export class AuthController {
        *  Jika memilih menggunakan header, maka gunakan pendekatan blacklist token atau cukup menghapus token di sisi client
        */
       res.clearCookie('token');
-      successResponse(res, 200, 'Logged out successfully');
+      successResponse(res, 200, 'Logged out berhasil');
     } catch (error) {
       next(error);
     }
