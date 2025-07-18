@@ -4,7 +4,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.test
     ports:
       - '3001:${PORT_SERVER}'
     depends_on:

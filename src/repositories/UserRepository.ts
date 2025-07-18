@@ -30,7 +30,7 @@ export class UserRepository {
   ) {
     const searchCondition = search
       ? {
-          username: {
+          name: {
             contains: search,
             mode: 'insensitive' as Prisma.QueryMode,
           },
@@ -52,7 +52,7 @@ export class UserRepository {
   static async findAll(search?: string, tx: Prisma.TransactionClient = db) {
     const searchCondition = search
       ? {
-          username: {
+          name: {
             contains: search,
             mode: 'insensitive' as Prisma.QueryMode,
           },
@@ -72,7 +72,7 @@ export class UserRepository {
   static async count(search?: string, tx: Prisma.TransactionClient = db) {
     const searchCondition = search
       ? {
-          username: {
+          name: {
             contains: search,
             mode: 'insensitive' as Prisma.QueryMode,
           },
@@ -86,16 +86,16 @@ export class UserRepository {
     });
   }
 
-  static async findByUsername(
-    username: string,
-    tx: Prisma.TransactionClient = db,
-  ) {
-    return tx.user.findUnique({
-      where: {
-        username: username,
-      },
-    });
-  }
+  // static async findByUsername(
+  //   username: string,
+  //   tx: Prisma.TransactionClient = db,
+  // ) {
+  //   return tx.user.findUnique({
+  //     where: {
+  //       username: username,
+  //     },
+  //   });
+  // }
 
   static async findByEmail(email: string, tx: Prisma.TransactionClient = db) {
     return tx.user.findUnique({

@@ -18,4 +18,4 @@ COPY ./src/utils/email-verification.html ./dist/utils/email-verification.html
 
 EXPOSE 3001
 
-CMD ["npm", "run", "start:dev"]
+CMD ["npm", "run", "start:test"]

@@ -3,12 +3,12 @@ import { z, ZodType } from 'zod';
 
 export class AuthValidation {
   static readonly REGISTER: ZodType = z.object({
-    username: z
+    name: z
       .string({
-        required_error: 'Username tidak boleh kosong',
-        invalid_type_error: 'Username tidak valid',
+        required_error: 'Name tidak boleh kosong',
+        invalid_type_error: 'Name tidak valid',
       })
-      .max(255, 'Username tidak boleh lebih dari 255 karakter'),
+      .max(255, 'Name tidak boleh lebih dari 255 karakter'),
 
     email: z
       .string({
@@ -25,6 +25,13 @@ export class AuthValidation {
       .max(255, 'Password tidak boleh lebih dari 255 karakter')
       .min(8, 'Password harus minimal 8 karakter')
       .regex(/\d/, 'Password harus mengandung setidaknya 1 angka'),
+  });
+
+  static readonly VERIFY_EMAIL: ZodType = z.object({
+    token: z.string({
+      required_error: 'Unauthorized!',
+      invalid_type_error: 'Unauthorized!',
+    }),
   });
 
   static readonly LOGIN: ZodType = z.object({
@@ -66,11 +73,11 @@ export class AuthValidation {
 
   static readonly UPDATE: ZodType = z
     .object({
-      username: z
+      name: z
         .string({
-          invalid_type_error: 'Username tidak valid',
+          invalid_type_error: 'Name tidak valid',
         })
-        .max(255, 'Username tidak boleh lebih dari 255 karakter')
+        .max(255, 'Name tidak boleh lebih dari 255 karakter')
         .optional(),
 
       email: z
@@ -95,7 +102,7 @@ export class AuthValidation {
         .optional(),
     })
 
-    .refine(data => data.username || data.password || data.email, {
+    .refine(data => data.name || data.password || data.email, {
       message: 'Setidaknya salah satu field harus diisi',
       path: [],
     })

@@ -2,16 +2,16 @@ import type { Request } from 'express';
 
 export interface IRegisterRequest {
   email: string;
-  username: string;
+  name: string;
   password: string;
 }
 
-export interface IRegisterResponse {
-  userId: string;
-  email: string;
-  username: string;
-  createdAt: Date;
-  updatedAt: Date;
+export interface IVerifyEmailRequest {
+  token: string;
+}
+
+export interface IVerifyEmailResponse {
+  accessToken: string;
 }
 
 export interface ILoginRequest {
@@ -30,7 +30,7 @@ export interface IGetUserRequest {
 export interface IGetUserResponse {
   userId: string;
   email: string;
-  username: string;
+  name: string;
   role: string;
   createdAt: Date;
   updatedAt: Date;
@@ -51,14 +51,14 @@ export interface IGetAllUserResponse {
 export interface IUpdateUserRequest {
   userId: string;
   email?: string;
-  username?: string;
+  name?: string;
   password?: string;
   oldPassword?: string;
 }
 
 export interface IUpdateUserResponse {
   userId: string;
-  username?: string;
+  name?: string;
   email?: string;
 }
 
@@ -68,6 +68,14 @@ export interface IDeleteUserRequest {
 
 export interface ITokenPayload {
   userId: string;
+}
+
+export interface IEmailVerificationPayload {
+  userId: string;
+  email: string;
+  password: string;
+  name: string;
+  photoUrl?: string;
 }
 
 export interface IForgotTokenPayload {

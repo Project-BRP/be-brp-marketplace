@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Reset Kata Sandi Anda</title>
+    <title>Verifikasi Email Anda</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -34,7 +34,7 @@
       }
       .btn {
         display: inline-block;
-        background-color: #007bff;
+        background-color: #28a745;
         color: white;
         padding: 10px 20px;
         text-decoration: none;
@@ -42,7 +42,7 @@
         font-weight: bold;
       }
       .btn:hover {
-        background-color: #0056b3;
+        background-color: #1e7e34;
       }
       .footer {
         margin-top: 20px;
@@ -55,16 +55,16 @@
   <body>
     <div class="container">
       <div class="logo">
-        <!-- Ganti URL di bawah dengan URL logo perusahaan -->
+        <!-- Ganti URL ini dengan URL logo perusahaan -->
         <img src="{{logo_url}}" alt="Logo Perusahaan" />
       </div>
-      <h2>Permintaan Reset Kata Sandi</h2>
+      <h2>Verifikasi Email Anda</h2>
       <p>
-        Kami menerima permintaan untuk mereset kata sandi Anda. Klik tombol di
-        bawah ini untuk mengatur ulang kata sandi Anda:
+        Terima kasih telah mendaftar! Silakan klik tombol di bawah untuk
+        memverifikasi alamat email Anda dan mengaktifkan akun Anda:
       </p>
-      <p><a class="btn" href="{{reset_link}}">Reset Kata Sandi</a></p>
-      <p>Jika Anda tidak meminta reset kata sandi, abaikan email ini.</p>
+      <p><a class="btn" href="{{verification_link}}">Verifikasi Email</a></p>
+      <p>Jika Anda tidak membuat akun, abaikan email ini.</p>
       <p class="footer">
         Email ini dikirim secara otomatis. Mohon tidak membalas email ini.
       </p>

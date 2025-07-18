@@ -2,12 +2,21 @@ import { Router } from 'express';
 
 import { Role } from '../constants';
 import { AuthController } from '../controllers';
-import { authMiddleware, roleMiddleware } from '../middlewares';
+import { authMiddleware, RateLimiter, roleMiddleware } from '../middlewares';
 
 export const authRoute: Router = Router();
 
-authRoute.post('/register', AuthController.register);
-authRoute.post('/login', AuthController.login);
+authRoute.post(
+  '/register',
+  RateLimiter.registerLimiter,
+  AuthController.register,
+);
+authRoute.get(
+  '/verify-email/:token',
+  RateLimiter.verifyEmailLimiter,
+  AuthController.verifyEmail,
+);
+authRoute.post('/login', RateLimiter.loginLimiter, AuthController.login);
 authRoute.post('/logout', authMiddleware, AuthController.logout);
 authRoute.get('/users/me', authMiddleware, AuthController.getUser);
 authRoute.get(
@@ -18,6 +27,14 @@ authRoute.get(
 );
 authRoute.patch('/users/me', authMiddleware, AuthController.updateUser);
 authRoute.delete('/users/me', authMiddleware, AuthController.deleteUser);
-authRoute.post('/forgot-password', AuthController.forgotPassword);
+authRoute.post(
+  '/forgot-password',
+  RateLimiter.forgotPasswordLimiter,
+  AuthController.forgotPassword,
+);
 authRoute.post('/check-reset-token', AuthController.checkResetToken);
-authRoute.post('/reset-password', AuthController.resetPassword);
+authRoute.post(
+  '/reset-password',
+  RateLimiter.resetPasswordLimiter,
+  AuthController.resetPassword,
+);

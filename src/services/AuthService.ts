@@ -2,11 +2,13 @@ import fs from 'fs';
 import { StatusCodes } from 'http-status-codes';
 import jwt from 'jsonwebtoken';
 import path from 'path';
+import { v4 as uuid } from 'uuid';
 
-import { CLIENT_URL, JWT_CONFIG, SMPTP_CONSTANTS } from '../constants';
+import { CLIENT_URL_CURRENT, JWT_CONFIG, SMPTP_CONSTANTS } from '../constants';
 import type {
   IRegisterRequest,
-  IRegisterResponse,
+  IVerifyEmailRequest,
+  IVerifyEmailResponse,
   ILoginRequest,
   ILoginResponse,
   IGetUserRequest,
@@ -20,6 +22,7 @@ import type {
   ICheckResetTokenRequest,
   IResetPasswordRequest,
   IEmailDto,
+  IEmailVerificationPayload,
 } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
 import { SendToKafka } from '../kafka';
@@ -28,16 +31,10 @@ import { JwtToken, PasswordUtils, Validator } from '../utils';
 import { AuthValidation } from '../validations';
 
 export class AuthService {
-  static async register(request: IRegisterRequest): Promise<IRegisterResponse> {
+  static async register(request: IRegisterRequest) {
     const validData = Validator.validate(AuthValidation.REGISTER, request);
 
-    let user = await UserRepository.findByUsername(validData.username);
-
-    if (user) {
-      throw new ResponseError(StatusCodes.BAD_REQUEST, 'Username sudah ada');
-    }
-
-    user = await UserRepository.findByEmail(validData.email);
+    const user = await UserRepository.findByEmail(validData.email);
 
     if (user) {
       throw new ResponseError(StatusCodes.BAD_REQUEST, 'Email sudah ada');
@@ -45,19 +42,88 @@ export class AuthService {
 
     const hashedPassword = await PasswordUtils.hashPassword(validData.password);
 
-    const newUser = await UserRepository.create({
-      username: validData.username,
-      email: validData.email,
-      password: hashedPassword,
-    });
+    const randomString = uuid();
 
-    return {
-      userId: newUser.id,
-      username: newUser.username,
-      email: newUser.email,
-      createdAt: newUser.createdAt,
-      updatedAt: newUser.updatedAt,
+    const userId = 'USR-' + randomString;
+
+    const payload: IEmailVerificationPayload = {
+      userId,
+      email: validData.email,
+      name: validData.name,
+      password: hashedPassword,
     };
+
+    const emailVerificationToken =
+      JwtToken.generateEmailVerificationToken(payload);
+
+    const verificationLink = `http://localhost:3001/api/auth/verify-email/${emailVerificationToken}`;
+
+    const templatePath = path.join(
+      __dirname,
+      '../utils/email-verification.html',
+    );
+
+    let emailHtml = fs.readFileSync(templatePath, 'utf-8');
+
+    emailHtml = emailHtml.replace('{{verification_link}}', verificationLink);
+
+    const emailData: IEmailDto = {
+      from: SMPTP_CONSTANTS.SMTP_EMAIL,
+      to: validData.email,
+      subject: 'Verifikasi Email',
+      html: emailHtml,
+    };
+
+    await SendToKafka.sendEmailMessage(emailData);
+  }
+
+  static async verifyEmail(
+    request: IVerifyEmailRequest,
+  ): Promise<IVerifyEmailResponse> {
+    const validData = Validator.validate(AuthValidation.VERIFY_EMAIL, request);
+
+    const token = validData.token;
+
+    try {
+      const decoded = JwtToken.verifyEmailVerificationToken(token);
+
+      const user = await UserRepository.findById(decoded.userId);
+
+      if (user) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'User sudah terverifikasi',
+        );
+      }
+
+      const newUser = await UserRepository.create({
+        id: decoded.userId,
+        email: decoded.email,
+        name: decoded.name,
+        password: decoded.password,
+      });
+
+      const payload = {
+        userId: newUser.id,
+      };
+
+      const accessToken = JwtToken.generateAccessToken(payload);
+
+      return {
+        accessToken,
+      };
+    } catch (error) {
+      if (error instanceof ResponseError) {
+        throw error;
+      } else if (error instanceof jwt.JsonWebTokenError) {
+        throw new ResponseError(StatusCodes.UNAUTHORIZED, 'Unauthorized!');
+      }
+
+      throw new ResponseError(
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        'Internal Server Error',
+      );
+    }
   }
 
   static async login(request: ILoginRequest): Promise<ILoginResponse> {
@@ -105,7 +171,7 @@ export class AuthService {
     return {
       userId: user.id,
       email: user.email,
-      username: user.username,
+      name: user.name,
       role: user.role,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
@@ -129,7 +195,7 @@ export class AuthService {
         currentPage: 1,
         users: users.map((user: any) => ({
           userId: user.id,
-          username: user.username,
+          name: user.name,
           email: user.email,
           role: user.role,
           createdAt: user.createdAt,
@@ -167,7 +233,7 @@ export class AuthService {
       currentPage,
       users: users.map((user: any) => ({
         userId: user.id,
-        username: user.username,
+        name: user.name,
         email: user.email,
         role: user.role,
         createdAt: user.createdAt,
@@ -187,26 +253,10 @@ export class AuthService {
       throw new ResponseError(StatusCodes.NOT_FOUND, 'User tidak ditemukan');
     }
 
-    const updateData: { username?: string; email?: string; password?: string } =
-      {};
+    const updateData: { name?: string; email?: string; password?: string } = {};
 
-    if (validData.username) {
-      const existingUser = await UserRepository.findByUsername(
-        validData.username,
-      );
-
-      if (existingUser) {
-        if (existingUser.id === request.userId) {
-          throw new ResponseError(
-            StatusCodes.BAD_REQUEST,
-            'Username tidak boleh sama',
-          );
-        }
-
-        throw new ResponseError(StatusCodes.BAD_REQUEST, 'Username sudah ada');
-      }
-
-      updateData.username = validData.username;
+    if (validData.name) {
+      updateData.name = validData.name;
     }
 
     if (validData.email) {
@@ -251,7 +301,7 @@ export class AuthService {
     return {
       userId: updatedUser.id,
       email: updatedUser.email,
-      username: updatedUser.username,
+      name: updatedUser.name,
     };
   }
 
@@ -283,7 +333,7 @@ export class AuthService {
 
     const token = JwtToken.generateForgotPasswordToken(payload);
 
-    const resetLink = `${CLIENT_URL.PRODUCTION}/forget-password/${token}`;
+    const resetLink = `${CLIENT_URL_CURRENT}/forget-password/${token}`;
 
     const templatePath = path.join(
       __dirname,

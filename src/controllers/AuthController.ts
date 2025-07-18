@@ -3,6 +3,7 @@ import type { Request, Response, NextFunction } from 'express';
 import { JWT_CONFIG } from '../constants';
 import type {
   IRegisterRequest,
+  IVerifyEmailRequest,
   ILoginRequest,
   IGetUserRequest,
   IGetAllUserRequest,
@@ -26,7 +27,33 @@ export class AuthController {
       const request = req.body as IRegisterRequest;
       const response = await AuthService.register(request);
 
-      successResponse(res, 201, 'Sukses menambahkan user', response);
+      successResponse(res, 201, 'Email verifikasi berhasil dikirim', response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async verifyEmail(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const request = {
+        token: req.params.token,
+      } as IVerifyEmailRequest;
+      const response = await AuthService.verifyEmail(request);
+
+      // jika menggunakan cookie, koneksi backend harus https
+      res.cookie('token', response.accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        maxAge: JWT_CONFIG.JWT_EXPIRES_IN,
+      });
+
+      // jika memutuskan menggunakan header, hapus set cookie diatas
+      successResponse(res, 200, 'Verifikasi email berhasil', response);
     } catch (error) {
       next(error);
     }

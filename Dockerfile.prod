@@ -14,6 +14,8 @@ RUN npm run build
 
 COPY ./src/utils/reset-password-template.html ./dist/utils/reset-password-template.html
 
+COPY ./src/utils/email-verification.html ./dist/utils/email-verification.html
+
 EXPOSE 3001 
 
 CMD ["npm", "run", "start:prod"]
