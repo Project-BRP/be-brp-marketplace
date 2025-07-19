@@ -24,7 +24,7 @@ if (currentEnv === Env.DEVELOPMENT) {
 } else if (currentEnv === Env.PRODUCTION) {
   origin = [CLIENT_URL.PRODUCTION];
 } else if (currentEnv === Env.TESTING) {
-  origin = ['*'];
+  origin = [CLIENT_URL.LOCAL];
 } else {
   appLogger.error('Invalid environment');
   process.exit(1); // exit ketika environment tidak valid
