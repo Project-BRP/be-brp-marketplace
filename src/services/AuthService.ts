@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import path from 'path';
 import { v4 as uuid } from 'uuid';
 
-import { CLIENT_URL_CURRENT, JWT_CONFIG, SMPTP_CONSTANTS } from '../constants';
+import { JWT_CONFIG, SMPTP_CONSTANTS } from '../constants';
 import type {
   IRegisterRequest,
   IVerifyEmailRequest,
@@ -28,6 +28,7 @@ import { ResponseError } from '../error/ResponseError';
 import { SendToKafka } from '../kafka';
 import { UserRepository, ResetTokenRepository } from '../repositories';
 import { JwtToken, PasswordUtils, Validator } from '../utils';
+import { CLIENT_URL_CURRENT } from '../utils/client-url-utils';
 import { AuthValidation } from '../validations';
 
 export class AuthService {
