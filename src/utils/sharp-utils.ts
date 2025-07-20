@@ -18,7 +18,7 @@ export class SharpUtils {
     const outputFilePath = path.join(absoluteDirectory, filename);
 
     await sharp(filePath)
-      .resize(200, 200)
+      .resize(400, 400)
       .toFormat('jpg')
       .toFile(outputFilePath);
 
