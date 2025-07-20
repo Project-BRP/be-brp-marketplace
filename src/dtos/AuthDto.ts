@@ -32,6 +32,7 @@ export interface IGetUserResponse {
   email: string;
   name: string;
   role: string;
+  photoProfile?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -50,16 +51,18 @@ export interface IGetAllUserResponse {
 
 export interface IUpdateUserRequest {
   userId: string;
-  email?: string;
   name?: string;
-  password?: string;
+  email?: string;
   oldPassword?: string;
+  password?: string;
+  photoProfile?: string;
 }
 
 export interface IUpdateUserResponse {
   userId: string;
   name?: string;
   email?: string;
+  photoProfile?: string;
 }
 
 export interface IDeleteUserRequest {
@@ -75,7 +78,6 @@ export interface IEmailVerificationPayload {
   email: string;
   password: string;
   name: string;
-  photoUrl?: string;
 }
 
 export interface IForgotTokenPayload {

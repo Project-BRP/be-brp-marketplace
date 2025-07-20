@@ -2,7 +2,12 @@ import { Router } from 'express';
 
 import { Role } from '../constants';
 import { AuthController } from '../controllers';
-import { authMiddleware, RateLimiter, roleMiddleware } from '../middlewares';
+import {
+  authMiddleware,
+  RateLimiter,
+  roleMiddleware,
+  uploadMiddleware,
+} from '../middlewares';
 
 export const authRoute: Router = Router();
 
@@ -25,7 +30,13 @@ authRoute.get(
   roleMiddleware([Role.ADMIN]),
   AuthController.getAllUsers,
 );
-authRoute.patch('/users/me', authMiddleware, AuthController.updateUser);
+
+authRoute.patch(
+  '/users/me',
+  authMiddleware,
+  uploadMiddleware,
+  AuthController.updateUser,
+);
 authRoute.delete('/users/me', authMiddleware, AuthController.deleteUser);
 authRoute.post(
   '/forgot-password',

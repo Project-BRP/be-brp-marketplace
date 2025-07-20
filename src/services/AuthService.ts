@@ -174,6 +174,7 @@ export class AuthService {
       email: user.email,
       name: user.name,
       role: user.role,
+      photoProfile: user.profilePicture,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
@@ -199,6 +200,7 @@ export class AuthService {
           name: user.name,
           email: user.email,
           role: user.role,
+          photoProfile: user.profilePicture,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         })),
@@ -237,6 +239,7 @@ export class AuthService {
         name: user.name,
         email: user.email,
         role: user.role,
+        photoProfile: user.profilePicture,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       })),
@@ -254,7 +257,16 @@ export class AuthService {
       throw new ResponseError(StatusCodes.NOT_FOUND, 'User tidak ditemukan');
     }
 
-    const updateData: { name?: string; email?: string; password?: string } = {};
+    const updateData: {
+      name?: string;
+      email?: string;
+      password?: string;
+      profilePicture?: string;
+    } = {};
+
+    if (validData.photoProfile) {
+      updateData.profilePicture = validData.photoProfile;
+    }
 
     if (validData.name) {
       updateData.name = validData.name;
@@ -263,14 +275,7 @@ export class AuthService {
     if (validData.email) {
       const existingUser = await UserRepository.findByEmail(validData.email);
 
-      if (existingUser) {
-        if (existingUser.id === request.userId) {
-          throw new ResponseError(
-            StatusCodes.BAD_REQUEST,
-            'Email tidak boleh sama',
-          );
-        }
-
+      if (existingUser && existingUser.id !== request.userId) {
         throw new ResponseError(StatusCodes.BAD_REQUEST, 'Email sudah ada');
       }
 
@@ -290,11 +295,9 @@ export class AuthService {
         );
       }
 
-      const hashedPassword = await PasswordUtils.hashPassword(
+      updateData.password = await PasswordUtils.hashPassword(
         validData.password,
       );
-
-      updateData.password = hashedPassword;
     }
 
     const updatedUser = await UserRepository.update(request.userId, updateData);
@@ -303,6 +306,7 @@ export class AuthService {
       userId: updatedUser.id,
       email: updatedUser.email,
       name: updatedUser.name,
+      photoProfile: updatedUser.profilePicture,
     };
   }
 

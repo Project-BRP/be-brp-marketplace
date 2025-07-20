@@ -80,11 +80,10 @@ export class AuthValidation {
         .max(255, 'Name tidak boleh lebih dari 255 karakter')
         .optional(),
 
-      email: z
+      photoProfile: z
         .string({
-          invalid_type_error: 'Email tidak valid',
+          invalid_type_error: 'Photo profile tidak valid',
         })
-        .email('Email tidak valid')
         .optional(),
 
       password: z
@@ -102,7 +101,7 @@ export class AuthValidation {
         .optional(),
     })
 
-    .refine(data => data.name || data.password || data.email, {
+    .refine(data => data.name || data.password || data.photoProfile, {
       message: 'Setidaknya salah satu field harus diisi',
       path: [],
     })

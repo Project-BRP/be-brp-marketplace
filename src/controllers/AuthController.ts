@@ -1,4 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
+import fs from 'fs';
 
 import { JWT_CONFIG } from '../constants';
 import type {
@@ -15,6 +16,7 @@ import type {
   IResetPasswordRequest,
 } from '../dtos';
 import { AuthService } from '../services';
+import { SharpUtils } from '../utils';
 import { successResponse } from '../utils/api-response';
 
 export class AuthController {
@@ -124,15 +126,28 @@ export class AuthController {
     res: Response,
     next: NextFunction,
   ): Promise<void> {
+    let resizedPhotoPath: string | undefined;
+
     try {
+      if (req.file) {
+        resizedPhotoPath = await SharpUtils.savePhotoProfile(req.file.path);
+      }
+
       const request = {
         userId: req.user.userId,
+        photoProfile: resizedPhotoPath,
         ...req.body,
       } as IUpdateUserRequest;
+
       const response = await AuthService.updateUser(request);
 
       successResponse(res, 200, 'Berhasil mengupdate user', response);
     } catch (error) {
+      // Hapus file hasil resize jika error
+      if (resizedPhotoPath && fs.existsSync(resizedPhotoPath)) {
+        fs.unlinkSync(resizedPhotoPath);
+      }
+
       next(error);
     }
   }
