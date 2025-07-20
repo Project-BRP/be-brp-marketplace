@@ -68,6 +68,14 @@ export class AuthService {
 
     emailHtml = emailHtml.replace('{{verification_link}}', verificationLink);
 
+    const serverDomain = process.env.SERVER_DOMAIN;
+
+    const uploadPath = process.env.UPLOADS_PATH;
+
+    const logoUrl = `${serverDomain}/${uploadPath}/logo/logo.jpg`;
+
+    emailHtml = emailHtml.replace('{{logo_url}}', logoUrl);
+
     const emailData: IEmailDto = {
       from: SMPTP_CONSTANTS.SMTP_EMAIL,
       to: validData.email,
@@ -348,6 +356,14 @@ export class AuthService {
     let emailHtml = fs.readFileSync(templatePath, 'utf-8');
 
     emailHtml = emailHtml.replace('{{reset_link}}', resetLink);
+
+    const serverDomain = process.env.SERVER_DOMAIN;
+
+    const uploadPath = process.env.UPLOADS_PATH;
+
+    const logoUrl = `${serverDomain}/${uploadPath}/logo/logo.jpg`;
+
+    emailHtml = emailHtml.replace('{{logo_url}}', logoUrl);
 
     const emailData: IEmailDto = {
       from: SMPTP_CONSTANTS.SMTP_EMAIL,
