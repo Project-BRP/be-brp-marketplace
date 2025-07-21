@@ -20,7 +20,7 @@ enum Role {
 
 model User {
   id             String   @id @map("id")
-  email          String?  @unique @map("email")
+  email          String   @unique @map("email")
   password       String   @map("password")
   name           String   @map("name")
   profilePicture String?  @map("profile_picture")
@@ -29,4 +29,61 @@ model User {
   updatedAt      DateTime @updatedAt @map("updated_at")
 
   @@map("users")
+}
+
+model Product {
+  id                     String   @id @map("id")
+  name                   String   @map("name")
+  description            String   @map("description")
+  productTypeId          String?  @map("product_type_id")
+  storageInstructions    String   @map("storage_instructions")
+  expiredDurationInYears Int      @map("expired_duration_in_years")
+  usageInstructions      String   @map("usage_instructions")
+  benefits               String   @map("benefits")
+  createdAt              DateTime @default(now()) @map("created_at")
+  updatedAt              DateTime @updatedAt @map("updated_at")
+
+  ProductType ProductType?     @relation(fields: [productTypeId], references: [id], onDelete: SetNull)
+  variants    ProductVariant[]
+
+  @@map("products")
+}
+
+model ProductVariant {
+  id          String   @id @map("id")
+  productId   String   @map("product_id")
+  weight      String   @map("weight")
+  composition String   @map("composition")
+  packagingId String?  @map("packaging_id")
+  imageUrl    String   @map("image_url")
+  priceRupiah Int      @map("price_rupiah")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  Product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  Packaging Packaging? @relation(fields: [packagingId], references: [id], onDelete: SetNull)
+
+  @@map("product_variants")
+}
+
+model Packaging {
+  id        String   @id @map("id")
+  name      String   @unique @map("name")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  ProductVariants ProductVariant[]
+
+  @@map("packagings")
+}
+
+model ProductType {
+  id        String   @id @map("id")
+  name      String   @unique @map("name")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  Products Product[]
+
+  @@map("product_types")
 }

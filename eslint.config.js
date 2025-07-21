@@ -191,6 +191,7 @@ export default [
           cases: {
             kebabCase: true,
             pascalCase: true,
+            '^[A-Z][a-zA-Z0-9]+(?:DTO)?\\.ts$': true
           },
         },
       ],
