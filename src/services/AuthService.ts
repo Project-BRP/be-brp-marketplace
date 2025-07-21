@@ -30,6 +30,7 @@ import { UserRepository, ResetTokenRepository } from '../repositories';
 import { JwtToken, PasswordUtils, Validator } from '../utils';
 import { CLIENT_URL_CURRENT } from '../utils/client-url-utils';
 import { AuthValidation } from '../validations';
+import { VerifyEmailRepository } from 'repositories/VerifyEmailRepository';
 
 export class AuthService {
   static async register(request: IRegisterRequest) {
@@ -84,6 +85,12 @@ export class AuthService {
     };
 
     await SendToKafka.sendEmailMessage(emailData);
+
+    await VerifyEmailRepository.set(
+      validData.email,
+      emailVerificationToken,
+      JWT_CONFIG.JWT_EMAIL_VERIFICATION_EXPIRES_IN,
+    );
   }
 
   static async verifyEmail(
@@ -105,6 +112,12 @@ export class AuthService {
         );
       }
 
+      const validEmailToken = await VerifyEmailRepository.get(decoded.email);
+
+      if (validEmailToken !== token) {
+        throw new ResponseError(StatusCodes.UNAUTHORIZED, 'Unauthorized!');
+      }
+
       const newUser = await UserRepository.create({
         id: decoded.userId,
         email: decoded.email,
@@ -117,6 +130,8 @@ export class AuthService {
       };
 
       const accessToken = JwtToken.generateAccessToken(payload);
+
+      await VerifyEmailRepository.delete(decoded.email);
 
       return {
         accessToken,
