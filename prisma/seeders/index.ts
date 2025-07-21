@@ -1,3 +1,4 @@
+import { productTypeSeeder } from './ProductTypeSeeder';
 import { userSeeder } from './UserSeeder';
 import dotenv from 'dotenv';
 
@@ -5,6 +6,7 @@ dotenv.config({ path: '.env.development' });
 
 const seeders: { [key: string]: () => Promise<void> } = {
   users: userSeeder,
+  productTypes: productTypeSeeder,
 };
 
 async function main() {

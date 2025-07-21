@@ -1,7 +1,6 @@
 import type { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-import { appLogger } from '../configs/logger';
 import type { IAuthDTO } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
 import { UserRepository } from '../repositories';
@@ -24,8 +23,6 @@ export const authMiddleware = async (
     const authheader = req.headers.authorization;
 
     if (!authheader) {
-      appLogger.error('No Token Provided!');
-
       return errorResponse(res, new ResponseError(401, 'Unauthorized!'));
     }
 
@@ -33,8 +30,6 @@ export const authMiddleware = async (
   }
 
   if (!token) {
-    appLogger.error('No Token Provided!');
-
     return errorResponse(res, new ResponseError(401, 'Unauthorized!'));
   }
 
@@ -44,8 +39,6 @@ export const authMiddleware = async (
     const user = await UserRepository.findById(decoded.userId);
 
     if (!user) {
-      appLogger.error('User not found!');
-
       return errorResponse(res, new ResponseError(401, 'Unauthorized!'));
     }
 
@@ -59,8 +52,6 @@ export const authMiddleware = async (
     if (error instanceof ResponseError) {
       return errorResponse(res, error);
     } else if (error instanceof jwt.JsonWebTokenError) {
-      appLogger.error('Invalid Token!');
-
       return errorResponse(res, new ResponseError(401, 'Unauthorized!'));
     }
 

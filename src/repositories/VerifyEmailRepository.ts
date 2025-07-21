@@ -1,4 +1,4 @@
-import { redisClient } from "../configs/redis";
+import { redisClient } from '../configs/redis';
 
 export class VerifyEmailRepository {
   static async set(email: string, token: string, expiresIn: number) {

@@ -26,11 +26,14 @@ import type {
 } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
 import { SendToKafka } from '../kafka';
-import { UserRepository, ResetTokenRepository } from '../repositories';
+import {
+  UserRepository,
+  ResetTokenRepository,
+  VerifyEmailRepository,
+} from '../repositories';
 import { JwtToken, PasswordUtils, Validator } from '../utils';
 import { CLIENT_URL_CURRENT } from '../utils/client-url-utils';
 import { AuthValidation } from '../validations';
-import { VerifyEmailRepository } from 'repositories/VerifyEmailRepository';
 
 export class AuthService {
   static async register(request: IRegisterRequest) {

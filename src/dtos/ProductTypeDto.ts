@@ -10,7 +10,7 @@ export interface ICreateProductTypeResponse {
 }
 
 export interface IGetProductTypeRequest {
-  productTypeId: string;
+  id: string;
 }
 
 export interface IGetProductTypeResponse {
@@ -33,7 +33,7 @@ export interface IGetAllProductTypesResponse {
 }
 
 export interface IUpdateProductTypeRequest {
-  productTypeId: string;
+  id: string;
   name: string;
 }
 
@@ -45,5 +45,5 @@ export interface IUpdateProductTypeResponse {
 }
 
 export interface IDeleteProductTypeRequest {
-  productTypeId: string;
+  id: string;
 }

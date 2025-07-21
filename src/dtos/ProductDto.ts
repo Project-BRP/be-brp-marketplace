@@ -1,4 +1,4 @@
-import { IGetProductVariantResponse } from "./ProductVariantsDto";
+import { IGetProductVariantResponse } from './ProductVariantsDto';
 
 export interface ICreateProductRequest {
   name: string;
@@ -7,7 +7,7 @@ export interface ICreateProductRequest {
   storageInstructions: string;
   expiredDurationInYears: number;
   usageInstructions: string;
-  benefits: string; 
+  benefits: string;
 }
 
 export interface ICreateProductResponse {
@@ -21,7 +21,7 @@ export interface ICreateProductResponse {
   storageInstructions: string;
   expiredDurationInYears: number;
   usageInstructions: string;
-  benefits: string; 
+  benefits: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -41,8 +41,8 @@ export interface IGetProductResponse {
   storageInstructions: string;
   expiredDurationInYears: number;
   usageInstructions: string;
-  benefits: string; 
-  variants: IGetProductVariantResponse[]; 
+  benefits: string;
+  variants: IGetProductVariantResponse[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -67,7 +67,7 @@ export interface IUpdateProductRequest {
   storageInstructions?: string;
   expiredDurationInYears?: number;
   usageInstructions?: string;
-  benefits?: string; 
+  benefits?: string;
 }
 
 export interface IUpdateProductResponse {
@@ -81,7 +81,7 @@ export interface IUpdateProductResponse {
   storageInstructions: string;
   expiredDurationInYears: number;
   usageInstructions: string;
-  benefits: string; 
+  benefits: string;
   createdAt: Date;
   updatedAt: Date;
 }

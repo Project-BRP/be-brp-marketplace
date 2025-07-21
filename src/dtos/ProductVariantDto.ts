@@ -2,7 +2,7 @@ export interface ICreateProductVariantRequest {
   productId: string;
   weight: string;
   composition: string;
-  packagingId: string; 
+  packagingId: string;
   imageUrl: string;
   priceRupiah: number;
 }

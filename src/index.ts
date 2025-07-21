@@ -8,7 +8,7 @@ import path from 'path';
 import { appLogger } from './configs/logger';
 import { currentEnv, Env, CLIENT_URL } from './constants';
 import { errorMiddleware } from './middlewares/error-middleware';
-import { healthRoute, authRoute } from './routes';
+import { healthRoute, authRoute, productTypeRoute } from './routes';
 
 const app: Express = express();
 
@@ -45,6 +45,7 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 // untuk mengecek kesehatan server
 app.use('/api/', healthRoute);
 app.use('/api/auth/', authRoute);
+app.use('/api/product-types', productTypeRoute);
 app.use(errorMiddleware);
 
 const port = Number(process.env.PORT_SERVER) || 5000;
