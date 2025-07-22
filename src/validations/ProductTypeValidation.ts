@@ -21,6 +21,12 @@ export class ProductTypeValidation {
   });
 
   static readonly GET_ALL: ZodType = z.object({
+    productTypeId: z
+      .string({
+        invalid_type_error: 'ID Tipe Produk tidak valid',
+      })
+      .nullish()
+      .optional(),
     search: z
       .string({
         invalid_type_error: 'Pencarian tidak valid',

@@ -8,7 +8,12 @@ import path from 'path';
 import { appLogger } from './configs/logger';
 import { currentEnv, Env, CLIENT_URL } from './constants';
 import { errorMiddleware } from './middlewares/error-middleware';
-import { healthRoute, authRoute, productTypeRoute } from './routes';
+import {
+  healthRoute,
+  authRoute,
+  productTypeRoute,
+  productRoute,
+} from './routes';
 
 const app: Express = express();
 
@@ -46,6 +51,7 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 app.use('/api/', healthRoute);
 app.use('/api/auth/', authRoute);
 app.use('/api/product-types', productTypeRoute);
+app.use('/api/products', productRoute);
 app.use(errorMiddleware);
 
 const port = Number(process.env.PORT_SERVER) || 5000;

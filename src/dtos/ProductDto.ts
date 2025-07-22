@@ -1,4 +1,4 @@
-import { IGetProductVariantResponse } from './ProductVariantsDto';
+import { IGetProductVariantResponse } from './ProductVariantDto';
 
 export interface ICreateProductRequest {
   name: string;
@@ -48,6 +48,7 @@ export interface IGetProductResponse {
 }
 
 export interface IGetAllProductsRequest {
+  productTypeId?: string;
   search?: string;
   page?: number;
   limit?: number;
