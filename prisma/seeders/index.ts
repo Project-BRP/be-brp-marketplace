@@ -1,12 +1,13 @@
+import '../../src/configs/env';
 import { productTypeSeeder } from './ProductTypeSeeder';
 import { userSeeder } from './UserSeeder';
+import { productSeeder } from './ProductSeeder';
 import dotenv from 'dotenv';
-
-dotenv.config({ path: '.env.development' });
 
 const seeders: { [key: string]: () => Promise<void> } = {
   users: userSeeder,
   productTypes: productTypeSeeder,
+  products: productSeeder,
 };
 
 async function main() {
@@ -23,7 +24,7 @@ async function main() {
   if (seederName === 'all') {
     console.log('Running all seeders in order...');
     // Jalankan sesuai urutan: users → categories → articles
-    const orderedSeeders = ['users', 'categories', 'articles'];
+    const orderedSeeders = ['users', 'productTypes', 'products'];
     for (const name of orderedSeeders) {
       console.log(`Running ${name} seeder...`);
       await seeders[name](); // Jalankan seeder berdasarkan urutan

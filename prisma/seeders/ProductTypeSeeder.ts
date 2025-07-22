@@ -15,12 +15,16 @@ export const productTypeSeeder = async () => {
     { id: 'Pupuk_Mikro', name: 'Pupuk Mikro' },
   ];
   for (const type of productTypes) {
-    await prisma.productType.create({
-      data: {
-        id: type.id,
-        name: type.name,
-      },
-    });
+    try {
+      await prisma.productType.create({
+        data: type,
+      });
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        continue;
+      }
+      throw error;
+    }
   }
   console.log('Product types seeded successfully!');
 };

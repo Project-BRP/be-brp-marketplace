@@ -11,7 +11,7 @@ productRoute.post(
   roleMiddleware([Role.ADMIN]),
   ProductController.createProduct,
 );
-productRoute.put(
+productRoute.patch(
   '/:id',
   authMiddleware,
   roleMiddleware([Role.ADMIN]),

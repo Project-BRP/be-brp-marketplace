@@ -39,7 +39,12 @@ export class ProductValidation {
         invalid_type_error: 'Instruksi penggunaan tidak valid',
       })
       .min(1, 'Instruksi penggunaan tidak boleh kosong'),
-    benefits: z.string().optional(),
+    benefits: z
+      .string({
+        required_error: 'Manfaat tidak boleh kosong',
+        invalid_type_error: 'Manfaat tidak valid',
+      })
+      .min(1, 'Manfaat tidak boleh kosong'),
   });
 
   static readonly UPDATE: ZodType = z
