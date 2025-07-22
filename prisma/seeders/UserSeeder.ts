@@ -20,6 +20,19 @@ export const userSeeder = async () => {
       password: await PasswordUtils.hashPassword('admin1234'),
       role: Role.ADMIN,
     },
+    {
+      id: `USR-${uuid()}`,
+      name: 'Qiqi Oberon',
+      email: 'aquq1q1.farrukh@gmail.com',
+      password: await PasswordUtils.hashPassword('Q1q10beron'),
+      role: Role.ADMIN,
+    },
+    {
+      id: `USR-${uuid()}`,
+      name: 'Aqil Dominic',
+      email: 'aquaq1l.farrukh@gmail.com',
+      password: await PasswordUtils.hashPassword('Q1q10beron'),
+    }
   ];
 
   for (const user of users) {

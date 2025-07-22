@@ -20,6 +20,7 @@
     "migrate:dev": "dotenv -e .env.development -- prisma migrate dev",
     "migrate:prod": "dotenv -e .env.production -- prisma migrate dev",
     "seed:all:test": "dotenv -e .env.testing ts-node prisma/seeders/index.ts all",
+    "seed:rest:test": "dotenv -e .env.testing ts-node prisma/seeders/seed.ts",
     "seed:users:test": "dotenv -e .env.testing ts-node prisma/seeders/index.ts users",
     "seed:product-types:test": "dotenv -e .env.testing ts-node prisma/seeders/index.ts productTypes",
     "seed:all": "dotenv -e .env.development ts-node prisma/seeders/index.ts all",
