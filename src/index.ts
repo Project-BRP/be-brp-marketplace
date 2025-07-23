@@ -13,6 +13,7 @@ import {
   authRoute,
   productTypeRoute,
   productRoute,
+  packagingRoute,
 } from './routes';
 
 const app: Express = express();
@@ -52,6 +53,7 @@ app.use('/api/', healthRoute);
 app.use('/api/auth/', authRoute);
 app.use('/api/product-types', productTypeRoute);
 app.use('/api/products', productRoute);
+app.use('/api/packagings', packagingRoute);
 app.use(errorMiddleware);
 
 const port = Number(process.env.PORT_SERVER) || 5000;
