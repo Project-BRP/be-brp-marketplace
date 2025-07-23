@@ -2,17 +2,20 @@ import '../../src/configs/env';
 import { productTypeSeeder } from './ProductTypeSeeder';
 import { userSeeder } from './UserSeeder';
 import { productSeeder } from './ProductSeeder';
-import dotenv from 'dotenv';
+import { packagingSeeder } from './packagingSeeder';
+import { productVariantSeeder } from './ProductVariantSeeder';
 
 const seeders: { [key: string]: () => Promise<void> } = {
   users: userSeeder,
   productTypes: productTypeSeeder,
+  packagings: packagingSeeder,
   products: productSeeder,
+  productVariants: productVariantSeeder,
 };
 
 async function main() {
-  const args = process.argv.slice(2); // Ambil argumen CLI
-  const seederName = args[0]; // Argumen pertama menentukan seeder
+  const args = process.argv.slice(2);
+  const seederName = args[0];
 
   if (!seederName) {
     console.error(
@@ -23,11 +26,18 @@ async function main() {
 
   if (seederName === 'all') {
     console.log('Running all seeders in order...');
-    // Jalankan sesuai urutan: users → categories → articles
-    const orderedSeeders = ['users', 'productTypes', 'products'];
+    // Jalankan sesuai urutan dependensi:
+    // User & Tipe Produk & Kemasan -> Produk -> Varian Produk
+    const orderedSeeders = [
+      'users',
+      'productTypes',
+      'packagings',
+      'products',
+      'productVariants',
+    ];
     for (const name of orderedSeeders) {
       console.log(`Running ${name} seeder...`);
-      await seeders[name](); // Jalankan seeder berdasarkan urutan
+      await seeders[name]();
     }
     console.log('All seeders executed successfully in order!');
   } else if (seeders[seederName]) {
