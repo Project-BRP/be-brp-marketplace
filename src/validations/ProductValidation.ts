@@ -122,6 +122,12 @@ export class ProductValidation {
       })
       .nullish()
       .optional(),
+    productTypeId: z
+      .string({
+        invalid_type_error: 'ID Tipe Produk tidak valid',
+      })
+      .nullish()
+      .optional(),
   });
 
   static readonly DELETE: ZodType = z.object({
