@@ -9,8 +9,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_15_15_15_Premium_1kg',
       productId: 'NPK_15_15_15_Premium',
-      weight: '1 kg',
-      composition: 'N: 15%, P: 15%, K: 15%',
+      weight_in_kg: '1 kg',
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 15000,
@@ -18,8 +17,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_15_15_15_Premium_25kg',
       productId: 'NPK_15_15_15_Premium',
-      weight: '25 kg',
-      composition: 'N: 15%, P: 15%, K: 15%',
+      weight_in_kg: '25 kg',
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 350000,
@@ -27,8 +25,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_15_15_15_Premium_50kg',
       productId: 'NPK_15_15_15_Premium',
-      weight: '50 kg',
-      composition: 'N: 15%, P: 15%, K: 15%',
+      weight_in_kg: '50 kg',
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 680000,
@@ -37,8 +34,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_Phonska_Plus_25kg',
       productId: 'NPK_Phonska_Plus',
-      weight: '25 kg',
-      composition: 'N: 15%, P: 15%, K: 15% + Zn',
+      weight_in_kg: '25 kg',
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 320000,
@@ -46,8 +42,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_Phonska_Plus_50kg',
       productId: 'NPK_Phonska_Plus',
-      weight: '50 kg',
-      composition: 'N: 15%, P: 15%, K: 15% + Zn',
+      weight_in_kg: '50 kg',
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 620000,
@@ -56,8 +51,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_Grower_Special_25kg',
       productId: 'NPK_Grower_Special',
-      weight: '25 kg',
-      composition: 'N: 20%, P: 10%, K: 10%',
+      weight_in_kg: '25 kg',
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 380000,
@@ -65,8 +59,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_Grower_Special_50kg',
       productId: 'NPK_Grower_Special',
-      weight: '50 kg',
-      composition: 'N: 20%, P: 10%, K: 10%',
+      weight_in_kg: '50 kg',
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 750000,
@@ -75,8 +68,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_Booster_Buah_1kg',
       productId: 'NPK_Booster_Buah',
-      weight: '1 kg',
-      composition: 'N: 10%, P: 10%, K: 30%',
+      weight_in_kg: '1 kg',
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 25000,
@@ -84,8 +76,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_Booster_Buah_25kg',
       productId: 'NPK_Booster_Buah',
-      weight: '25 kg',
-      composition: 'N: 10%, P: 10%, K: 30%',
+      weight_in_kg: '25 kg',
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 450000,
@@ -93,8 +84,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_Booster_Buah_50kg',
       productId: 'NPK_Booster_Buah',
-      weight: '50 kg',
-      composition: 'N: 10%, P: 10%, K: 30%',
+      weight_in_kg: '50 kg',
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 880000,
@@ -103,8 +93,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_Compact_SlowRelease_1kg',
       productId: 'NPK_Compact_SlowRelease',
-      weight: '1 kg',
-      composition: 'N: 18%, P: 9%, K: 12% + TE',
+      weight_in_kg: '1 kg',
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 45000,
@@ -112,8 +101,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_Compact_SlowRelease_25kg',
       productId: 'NPK_Compact_SlowRelease',
-      weight: '25 kg',
-      composition: 'N: 18%, P: 9%, K: 12% + TE',
+      weight_in_kg: '25 kg',
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 950000,
@@ -122,8 +110,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Organik_Granul_Super_25kg',
       productId: 'Organik_Granul_Super',
-      weight: '25 kg',
-      composition: 'C-Organik: 15%, NPK Total: 4%',
+      weight_in_kg: '25 kg',
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 50000,
@@ -131,8 +118,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Organik_Granul_Super_50kg',
       productId: 'Organik_Granul_Super',
-      weight: '50 kg',
-      composition: 'C-Organik: 15%, NPK Total: 4%',
+      weight_in_kg: '50 kg',
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 95000,
@@ -141,8 +127,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Kompos_Super_Matang_25kg',
       productId: 'Kompos_Super_Matang',
-      weight: '25 kg',
-      composition: 'Bahan Organik Pilihan',
+      weight_in_kg: '25 kg',
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 40000,
@@ -150,8 +135,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Kompos_Super_Matang_50kg',
       productId: 'Kompos_Super_Matang',
-      weight: '50 kg',
-      composition: 'Bahan Organik Pilihan',
+      weight_in_kg: '50 kg',
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 75000,
@@ -160,8 +144,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Organik_Cair_Plus_Giberelin_1L',
       productId: 'Organik_Cair_Plus_Giberelin',
-      weight: '1 Liter',
-      composition: 'N: 3%, P: 2%, K: 4% + Giberelin',
+      weight_in_kg: '1 Liter',
       packagingId: 'Botol_1L',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 75000,
@@ -169,8 +152,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Organik_Cair_Plus_Giberelin_500ml',
       productId: 'Organik_Cair_Plus_Giberelin',
-      weight: '500 ml',
-      composition: 'N: 3%, P: 2%, K: 4% + Giberelin',
+      weight_in_kg: '500 ml',
       packagingId: 'Botol_1L', // Assuming 500ml uses a 1L bottle type for simplicity
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 45000,
@@ -179,8 +161,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Guano_Fosfat_Alami_1kg',
       productId: 'Guano_Fosfat_Alami',
-      weight: '1 kg',
-      composition: 'P2O5: 25%',
+      weight_in_kg: '1 kg',
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 30000,
@@ -188,8 +169,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Guano_Fosfat_Alami_25kg',
       productId: 'Guano_Fosfat_Alami',
-      weight: '25 kg',
-      composition: 'P2O5: 25%',
+      weight_in_kg: '25 kg',
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 550000,
@@ -197,8 +177,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Guano_Fosfat_Alami_50kg',
       productId: 'Guano_Fosfat_Alami',
-      weight: '50 kg',
-      composition: 'P2O5: 25%',
+      weight_in_kg: '50 kg',
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 1050000,
@@ -207,8 +186,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Bio_Trichoderma_Hayati_1kg',
       productId: 'Bio_Trichoderma_Hayati',
-      weight: '1 kg',
-      composition: 'Trichoderma sp. 10^6 cfu/gram',
+      weight_in_kg: '1 kg',
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 60000,
@@ -216,8 +194,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Bio_Trichoderma_Hayati_500g',
       productId: 'Bio_Trichoderma_Hayati',
-      weight: '500 g',
-      composition: 'Trichoderma sp. 10^6 cfu/gram',
+      weight_in_kg: '500 g',
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 35000,
@@ -226,8 +203,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Mikroba_Rhizobium_Plus_1kg',
       productId: 'Mikroba_Rhizobium_Plus',
-      weight: '1 kg',
-      composition: 'Rhizobium sp. 10^8 cfu/gram',
+      weight_in_kg: '1 kg',
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 80000,
@@ -235,8 +211,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Mikroba_Rhizobium_Plus_250g',
       productId: 'Mikroba_Rhizobium_Plus',
-      weight: '250 g',
-      composition: 'Rhizobium sp. 10^8 cfu/gram',
+      weight_in_kg: '250 g',
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 25000,
@@ -245,8 +220,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Myco_Plus_Mikoriza_1kg',
       productId: 'Myco_Plus_Mikoriza',
-      weight: '1 kg',
-      composition: 'Mikoriza spora 1000/gram',
+      weight_in_kg: '1 kg',
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 120000,
@@ -254,8 +228,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Myco_Plus_Mikoriza_5kg',
       productId: 'Myco_Plus_Mikoriza',
-      weight: '5 kg',
-      composition: 'Mikoriza spora 1000/gram',
+      weight_in_kg: '5 kg',
       packagingId: 'Karung_25kg', // Using a generic bag type
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 550000,
@@ -264,8 +237,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Urea_NonSubsidi_25kg',
       productId: 'Urea_NonSubsidi',
-      weight: '25 kg',
-      composition: 'N: 46%',
+      weight_in_kg: '25 kg',
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 280000,
@@ -273,8 +245,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Urea_NonSubsidi_50kg',
       productId: 'Urea_NonSubsidi',
-      weight: '50 kg',
-      composition: 'N: 46%',
+      weight_in_kg: '50 kg',
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 550000,
@@ -283,8 +254,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'ZA_Amonium_Sulfat_25kg',
       productId: 'ZA_Amonium_Sulfat',
-      weight: '25 kg',
-      composition: 'N: 21%, S: 24%',
+      weight_in_kg: '25 kg',
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 180000,
@@ -292,8 +262,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'ZA_Amonium_Sulfat_50kg',
       productId: 'ZA_Amonium_Sulfat',
-      weight: '50 kg',
-      composition: 'N: 21%, S: 24%',
+      weight_in_kg: '50 kg',
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 350000,
@@ -302,8 +271,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'KCL_Kalium_Klorida_1kg',
       productId: 'KCL_Kalium_Klorida',
-      weight: '1 kg',
-      composition: 'K2O: 60%',
+      weight_in_kg: '1 kg',
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 20000,
@@ -311,8 +279,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'KCL_Kalium_Klorida_25kg',
       productId: 'KCL_Kalium_Klorida',
-      weight: '25 kg',
-      composition: 'K2O: 60%',
+      weight_in_kg: '25 kg',
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 480000,
@@ -320,8 +287,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'KCL_Kalium_Klorida_50kg',
       productId: 'KCL_Kalium_Klorida',
-      weight: '50 kg',
-      composition: 'K2O: 60%',
+      weight_in_kg: '50 kg',
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 950000,
@@ -330,8 +296,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'SP36_Super_Fosfat_25kg',
       productId: 'SP36_Super_Fosfat',
-      weight: '25 kg',
-      composition: 'P2O5: 36%',
+      weight_in_kg: '25 kg',
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 220000,
@@ -339,8 +304,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'SP36_Super_Fosfat_50kg',
       productId: 'SP36_Super_Fosfat',
-      weight: '50 kg',
-      composition: 'P2O5: 36%',
+      weight_in_kg: '50 kg',
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 430000,
@@ -349,8 +313,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Mikro_Boron_Plus_1kg',
       productId: 'Mikro_Boron_Plus',
-      weight: '1 kg',
-      composition: 'Boron (B): 15%',
+      weight_in_kg: '1 kg',
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 50000,
@@ -358,8 +321,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Mikro_Boron_Plus_500g',
       productId: 'Mikro_Boron_Plus',
-      weight: '500 g',
-      composition: 'Boron (B): 15%',
+      weight_in_kg: '500 g',
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 30000,
@@ -368,8 +330,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Mikro_Fe_Chelate_1kg',
       productId: 'Mikro_Fe_Chelate',
-      weight: '1 kg',
-      composition: 'Fe-EDTA: 13%',
+      weight_in_kg: '1 kg',
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 150000,
@@ -377,8 +338,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Mikro_Fe_Chelate_250g',
       productId: 'Mikro_Fe_Chelate',
-      weight: '250 g',
-      composition: 'Fe-EDTA: 13%',
+      weight_in_kg: '250 g',
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 45000,
@@ -387,8 +347,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Kalsium_Nitrat_Super_1kg',
       productId: 'Kalsium_Nitrat_Super',
-      weight: '1 kg',
-      composition: 'Ca: 26%, N-NO3: 15.5%',
+      weight_in_kg: '1 kg',
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 28000,
@@ -396,8 +355,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Kalsium_Nitrat_Super_25kg',
       productId: 'Kalsium_Nitrat_Super',
-      weight: '25 kg',
-      composition: 'Ca: 26%, N-NO3: 15.5%',
+      weight_in_kg: '25 kg',
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 650000,
@@ -405,8 +363,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Kalsium_Nitrat_Super_50kg',
       productId: 'Kalsium_Nitrat_Super',
-      weight: '50 kg',
-      composition: 'Ca: 26%, N-NO3: 15.5%',
+      weight_in_kg: '50 kg',
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 1250000,
@@ -415,8 +372,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Magnesium_Sulfat_Epsom_1kg',
       productId: 'Magnesium_Sulfat_Epsom',
-      weight: '1 kg',
-      composition: 'MgO: 16%, S: 13%',
+      weight_in_kg: '1 kg',
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 18000,
@@ -424,8 +380,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Magnesium_Sulfat_Epsom_25kg',
       productId: 'Magnesium_Sulfat_Epsom',
-      weight: '25 kg',
-      composition: 'MgO: 16%, S: 13%',
+      weight_in_kg: '25 kg',
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 400000,
@@ -433,8 +388,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Magnesium_Sulfat_Epsom_50kg',
       productId: 'Magnesium_Sulfat_Epsom',
-      weight: '50 kg',
-      composition: 'MgO: 16%, S: 13%',
+      weight_in_kg: '50 kg',
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 780000,

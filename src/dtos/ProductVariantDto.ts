@@ -1,7 +1,6 @@
 export interface ICreateProductVariantRequest {
   productId: string;
-  weight: string;
-  composition: string;
+  weight_in_kg: string;
   packagingId: string;
   imageUrl: string;
   priceRupiah: number;
@@ -10,8 +9,7 @@ export interface ICreateProductVariantRequest {
 export interface ICreateProductVariantResponse {
   id: string;
   productId: string;
-  weight: string;
-  composition: string;
+  weight_in_kg: string;
   packagingId: string;
   imageUrl: string;
   priceRupiah: number;
@@ -26,8 +24,7 @@ export interface IGetProductVariantRequest {
 export interface IGetProductVariantResponse {
   id: string;
   productId: string;
-  weight: string;
-  composition: string;
+  weight_in_kg: string;
   packagingId: string;
   imageUrl: string;
   priceRupiah: number;
@@ -37,7 +34,6 @@ export interface IGetProductVariantResponse {
 
 export interface IGetAllProductVariantsRequest {
   productId: string;
-  search?: string;
   page?: number;
   limit?: number;
 }
@@ -50,8 +46,7 @@ export interface IGetAllProductVariantsResponse {
 
 export interface IUpdateProductVariantRequest {
   id: string;
-  weight?: string;
-  composition?: string;
+  weight_in_kg?: string;
   packagingId?: string;
   imageUrl?: string;
   priceRupiah?: number;
@@ -60,8 +55,7 @@ export interface IUpdateProductVariantRequest {
 export interface IUpdateProductVariantResponse {
   id: string;
   productId: string;
-  weight: string;
-  composition: string;
+  weight_in_kg: string;
   packagingId: string;
   imageUrl: string;
   priceRupiah: number;

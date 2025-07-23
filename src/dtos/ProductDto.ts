@@ -8,6 +8,7 @@ export interface ICreateProductRequest {
   expiredDurationInYears: number;
   usageInstructions: string;
   benefits: string;
+  composition: string;
 }
 
 export interface ICreateProductResponse {
@@ -22,6 +23,7 @@ export interface ICreateProductResponse {
   expiredDurationInYears: number;
   usageInstructions: string;
   benefits: string;
+  composition: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -42,6 +44,7 @@ export interface IGetProductResponse {
   expiredDurationInYears: number;
   usageInstructions: string;
   benefits: string;
+  composition: string;
   variants: IGetProductVariantResponse[];
   createdAt: Date;
   updatedAt: Date;
@@ -69,6 +72,7 @@ export interface IUpdateProductRequest {
   expiredDurationInYears?: number;
   usageInstructions?: string;
   benefits?: string;
+  composition?: string;
 }
 
 export interface IUpdateProductResponse {
@@ -83,6 +87,7 @@ export interface IUpdateProductResponse {
   expiredDurationInYears: number;
   usageInstructions: string;
   benefits: string;
+  composition: string;
   createdAt: Date;
   updatedAt: Date;
 }

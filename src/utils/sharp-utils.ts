@@ -6,7 +6,12 @@ import { v4 as uuid } from 'uuid';
 export class SharpUtils {
   static async savePhotoProfile(filePath: string): Promise<string> {
     const rootDirectory = path.resolve(__dirname, '..', '..');
-    const relativeDirectory = path.join('uploads', 'users', 'photo-profile');
+    const mainDirectory = process.env.UPLOADS_PATH;
+    const relativeDirectory = path.join(
+      mainDirectory,
+      'users',
+      'photo-profile',
+    );
     const absoluteDirectory = path.join(rootDirectory, relativeDirectory);
 
     if (!fs.existsSync(absoluteDirectory)) {
@@ -14,31 +19,42 @@ export class SharpUtils {
     }
 
     const timestamp = Date.now();
-    const filename = `${uuid()}_${timestamp}.jpg`;
+    const filename = `${uuid()}_${timestamp}.webp`;
     const outputFilePath = path.join(absoluteDirectory, filename);
 
     await sharp(filePath)
       .resize(400, 400)
-      .toFormat('jpg')
+      .toFormat('webp')
       .toFile(outputFilePath);
 
     fs.unlinkSync(filePath);
 
     const relativePath = path.join('users', 'photo-profile', filename);
-
     return relativePath.replace(/\\/g, '/');
   }
 
-  static async resizeImage(imagePath: string): Promise<string> {
-    const dir = path.dirname(imagePath);
-    const extension = path.extname(imagePath);
-    const name = path.basename(imagePath, extension);
+  static async saveProductVariantImage(filePath: string): Promise<string> {
+    const rootDirectory = path.resolve(__dirname, '..', '..');
+    const mainDirectory = process.env.UPLOADS_PATH;
+    const relativeDirectory = path.join(mainDirectory, 'products', 'variants');
+    const absoluteDirectory = path.join(rootDirectory, relativeDirectory);
 
-    const newImagePath = path.join(dir, `resized_${name}${extension}`);
-    await sharp(imagePath).resize(1920, 1080).toFile(newImagePath);
+    if (!fs.existsSync(absoluteDirectory)) {
+      fs.mkdirSync(absoluteDirectory, { recursive: true });
+    }
 
-    fs.unlinkSync(imagePath);
+    const timestamp = Date.now();
+    const filename = `${uuid()}_${timestamp}.webp`;
+    const outputFilePath = path.join(absoluteDirectory, filename);
 
-    return newImagePath;
+    await sharp(filePath)
+      .resize(1920, 1080)
+      .toFormat('webp')
+      .toFile(outputFilePath);
+
+    fs.unlinkSync(filePath);
+
+    const relativePath = path.join('products', 'variants', filename);
+    return relativePath.replace(/\\/g, '/');
   }
 }

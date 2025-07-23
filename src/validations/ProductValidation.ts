@@ -45,6 +45,12 @@ export class ProductValidation {
         invalid_type_error: 'Manfaat tidak valid',
       })
       .min(1, 'Manfaat tidak boleh kosong'),
+    composition: z
+      .string({
+        required_error: 'Komposisi tidak boleh kosong',
+        invalid_type_error: 'Komposisi tidak valid',
+      })
+      .min(1, 'Komposisi tidak boleh kosong'),
   });
 
   static readonly UPDATE: ZodType = z
@@ -87,7 +93,16 @@ export class ProductValidation {
           invalid_type_error: 'Instruksi penggunaan tidak valid',
         })
         .optional(),
-      benefits: z.string().optional(),
+      benefits: z
+        .string({
+          invalid_type_error: 'Manfaat tidak valid',
+        })
+        .optional(),
+      composition: z
+        .string({
+          invalid_type_error: 'Komposisi tidak valid',
+        })
+        .optional(),
     })
     .refine(data => Object.keys(data).some(key => key !== 'productId'), {
       message: 'Setidaknya satu field harus diisi untuk update',

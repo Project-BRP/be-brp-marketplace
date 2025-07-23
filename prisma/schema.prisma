@@ -36,6 +36,7 @@ model Product {
   name                   String   @map("name")
   description            String   @map("description")
   productTypeId          String?  @map("product_type_id")
+  composition            String   @map("composition")
   storageInstructions    String   @map("storage_instructions")
   expiredDurationInYears Int      @map("expired_duration_in_years")
   usageInstructions      String   @map("usage_instructions")
@@ -50,15 +51,14 @@ model Product {
 }
 
 model ProductVariant {
-  id          String   @id @map("id")
-  productId   String   @map("product_id")
-  weight      String   @map("weight")
-  composition String   @map("composition")
-  packagingId String?  @map("packaging_id")
-  imageUrl    String   @map("image_url")
-  priceRupiah Int      @map("price_rupiah")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id           String   @id @map("id")
+  productId    String   @map("product_id")
+  weight_in_kg String   @map("weight_in_kg")
+  packagingId  String?  @map("packaging_id")
+  imageUrl     String   @map("image_url")
+  priceRupiah  Int      @map("price_rupiah")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
   packaging Packaging? @relation(fields: [packagingId], references: [id], onDelete: SetNull)

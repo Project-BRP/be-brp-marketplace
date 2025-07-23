@@ -44,6 +44,7 @@ export class ProductService {
       expiredDurationInYears: validData.expiredDurationInYears,
       usageInstructions: validData.usageInstructions,
       benefits: validData.benefits,
+      composition: validData.composition,
     });
 
     return {
@@ -58,6 +59,7 @@ export class ProductService {
       expiredDurationInYears: newProduct.expiredDurationInYears,
       usageInstructions: newProduct.usageInstructions,
       benefits: newProduct.benefits,
+      composition: newProduct.composition,
       createdAt: newProduct.createdAt,
       updatedAt: newProduct.updatedAt,
     };
@@ -119,6 +121,7 @@ export class ProductService {
       expiredDurationInYears: updatedProduct.expiredDurationInYears,
       usageInstructions: updatedProduct.usageInstructions,
       benefits: updatedProduct.benefits,
+      composition: updatedProduct.composition,
       createdAt: updatedProduct.createdAt,
       updatedAt: updatedProduct.updatedAt,
     };
@@ -145,11 +148,11 @@ export class ProductService {
       expiredDurationInYears: product.expiredDurationInYears,
       usageInstructions: product.usageInstructions,
       benefits: product.benefits,
+      composition: product.composition,
       variants: product.productVariants.map(variant => ({
         id: variant.id,
         productId: variant.productId,
-        weight: variant.weight,
-        composition: variant.composition,
+        weight_in_kg: variant.weight_in_kg,
         packagingId: variant.packagingId,
         imageUrl: variant.imageUrl,
         priceRupiah: variant.priceRupiah,
@@ -188,11 +191,11 @@ export class ProductService {
           expiredDurationInYears: product.expiredDurationInYears,
           usageInstructions: product.usageInstructions,
           benefits: product.benefits,
+          composition: product.composition,
           variants: product.productVariants.map(variant => ({
             id: variant.id,
             productId: variant.productId,
-            weight: variant.weight,
-            composition: variant.composition,
+            weight_in_kg: variant.weight_in_kg,
             packagingId: variant.packagingId,
             imageUrl: variant.imageUrl,
             priceRupiah: variant.priceRupiah,
@@ -243,11 +246,11 @@ export class ProductService {
         expiredDurationInYears: product.expiredDurationInYears,
         usageInstructions: product.usageInstructions,
         benefits: product.benefits,
+        composition: product.composition,
         variants: product.productVariants.map(variant => ({
           id: variant.id,
           productId: variant.productId,
-          weight: variant.weight,
-          composition: variant.composition,
+          weight_in_kg: variant.weight_in_kg,
           packagingId: variant.packagingId,
           imageUrl: variant.imageUrl,
           priceRupiah: variant.priceRupiah,
