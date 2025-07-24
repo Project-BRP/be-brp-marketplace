@@ -9,7 +9,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_15_15_15_Premium_1kg',
       productId: 'NPK_15_15_15_Premium',
-      weight_in_kg: '1 kg',
+      weight_in_kg: 1,
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 15000,
@@ -17,7 +17,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_15_15_15_Premium_25kg',
       productId: 'NPK_15_15_15_Premium',
-      weight_in_kg: '25 kg',
+      weight_in_kg: 25,
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 350000,
@@ -25,7 +25,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_15_15_15_Premium_50kg',
       productId: 'NPK_15_15_15_Premium',
-      weight_in_kg: '50 kg',
+      weight_in_kg: 50,
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 680000,
@@ -34,7 +34,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_Phonska_Plus_25kg',
       productId: 'NPK_Phonska_Plus',
-      weight_in_kg: '25 kg',
+      weight_in_kg: 25,
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 320000,
@@ -42,7 +42,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_Phonska_Plus_50kg',
       productId: 'NPK_Phonska_Plus',
-      weight_in_kg: '50 kg',
+      weight_in_kg: 50,
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 620000,
@@ -51,7 +51,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_Grower_Special_25kg',
       productId: 'NPK_Grower_Special',
-      weight_in_kg: '25 kg',
+      weight_in_kg: 25,
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 380000,
@@ -59,7 +59,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_Grower_Special_50kg',
       productId: 'NPK_Grower_Special',
-      weight_in_kg: '50 kg',
+      weight_in_kg: 50,
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 750000,
@@ -68,7 +68,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_Booster_Buah_1kg',
       productId: 'NPK_Booster_Buah',
-      weight_in_kg: '1 kg',
+      weight_in_kg: 1,
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 25000,
@@ -76,7 +76,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_Booster_Buah_25kg',
       productId: 'NPK_Booster_Buah',
-      weight_in_kg: '25 kg',
+      weight_in_kg: 25,
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 450000,
@@ -84,7 +84,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_Booster_Buah_50kg',
       productId: 'NPK_Booster_Buah',
-      weight_in_kg: '50 kg',
+      weight_in_kg: 50,
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 880000,
@@ -93,7 +93,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_Compact_SlowRelease_1kg',
       productId: 'NPK_Compact_SlowRelease',
-      weight_in_kg: '1 kg',
+      weight_in_kg: 1,
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 45000,
@@ -101,7 +101,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'NPK_Compact_SlowRelease_25kg',
       productId: 'NPK_Compact_SlowRelease',
-      weight_in_kg: '25 kg',
+      weight_in_kg: 25,
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 950000,
@@ -110,7 +110,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Organik_Granul_Super_25kg',
       productId: 'Organik_Granul_Super',
-      weight_in_kg: '25 kg',
+      weight_in_kg: 25,
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 50000,
@@ -118,7 +118,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Organik_Granul_Super_50kg',
       productId: 'Organik_Granul_Super',
-      weight_in_kg: '50 kg',
+      weight_in_kg: 50,
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 95000,
@@ -127,7 +127,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Kompos_Super_Matang_25kg',
       productId: 'Kompos_Super_Matang',
-      weight_in_kg: '25 kg',
+      weight_in_kg: 25,
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 40000,
@@ -135,7 +135,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Kompos_Super_Matang_50kg',
       productId: 'Kompos_Super_Matang',
-      weight_in_kg: '50 kg',
+      weight_in_kg: 50,
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 75000,
@@ -144,7 +144,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Organik_Cair_Plus_Giberelin_1L',
       productId: 'Organik_Cair_Plus_Giberelin',
-      weight_in_kg: '1 Liter',
+      weight_in_kg: 1, // 1 Liter as 1 kg equivalent
       packagingId: 'Botol_1L',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 75000,
@@ -152,7 +152,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Organik_Cair_Plus_Giberelin_500ml',
       productId: 'Organik_Cair_Plus_Giberelin',
-      weight_in_kg: '500 ml',
+      weight_in_kg: 0.5, // 500 ml as 0.5 kg equivalent
       packagingId: 'Botol_1L', // Assuming 500ml uses a 1L bottle type for simplicity
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 45000,
@@ -161,7 +161,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Guano_Fosfat_Alami_1kg',
       productId: 'Guano_Fosfat_Alami',
-      weight_in_kg: '1 kg',
+      weight_in_kg: 1,
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 30000,
@@ -169,7 +169,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Guano_Fosfat_Alami_25kg',
       productId: 'Guano_Fosfat_Alami',
-      weight_in_kg: '25 kg',
+      weight_in_kg: 25,
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 550000,
@@ -177,7 +177,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Guano_Fosfat_Alami_50kg',
       productId: 'Guano_Fosfat_Alami',
-      weight_in_kg: '50 kg',
+      weight_in_kg: 50,
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 1050000,
@@ -186,7 +186,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Bio_Trichoderma_Hayati_1kg',
       productId: 'Bio_Trichoderma_Hayati',
-      weight_in_kg: '1 kg',
+      weight_in_kg: 1,
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 60000,
@@ -194,7 +194,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Bio_Trichoderma_Hayati_500g',
       productId: 'Bio_Trichoderma_Hayati',
-      weight_in_kg: '500 g',
+      weight_in_kg: 0.5,
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 35000,
@@ -203,7 +203,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Mikroba_Rhizobium_Plus_1kg',
       productId: 'Mikroba_Rhizobium_Plus',
-      weight_in_kg: '1 kg',
+      weight_in_kg: 1,
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 80000,
@@ -211,7 +211,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Mikroba_Rhizobium_Plus_250g',
       productId: 'Mikroba_Rhizobium_Plus',
-      weight_in_kg: '250 g',
+      weight_in_kg: 0.25,
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 25000,
@@ -220,7 +220,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Myco_Plus_Mikoriza_1kg',
       productId: 'Myco_Plus_Mikoriza',
-      weight_in_kg: '1 kg',
+      weight_in_kg: 1,
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 120000,
@@ -228,7 +228,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Myco_Plus_Mikoriza_5kg',
       productId: 'Myco_Plus_Mikoriza',
-      weight_in_kg: '5 kg',
+      weight_in_kg: 5,
       packagingId: 'Karung_25kg', // Using a generic bag type
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 550000,
@@ -237,7 +237,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Urea_NonSubsidi_25kg',
       productId: 'Urea_NonSubsidi',
-      weight_in_kg: '25 kg',
+      weight_in_kg: 25,
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 280000,
@@ -245,7 +245,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Urea_NonSubsidi_50kg',
       productId: 'Urea_NonSubsidi',
-      weight_in_kg: '50 kg',
+      weight_in_kg: 50,
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 550000,
@@ -254,7 +254,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'ZA_Amonium_Sulfat_25kg',
       productId: 'ZA_Amonium_Sulfat',
-      weight_in_kg: '25 kg',
+      weight_in_kg: 25,
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 180000,
@@ -262,7 +262,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'ZA_Amonium_Sulfat_50kg',
       productId: 'ZA_Amonium_Sulfat',
-      weight_in_kg: '50 kg',
+      weight_in_kg: 50,
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 350000,
@@ -271,7 +271,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'KCL_Kalium_Klorida_1kg',
       productId: 'KCL_Kalium_Klorida',
-      weight_in_kg: '1 kg',
+      weight_in_kg: 1,
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 20000,
@@ -279,7 +279,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'KCL_Kalium_Klorida_25kg',
       productId: 'KCL_Kalium_Klorida',
-      weight_in_kg: '25 kg',
+      weight_in_kg: 25,
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 480000,
@@ -287,7 +287,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'KCL_Kalium_Klorida_50kg',
       productId: 'KCL_Kalium_Klorida',
-      weight_in_kg: '50 kg',
+      weight_in_kg: 50,
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 950000,
@@ -296,7 +296,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'SP36_Super_Fosfat_25kg',
       productId: 'SP36_Super_Fosfat',
-      weight_in_kg: '25 kg',
+      weight_in_kg: 25,
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 220000,
@@ -304,7 +304,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'SP36_Super_Fosfat_50kg',
       productId: 'SP36_Super_Fosfat',
-      weight_in_kg: '50 kg',
+      weight_in_kg: 50,
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 430000,
@@ -313,7 +313,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Mikro_Boron_Plus_1kg',
       productId: 'Mikro_Boron_Plus',
-      weight_in_kg: '1 kg',
+      weight_in_kg: 1,
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 50000,
@@ -321,7 +321,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Mikro_Boron_Plus_500g',
       productId: 'Mikro_Boron_Plus',
-      weight_in_kg: '500 g',
+      weight_in_kg: 0.5,
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 30000,
@@ -330,7 +330,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Mikro_Fe_Chelate_1kg',
       productId: 'Mikro_Fe_Chelate',
-      weight_in_kg: '1 kg',
+      weight_in_kg: 1,
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 150000,
@@ -338,7 +338,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Mikro_Fe_Chelate_250g',
       productId: 'Mikro_Fe_Chelate',
-      weight_in_kg: '250 g',
+      weight_in_kg: 0.25,
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 45000,
@@ -347,7 +347,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Kalsium_Nitrat_Super_1kg',
       productId: 'Kalsium_Nitrat_Super',
-      weight_in_kg: '1 kg',
+      weight_in_kg: 1,
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 28000,
@@ -355,7 +355,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Kalsium_Nitrat_Super_25kg',
       productId: 'Kalsium_Nitrat_Super',
-      weight_in_kg: '25 kg',
+      weight_in_kg: 25,
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 650000,
@@ -363,7 +363,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Kalsium_Nitrat_Super_50kg',
       productId: 'Kalsium_Nitrat_Super',
-      weight_in_kg: '50 kg',
+      weight_in_kg: 50,
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 1250000,
@@ -372,7 +372,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Magnesium_Sulfat_Epsom_1kg',
       productId: 'Magnesium_Sulfat_Epsom',
-      weight_in_kg: '1 kg',
+      weight_in_kg: 1,
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 18000,
@@ -380,7 +380,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Magnesium_Sulfat_Epsom_25kg',
       productId: 'Magnesium_Sulfat_Epsom',
-      weight_in_kg: '25 kg',
+      weight_in_kg: 25,
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 400000,
@@ -388,7 +388,7 @@ export const productVariantSeeder = async () => {
     {
       id: 'Magnesium_Sulfat_Epsom_50kg',
       productId: 'Magnesium_Sulfat_Epsom',
-      weight_in_kg: '50 kg',
+      weight_in_kg: 50,
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 780000,

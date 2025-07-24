@@ -8,12 +8,23 @@ export class ProductVariantValidation {
         invalid_type_error: 'ID Produk tidak valid',
       })
       .min(1, 'ID Produk tidak boleh kosong'),
-    weight_in_kg: z
-      .string({
+    weight_in_kg: z.preprocess(
+      val => {
+        if (
+          val === undefined ||
+          val === null ||
+          (typeof val === 'string' && val.trim() === '')
+        ) {
+          return undefined;
+        }
+        const num = Number(val);
+        return Number.isNaN(num) ? undefined : num;
+      },
+      z.number({
         required_error: 'Berat tidak boleh kosong',
         invalid_type_error: 'Berat tidak valid',
-      })
-      .min(1, 'Berat tidak boleh kosong'),
+      }),
+    ),
     packagingId: z.string({
       required_error: 'ID Kemasan tidak boleh kosong',
       invalid_type_error: 'ID Kemasan tidak valid',
@@ -60,7 +71,24 @@ export class ProductVariantValidation {
           invalid_type_error: 'ID Varian tidak valid',
         })
         .min(1, 'ID Varian tidak boleh kosong'),
-      weight_in_kg: z.string().optional(),
+      weight_in_kg: z.preprocess(
+        val => {
+          if (
+            val === undefined ||
+            val === null ||
+            (typeof val === 'string' && val.trim() === '')
+          ) {
+            return undefined;
+          }
+          const num = Number(val);
+          return Number.isNaN(num) ? undefined : num;
+        },
+        z
+          .number({
+            invalid_type_error: 'Berat tidak valid',
+          })
+          .optional(),
+      ),
       packagingId: z.string().optional(),
       imageUrl: z.string().optional(),
       priceRupiah: z.preprocess(

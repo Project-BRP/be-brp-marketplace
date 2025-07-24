@@ -56,6 +56,8 @@ export class ProductVariantController {
         );
       }
 
+      console.log(req.body);
+
       const request: IUpdateProductVariantRequest = {
         id: req.params.id,
         ...req.body,

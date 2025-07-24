@@ -1,3 +1,4 @@
+import fs from 'fs';
 import { StatusCodes } from 'http-status-codes';
 import { v4 as uuid } from 'uuid';
 
@@ -64,7 +65,12 @@ export class ProductVariantService {
       id: newProductVariant.id,
       productId: newProductVariant.productId,
       weight_in_kg: newProductVariant.weight_in_kg,
-      packagingId: newProductVariant.packagingId,
+      packaging: packaging
+        ? {
+            id: packaging.id,
+            name: packaging.name,
+          }
+        : undefined,
       imageUrl: newProductVariant.imageUrl,
       priceRupiah: newProductVariant.priceRupiah,
       createdAt: newProductVariant.createdAt,
@@ -102,13 +108,39 @@ export class ProductVariantService {
       }
     }
 
-    const updatedProductVariant = await ProductVariantRepository.update(
+    let updatedProductVariant;
+
+    if (validData.packagingId) {
+      updatedProductVariant = await ProductVariantRepository.update(
+        validData.id,
+        {
+          weight_in_kg: validData.weight_in_kg,
+          packaging: {
+            connect: { id: validData.packagingId },
+          },
+          imageUrl: validData.imageUrl,
+          priceRupiah: validData.priceRupiah,
+        },
+      );
+      return {
+        id: updatedProductVariant.id,
+        productId: updatedProductVariant.productId,
+        weight_in_kg: updatedProductVariant.weight_in_kg,
+        packaging: {
+          id: updatedProductVariant.packaging.id,
+          name: updatedProductVariant.packaging.name,
+        },
+        imageUrl: updatedProductVariant.imageUrl,
+        priceRupiah: updatedProductVariant.priceRupiah,
+        createdAt: updatedProductVariant.createdAt,
+        updatedAt: updatedProductVariant.updatedAt,
+      };
+    }
+
+    updatedProductVariant = await ProductVariantRepository.update(
       validData.id,
       {
         weight_in_kg: validData.weight_in_kg,
-        packaging: {
-          connect: { id: validData.packagingId },
-        },
         imageUrl: validData.imageUrl,
         priceRupiah: validData.priceRupiah,
       },
@@ -118,7 +150,12 @@ export class ProductVariantService {
       id: updatedProductVariant.id,
       productId: updatedProductVariant.productId,
       weight_in_kg: updatedProductVariant.weight_in_kg,
-      packagingId: updatedProductVariant.packagingId,
+      packaging: updatedProductVariant.packaging
+        ? {
+            id: updatedProductVariant.packaging.id,
+            name: updatedProductVariant.packaging.name,
+          }
+        : undefined,
       imageUrl: updatedProductVariant.imageUrl,
       priceRupiah: updatedProductVariant.priceRupiah,
       createdAt: updatedProductVariant.createdAt,
@@ -148,7 +185,12 @@ export class ProductVariantService {
       id: productVariant.id,
       productId: productVariant.productId,
       weight_in_kg: productVariant.weight_in_kg,
-      packagingId: productVariant.packagingId,
+      packaging: productVariant.packaging
+        ? {
+            id: productVariant.packaging.id,
+            name: productVariant.packaging.name,
+          }
+        : undefined,
       imageUrl: productVariant.imageUrl,
       priceRupiah: productVariant.priceRupiah,
       createdAt: productVariant.createdAt,
@@ -179,7 +221,12 @@ export class ProductVariantService {
           id: variant.id,
           productId: variant.productId,
           weight_in_kg: variant.weight_in_kg,
-          packagingId: variant.packagingId,
+          packaging: variant.packaging
+            ? {
+                id: variant.packaging.id,
+                name: variant.packaging.name,
+              }
+            : undefined,
           imageUrl: variant.imageUrl,
           priceRupiah: variant.priceRupiah,
           createdAt: variant.createdAt,
@@ -222,7 +269,12 @@ export class ProductVariantService {
         id: variant.id,
         productId: variant.productId,
         weight_in_kg: variant.weight_in_kg,
-        packagingId: variant.packagingId,
+        packaging: variant.packaging
+          ? {
+              id: variant.packaging.id,
+              name: variant.packaging.name,
+            }
+          : undefined,
         imageUrl: variant.imageUrl,
         priceRupiah: variant.priceRupiah,
         createdAt: variant.createdAt,
@@ -245,6 +297,12 @@ export class ProductVariantService {
         StatusCodes.NOT_FOUND,
         'Varian produk tidak ditemukan',
       );
+    }
+
+    const assetDir = process.env.UPLOADS_PATH;
+
+    if (fs.existsSync(`${assetDir}/${productVariant.imageUrl}`)) {
+      fs.unlinkSync(`${assetDir}/${productVariant.imageUrl}`);
     }
 
     await ProductVariantRepository.delete(validData.id);

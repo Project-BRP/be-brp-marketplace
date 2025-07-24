@@ -19,6 +19,7 @@ productVariantRoute.post(
 productVariantRoute.patch(
   '/:id',
   authMiddleware,
+  uploadMiddleware,
   roleMiddleware([Role.ADMIN]),
   ProductVariantController.updateProductVariant,
 );

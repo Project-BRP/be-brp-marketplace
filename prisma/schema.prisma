@@ -53,7 +53,7 @@ model Product {
 model ProductVariant {
   id           String   @id @map("id")
   productId    String   @map("product_id")
-  weight_in_kg String   @map("weight_in_kg")
+  weight_in_kg Int      @map("weight_in_kg")
   packagingId  String?  @map("packaging_id")
   imageUrl     String   @map("image_url")
   priceRupiah  Int      @map("price_rupiah")
