@@ -57,4 +57,30 @@ export class SharpUtils {
     const relativePath = path.join('products', 'variants', filename);
     return relativePath.replace(/\\/g, '/');
   }
+
+  // Tambahkan fungsi ini untuk gambar produk utama
+  static async saveProductImage(filePath: string): Promise<string> {
+    const rootDirectory = path.resolve(__dirname, '..', '..');
+    const mainDirectory = process.env.UPLOADS_PATH;
+    const relativeDirectory = path.join(mainDirectory, 'products', 'main');
+    const absoluteDirectory = path.join(rootDirectory, relativeDirectory);
+
+    if (!fs.existsSync(absoluteDirectory)) {
+      fs.mkdirSync(absoluteDirectory, { recursive: true });
+    }
+
+    const timestamp = Date.now();
+    const filename = `${uuid()}_${timestamp}.webp`;
+    const outputFilePath = path.join(absoluteDirectory, filename);
+
+    await sharp(filePath)
+      .resize(1920, 1080)
+      .toFormat('webp')
+      .toFile(outputFilePath);
+
+    fs.unlinkSync(filePath);
+
+    const relativePath = path.join('products', 'main', filename);
+    return relativePath.replace(/\\/g, '/');
+  }
 }

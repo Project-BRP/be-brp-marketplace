@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import { StatusCodes } from 'http-status-codes';
 import { v4 as uuid } from 'uuid';
 
@@ -108,6 +109,23 @@ export class ProductVariantService {
       }
     }
 
+    const product = await ProductRepository.findById(
+      productVariant.productId,
+    );
+
+    if (!product) {
+      throw new ResponseError(StatusCodes.NOT_FOUND, 'Produk tidak ditemukan');
+    }
+
+    if (validData.imageUrl && productVariant.imageUrl) {
+      const assetDir = process.env.UPLOADS_PATH;
+      const imagePath = path.join(assetDir, productVariant.imageUrl);
+      
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+      }
+    }
+
     let updatedProductVariant;
 
     if (validData.packagingId) {
@@ -208,10 +226,9 @@ export class ProductVariantService {
 
     const take = validData.limit;
     const skip = (validData.page - 1) * take;
-    const productId = validData.productId; // Tetap ambil productId dari validData
+    const productId = validData.productId; 
 
     if (!take || !validData.page) {
-      // Teruskan productId ke repository
       const productVariants = await ProductVariantRepository.findAll(productId);
 
       return {
@@ -235,7 +252,6 @@ export class ProductVariantService {
       };
     }
 
-    // Teruskan productId ke repository
     const totalProductVariants =
       await ProductVariantRepository.count(productId);
 
@@ -251,7 +267,6 @@ export class ProductVariantService {
       throw new ResponseError(StatusCodes.BAD_REQUEST, 'Halaman tidak valid');
     }
 
-    // Teruskan productId ke repository
     const productVariants =
       await ProductVariantRepository.findAllWithPagination(
         skip,
@@ -299,10 +314,12 @@ export class ProductVariantService {
       );
     }
 
-    const assetDir = process.env.UPLOADS_PATH;
-
-    if (fs.existsSync(`${assetDir}/${productVariant.imageUrl}`)) {
-      fs.unlinkSync(`${assetDir}/${productVariant.imageUrl}`);
+    if (productVariant.imageUrl) {
+      const assetDir = process.env.UPLOADS_PATH;
+      const imagePath = path.join(assetDir, productVariant.imageUrl);
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+      }
     }
 
     await ProductVariantRepository.delete(validData.id);

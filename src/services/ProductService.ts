@@ -1,5 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import { v4 as uuid } from 'uuid';
+import fs from 'fs';
+import path from 'path';
 
 import type {
   ICreateProductRequest,
@@ -40,11 +42,12 @@ export class ProductService {
       productType: {
         connect: { id: validData.productTypeId },
       },
+      composition: validData.composition, // Tambahkan composition
+      imageUrl: validData.imageUrl, // Tambahkan imageUrl
       storageInstructions: validData.storageInstructions,
       expiredDurationInYears: validData.expiredDurationInYears,
       usageInstructions: validData.usageInstructions,
       benefits: validData.benefits,
-      composition: validData.composition,
     });
 
     return {
@@ -55,11 +58,12 @@ export class ProductService {
         id: productType.id,
         name: productType.name,
       },
+      composition: newProduct.composition, // Tambahkan composition
+      imageUrl: newProduct.imageUrl, // Tambahkan imageUrl
       storageInstructions: newProduct.storageInstructions,
       expiredDurationInYears: newProduct.expiredDurationInYears,
       usageInstructions: newProduct.usageInstructions,
       benefits: newProduct.benefits,
-      composition: newProduct.composition,
       createdAt: newProduct.createdAt,
       updatedAt: newProduct.updatedAt,
     };
@@ -87,12 +91,23 @@ export class ProductService {
       }
     }
 
+    if (validData.imageUrl && product.imageUrl) {
+      const assetDir = process.env.UPLOADS_PATH; 
+      const imagePath = path.join(assetDir, product.imageUrl);
+
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+      }
+    }
+
     const updatedProduct = await ProductRepository.update(validData.id, {
       name: validData.name,
       description: validData.description,
       productType: validData.productTypeId
         ? { connect: { id: validData.productTypeId } }
         : undefined,
+      composition: validData.composition, // Tambahkan composition
+      imageUrl: validData.imageUrl, // Tambahkan imageUrl
       storageInstructions: validData.storageInstructions,
       expiredDurationInYears: validData.expiredDurationInYears,
       usageInstructions: validData.usageInstructions,
@@ -117,11 +132,12 @@ export class ProductService {
         id: productType.id,
         name: productType.name,
       },
+      composition: updatedProduct.composition, // Tambahkan composition
+      imageUrl: updatedProduct.imageUrl, // Tambahkan imageUrl
       storageInstructions: updatedProduct.storageInstructions,
       expiredDurationInYears: updatedProduct.expiredDurationInYears,
       usageInstructions: updatedProduct.usageInstructions,
       benefits: updatedProduct.benefits,
-      composition: updatedProduct.composition,
       createdAt: updatedProduct.createdAt,
       updatedAt: updatedProduct.updatedAt,
     };
@@ -144,11 +160,12 @@ export class ProductService {
       productType: product.productType
         ? { id: product.productType.id, name: product.productType.name }
         : undefined,
+      composition: product.composition, // Tambahkan composition
+      imageUrl: product.imageUrl, // Tambahkan imageUrl
       storageInstructions: product.storageInstructions,
       expiredDurationInYears: product.expiredDurationInYears,
       usageInstructions: product.usageInstructions,
       benefits: product.benefits,
-      composition: product.composition,
       variants: product.productVariants.map(variant => ({
         id: variant.id,
         productId: variant.productId,
@@ -187,11 +204,12 @@ export class ProductService {
           productType: product.productType
             ? { id: product.productType.id, name: product.productType.name }
             : undefined,
+          composition: product.composition, // Tambahkan composition
+          imageUrl: product.imageUrl, // Tambahkan imageUrl
           storageInstructions: product.storageInstructions,
           expiredDurationInYears: product.expiredDurationInYears,
           usageInstructions: product.usageInstructions,
           benefits: product.benefits,
-          composition: product.composition,
           variants: product.productVariants.map(variant => ({
             id: variant.id,
             productId: variant.productId,
@@ -242,11 +260,12 @@ export class ProductService {
         productType: product.productType
           ? { id: product.productType.id, name: product.productType.name }
           : undefined,
+        composition: product.composition, // Tambahkan composition
+        imageUrl: product.imageUrl, // Tambahkan imageUrl
         storageInstructions: product.storageInstructions,
         expiredDurationInYears: product.expiredDurationInYears,
         usageInstructions: product.usageInstructions,
         benefits: product.benefits,
-        composition: product.composition,
         variants: product.productVariants.map(variant => ({
           id: variant.id,
           productId: variant.productId,
@@ -269,6 +288,14 @@ export class ProductService {
     const product = await ProductRepository.findById(validData.id);
     if (!product) {
       throw new ResponseError(StatusCodes.NOT_FOUND, 'Produk tidak ditemukan');
+    }
+
+    if (product.imageUrl) {
+      const assetDir = process.env.UPLOADS_PATH;
+      const imagePath = path.join(assetDir, product.imageUrl);
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+      }
     }
 
     await ProductRepository.delete(validData.id);

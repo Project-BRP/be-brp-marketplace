@@ -1,4 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
+import fs from 'fs';
+import { SharpUtils } from '../utils';
 import {
   ICreateProductRequest,
   IUpdateProductRequest,
@@ -15,11 +17,24 @@ export class ProductController {
     res: Response,
     next: NextFunction,
   ): Promise<void> {
+    let resizedImagePath: string | undefined;
+
     try {
-      const request = req.body as ICreateProductRequest;
+      if (req.file) {
+        resizedImagePath = await SharpUtils.saveProductImage(req.file.path);
+      }
+
+      const request: ICreateProductRequest = {
+        ...req.body,
+        imageUrl: resizedImagePath,
+      };
+
       const response = await ProductService.create(request);
       successResponse(res, 201, 'Produk berhasil ditambahkan', response);
     } catch (error) {
+      if (resizedImagePath && fs.existsSync(resizedImagePath)) {
+        fs.unlinkSync(resizedImagePath);
+      }
       next(error);
     }
   }
@@ -29,14 +44,25 @@ export class ProductController {
     res: Response,
     next: NextFunction,
   ): Promise<void> {
+    let resizedImagePath: string | undefined;
+
     try {
-      const request = {
+      if (req.file) {
+        resizedImagePath = await SharpUtils.saveProductImage(req.file.path);
+      }
+
+      const request: IUpdateProductRequest = {
         id: req.params.id,
         ...req.body,
-      } as IUpdateProductRequest;
+        imageUrl: resizedImagePath,
+      };
+
       const response = await ProductService.update(request);
       successResponse(res, 200, 'Produk berhasil diperbarui', response);
     } catch (error) {
+      if (resizedImagePath && fs.existsSync(resizedImagePath)) {
+        fs.unlinkSync(resizedImagePath);
+      }
       next(error);
     }
   }

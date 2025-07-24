@@ -4,11 +4,12 @@ export interface ICreateProductRequest {
   name: string;
   description: string;
   productTypeId: string;
+  composition: string;
+  imageUrl: string;
   storageInstructions: string;
   expiredDurationInYears: number;
   usageInstructions: string;
   benefits: string;
-  composition: string;
 }
 
 export interface ICreateProductResponse {
@@ -19,11 +20,12 @@ export interface ICreateProductResponse {
     id: string;
     name: string;
   };
+  composition: string;
+  imageUrl: string;
   storageInstructions: string;
   expiredDurationInYears: number;
   usageInstructions: string;
   benefits: string;
-  composition: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -40,11 +42,12 @@ export interface IGetProductResponse {
     id: string;
     name: string;
   };
+  composition: string;
+  imageUrl: string;
   storageInstructions: string;
   expiredDurationInYears: number;
   usageInstructions: string;
   benefits: string;
-  composition: string;
   variants: IGetProductVariantResponse[];
   createdAt: Date;
   updatedAt: Date;
@@ -68,11 +71,12 @@ export interface IUpdateProductRequest {
   name?: string;
   description?: string;
   productTypeId?: string;
+  composition?: string;
+  imageUrl?: string;
   storageInstructions?: string;
   expiredDurationInYears?: number;
   usageInstructions?: string;
   benefits?: string;
-  composition?: string;
 }
 
 export interface IUpdateProductResponse {
@@ -83,11 +87,12 @@ export interface IUpdateProductResponse {
     id: string;
     name: string;
   };
+  composition: string;
+  imageUrl: string;
   storageInstructions: string;
   expiredDurationInYears: number;
   usageInstructions: string;
   benefits: string;
-  composition: string;
   createdAt: Date;
   updatedAt: Date;
 }

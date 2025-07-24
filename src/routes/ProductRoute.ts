@@ -1,6 +1,10 @@
 import { Router } from 'express';
 import { ProductController } from '../controllers';
-import { authMiddleware, roleMiddleware } from '../middlewares';
+import {
+  authMiddleware,
+  roleMiddleware,
+  uploadMiddleware,
+} from '../middlewares';
 import { Role } from '../constants';
 
 export const productRoute: Router = Router();
@@ -8,12 +12,14 @@ export const productRoute: Router = Router();
 productRoute.post(
   '/',
   authMiddleware,
+  uploadMiddleware,
   roleMiddleware([Role.ADMIN]),
   ProductController.createProduct,
 );
 productRoute.patch(
   '/:id',
   authMiddleware,
+  uploadMiddleware,
   roleMiddleware([Role.ADMIN]),
   ProductController.updateProduct,
 );

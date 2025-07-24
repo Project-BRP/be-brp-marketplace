@@ -292,6 +292,14 @@ export class AuthService {
 
     if (validData.photoProfile) {
       updateData.profilePicture = validData.photoProfile;
+      if (user.profilePicture) {
+        const assetDir = process.env.UPLOADS_PATH; 
+        const imagePath = path.join(assetDir, user.profilePicture);
+
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath);
+        }
+      }
     }
 
     if (validData.name) {

@@ -21,18 +21,43 @@ export class ProductValidation {
         invalid_type_error: 'ID Tipe Produk tidak valid',
       })
       .min(1, 'ID Tipe Produk tidak boleh kosong'),
+    composition: z
+      .string({
+        required_error: 'Komposisi tidak boleh kosong',
+        invalid_type_error: 'Komposisi tidak valid',
+      })
+      .min(1, 'Komposisi tidak boleh kosong'),
+    imageUrl: z 
+      .string({
+        required_error: 'URL gambar tidak boleh kosong',
+        invalid_type_error: 'URL gambar tidak valid',
+      })
+      .min(1, 'URL gambar tidak boleh kosong'),
     storageInstructions: z
       .string({
         required_error: 'Instruksi penyimpanan tidak boleh kosong',
         invalid_type_error: 'Instruksi penyimpanan tidak valid',
       })
       .min(1, 'Instruksi penyimpanan tidak boleh kosong'),
-    expiredDurationInYears: z
-      .number({
-        required_error: 'Durasi kadaluarsa tidak boleh kosong',
-        invalid_type_error: 'Durasi kadaluarsa tidak valid',
-      })
-      .min(0, 'Durasi kadaluarsa tidak boleh negatif'),
+    expiredDurationInYears: z.preprocess(
+      val => {
+        if (
+          val === undefined ||
+          val === null ||
+          (typeof val === 'string' && val.trim() === '')
+        ) {
+          return undefined;
+        }
+        const num = Number(val);
+        return Number.isNaN(num) ? undefined : num;
+      },
+      z
+        .number({
+          required_error: 'Durasi kadaluarsa tidak boleh kosong',
+          invalid_type_error: 'Durasi kadaluarsa tidak valid',
+        })
+        .min(0, 'Durasi kadaluarsa tidak boleh negatif'),
+    ),
     usageInstructions: z
       .string({
         required_error: 'Instruksi penggunaan tidak boleh kosong',
@@ -45,12 +70,6 @@ export class ProductValidation {
         invalid_type_error: 'Manfaat tidak valid',
       })
       .min(1, 'Manfaat tidak boleh kosong'),
-    composition: z
-      .string({
-        required_error: 'Komposisi tidak boleh kosong',
-        invalid_type_error: 'Komposisi tidak valid',
-      })
-      .min(1, 'Komposisi tidak boleh kosong'),
   });
 
   static readonly UPDATE: ZodType = z
@@ -77,17 +96,40 @@ export class ProductValidation {
           invalid_type_error: 'ID Tipe Produk tidak valid',
         })
         .optional(),
+      composition: z
+        .string({
+          invalid_type_error: 'Komposisi tidak valid',
+        })
+        .optional(),
+      imageUrl: z 
+        .string({
+          invalid_type_error: 'URL gambar tidak valid',
+        })
+        .optional(),
       storageInstructions: z
         .string({
           invalid_type_error: 'Instruksi penyimpanan tidak valid',
         })
         .optional(),
-      expiredDurationInYears: z
-        .number({
-          invalid_type_error: 'Durasi kadaluarsa tidak valid',
-        })
-        .min(0, 'Durasi kadaluarsa tidak boleh negatif')
-        .optional(),
+      expiredDurationInYears: z.preprocess(
+        val => {  
+          if (
+            val === undefined ||
+            val === null ||
+            (typeof val === 'string' && val.trim() === '')
+          ) {
+            return undefined;
+          }
+          const num = Number(val);
+          return Number.isNaN(num) ? undefined : num;
+        },
+        z
+          .number({
+            invalid_type_error: 'Durasi kadaluarsa tidak valid',
+          })
+          .min(0, 'Durasi kadaluarsa tidak boleh negatif')
+          .optional(),
+      ),
       usageInstructions: z
         .string({
           invalid_type_error: 'Instruksi penggunaan tidak valid',
@@ -98,13 +140,8 @@ export class ProductValidation {
           invalid_type_error: 'Manfaat tidak valid',
         })
         .optional(),
-      composition: z
-        .string({
-          invalid_type_error: 'Komposisi tidak valid',
-        })
-        .optional(),
     })
-    .refine(data => Object.keys(data).some(key => key !== 'productId'), {
+    .refine(data => Object.keys(data).some(key => key !== 'id'), {
       message: 'Setidaknya satu field harus diisi untuk update',
       path: [],
     });

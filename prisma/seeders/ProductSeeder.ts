@@ -19,6 +19,7 @@ export const productSeeder = async () => {
       benefits:
         'Mempercepat pertumbuhan daun, memperkuat batang, dan merangsang pembungaan serta pembuahan.',
       composition: 'N 15%, P 15%, K 15%',
+      imageUrl: 'https://example.com/images/NPK_15_15_15_Premium.jpg',
     },
     {
       id: 'NPK_Phonska_Plus',
@@ -34,6 +35,7 @@ export const productSeeder = async () => {
       benefits:
         'Meningkatkan efisiensi penyerapan unsur hara, membuat tanaman lebih hijau dan tahan penyakit.',
       composition: 'NPK + Zn',
+      imageUrl: 'https://example.com/images/NPK_Phonska_Plus.jpg',
     },
     {
       id: 'NPK_Grower_Special',
@@ -47,6 +49,7 @@ export const productSeeder = async () => {
         'Ideal untuk pemupukan kedua pada tanaman sayuran daun dan perkebunan muda.',
       benefits: 'Merangsang pertumbuhan tunas dan daun baru secara masif.',
       composition: 'N tinggi, P, K',
+      imageUrl: 'https://example.com/images/NPK_Grower_Special.jpg',
     },
     {
       id: 'NPK_Booster_Buah',
@@ -60,6 +63,7 @@ export const productSeeder = async () => {
         'Aplikasikan saat tanaman memasuki fase generatif atau pembentukan buah.',
       benefits: 'Membuat buah lebih manis, besar, dan tidak mudah rontok.',
       composition: 'NPK dengan K tinggi',
+      imageUrl: 'https://example.com/images/NPK_Booster_Buah.jpg',
     },
     {
       id: 'NPK_Compact_SlowRelease',
@@ -74,6 +78,7 @@ export const productSeeder = async () => {
       benefits:
         'Nutrisi tersedia berkelanjutan, mengurangi frekuensi pemupukan dan pencemaran lingkungan.',
       composition: 'NPK slow release',
+      imageUrl: 'https://example.com/images/NPK_Compact_SlowRelease.jpg',
     },
     // Organic Products (4)
     {
@@ -88,6 +93,7 @@ export const productSeeder = async () => {
       benefits:
         'Meningkatkan kesuburan tanah, kapasitas tukar kation, dan aktivitas mikroorganisme tanah.',
       composition: 'Bahan organik alami',
+      imageUrl: 'https://example.com/images/Organik_Granul_Super.jpg',
     },
     {
       id: 'Kompos_Super_Matang',
@@ -103,6 +109,7 @@ export const productSeeder = async () => {
       benefits:
         'Menyediakan hara makro dan mikro esensial secara alami dan memperbaiki drainase tanah.',
       composition: 'Kompos organik',
+      imageUrl: 'https://example.com/images/Kompos_Super_Matang.jpg',
     },
     {
       id: 'Organik_Cair_Plus_Giberelin',
@@ -117,6 +124,7 @@ export const productSeeder = async () => {
       benefits:
         'Mempercepat perkecambahan, pembungaan, dan mengurangi kerontokan bunga.',
       composition: 'Ekstrak organik + Giberelin',
+      imageUrl: 'https://example.com/images/Organik_Cair_Plus_Giberelin.jpg',
     },
     {
       id: 'Guano_Fosfat_Alami',
@@ -131,6 +139,7 @@ export const productSeeder = async () => {
       benefits:
         'Merangsang pertumbuhan akar yang kuat dan memaksimalkan potensi pembungaan.',
       composition: 'Guano (Fosfor tinggi)',
+      imageUrl: 'https://example.com/images/Guano_Fosfat_Alami.jpg',
     },
     // Hayati Products (3)
     {
@@ -147,6 +156,7 @@ export const productSeeder = async () => {
       benefits:
         'Mencegah penyakit busuk akar, layu fusarium, dan rebah semai secara biologis.',
       composition: 'Trichoderma sp.',
+      imageUrl: 'https://example.com/images/Bio_Trichoderma_Hayati.jpg',
     },
     {
       id: 'Mikroba_Rhizobium_Plus',
@@ -160,6 +170,7 @@ export const productSeeder = async () => {
       benefits:
         'Mengurangi kebutuhan pupuk N kimia, meningkatkan bintil akar, dan menyuburkan tanah.',
       composition: 'Rhizobium sp.',
+      imageUrl: 'https://example.com/images/Mikroba_Rhizobium_Plus.jpg',
     },
     {
       id: 'Myco_Plus_Mikoriza',
@@ -175,6 +186,7 @@ export const productSeeder = async () => {
       benefits:
         'Meningkatkan penyerapan Fosfor dan air, serta meningkatkan ketahanan tanaman terhadap kekeringan.',
       composition: 'Spora Mikoriza',
+      imageUrl: 'https://example.com/images/Myco_Plus_Mikoriza.jpg',
     },
     // Chemical Single Products (4)
     {
@@ -190,6 +202,7 @@ export const productSeeder = async () => {
       benefits:
         'Membuat daun lebih hijau, rimbun, dan mempercepat pertumbuhan tanaman.',
       composition: 'Urea (N 46%)',
+      imageUrl: 'https://example.com/images/Urea_NonSubsidi.jpg',
     },
     {
       id: 'ZA_Amonium_Sulfat',
@@ -204,6 +217,7 @@ export const productSeeder = async () => {
       benefits:
         'Meningkatkan anakan, kualitas umbi, dan aroma pada tanaman hortikultura.',
       composition: 'Amonium Sulfat (N, S)',
+      imageUrl: 'https://example.com/images/ZA_Amonium_Sulfat.jpg',
     },
     {
       id: 'KCL_Kalium_Klorida',
@@ -217,6 +231,7 @@ export const productSeeder = async () => {
       benefits:
         'Memperkuat batang agar tidak mudah rebah, meningkatkan bobot dan rasa buah.',
       composition: 'Kalium Klorida (K2O 60%)',
+      imageUrl: 'https://example.com/images/KCL_Kalium_Klorida.jpg',
     },
     {
       id: 'SP36_Super_Fosfat',
@@ -230,6 +245,7 @@ export const productSeeder = async () => {
       benefits:
         'Memacu pertumbuhan sistem perakaran yang sehat dan merangsang pembentukan bunga.',
       composition: 'Super Fosfat (P2O5 36%)',
+      imageUrl: 'https://example.com/images/SP36_Super_Fosfat.jpg',
     },
     // Micro Nutrient Products (4)
     {
@@ -245,6 +261,7 @@ export const productSeeder = async () => {
       benefits:
         'Meningkatkan pembentukan serbuk sari, mencegah buah pecah dan cacat.',
       composition: 'Boron (B)',
+      imageUrl: 'https://example.com/images/Mikro_Boron_Plus.jpg',
     },
     {
       id: 'Mikro_Fe_Chelate',
@@ -258,6 +275,7 @@ export const productSeeder = async () => {
       benefits:
         'Menghijaukan kembali daun yang kuning karena kekurangan zat besi.',
       composition: 'Fe-Chelate',
+      imageUrl: 'https://example.com/images/Mikro_Fe_Chelate.jpg',
     },
     {
       id: 'Kalsium_Nitrat_Super',
@@ -272,6 +290,7 @@ export const productSeeder = async () => {
       benefits:
         'Memperkuat dinding sel tanaman, membuat buah lebih padat dan tahan simpan.',
       composition: 'Kalsium Nitrat (Ca, N)',
+      imageUrl: 'https://example.com/images/Kalsium_Nitrat_Super.jpg',
     },
     {
       id: 'Magnesium_Sulfat_Epsom',
@@ -286,6 +305,7 @@ export const productSeeder = async () => {
       benefits:
         'Mencegah daun tua menguning dan meningkatkan vitalitas tanaman secara keseluruhan.',
       composition: 'Magnesium Sulfat (Mg, S)',
+      imageUrl: 'https://example.com/images/Magnesium_Sulfat_Epsom.jpg',
     },
   ];
 
