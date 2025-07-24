@@ -15,6 +15,7 @@ import {
   productRoute,
   packagingRoute,
   productVariantRoute,
+  configRoute,
 } from './routes';
 
 const app: Express = express();
@@ -51,7 +52,8 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // untuk mengecek kesehatan server
 app.use('/api/', healthRoute);
-app.use('/api/auth/', authRoute);
+app.use('/api/config', configRoute);
+app.use('/api/auth', authRoute);
 app.use('/api/product-types', productTypeRoute);
 app.use('/api/products', productRoute);
 app.use('/api/packagings', packagingRoute);

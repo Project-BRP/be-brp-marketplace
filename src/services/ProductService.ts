@@ -92,7 +92,7 @@ export class ProductService {
     }
 
     if (validData.imageUrl && product.imageUrl) {
-      const assetDir = process.env.UPLOADS_PATH; 
+      const assetDir = process.env.UPLOADS_PATH;
       const imagePath = path.join(assetDir, product.imageUrl);
 
       if (fs.existsSync(imagePath)) {

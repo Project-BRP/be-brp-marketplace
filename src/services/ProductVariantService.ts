@@ -109,9 +109,7 @@ export class ProductVariantService {
       }
     }
 
-    const product = await ProductRepository.findById(
-      productVariant.productId,
-    );
+    const product = await ProductRepository.findById(productVariant.productId);
 
     if (!product) {
       throw new ResponseError(StatusCodes.NOT_FOUND, 'Produk tidak ditemukan');
@@ -120,7 +118,7 @@ export class ProductVariantService {
     if (validData.imageUrl && productVariant.imageUrl) {
       const assetDir = process.env.UPLOADS_PATH;
       const imagePath = path.join(assetDir, productVariant.imageUrl);
-      
+
       if (fs.existsSync(imagePath)) {
         fs.unlinkSync(imagePath);
       }
@@ -226,7 +224,7 @@ export class ProductVariantService {
 
     const take = validData.limit;
     const skip = (validData.page - 1) * take;
-    const productId = validData.productId; 
+    const productId = validData.productId;
 
     if (!take || !validData.page) {
       const productVariants = await ProductVariantRepository.findAll(productId);

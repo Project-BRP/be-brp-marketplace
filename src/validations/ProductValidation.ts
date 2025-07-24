@@ -27,7 +27,7 @@ export class ProductValidation {
         invalid_type_error: 'Komposisi tidak valid',
       })
       .min(1, 'Komposisi tidak boleh kosong'),
-    imageUrl: z 
+    imageUrl: z
       .string({
         required_error: 'URL gambar tidak boleh kosong',
         invalid_type_error: 'URL gambar tidak valid',
@@ -101,7 +101,7 @@ export class ProductValidation {
           invalid_type_error: 'Komposisi tidak valid',
         })
         .optional(),
-      imageUrl: z 
+      imageUrl: z
         .string({
           invalid_type_error: 'URL gambar tidak valid',
         })
@@ -112,7 +112,7 @@ export class ProductValidation {
         })
         .optional(),
       expiredDurationInYears: z.preprocess(
-        val => {  
+        val => {
           if (
             val === undefined ||
             val === null ||

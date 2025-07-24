@@ -76,7 +76,11 @@ export class AuthService {
 
     const uploadPath = process.env.UPLOADS_PATH;
 
-    const logoUrl = `${serverDomain}/${uploadPath}/logo/logo.jpg`;
+    const logoName = fs.readdirSync(
+      path.join(__dirname, '..', '..', uploadPath, 'logo'),
+    )[0];
+
+    const logoUrl = `${serverDomain}/${uploadPath}/logo/${logoName}`;
 
     emailHtml = emailHtml.replace('{{logo_url}}', logoUrl);
 
@@ -293,7 +297,7 @@ export class AuthService {
     if (validData.photoProfile) {
       updateData.profilePicture = validData.photoProfile;
       if (user.profilePicture) {
-        const assetDir = process.env.UPLOADS_PATH; 
+        const assetDir = process.env.UPLOADS_PATH;
         const imagePath = path.join(assetDir, user.profilePicture);
 
         if (fs.existsSync(imagePath)) {
@@ -387,8 +391,13 @@ export class AuthService {
 
     const uploadPath = process.env.UPLOADS_PATH;
 
-    const logoUrl = `${serverDomain}/${uploadPath}/logo/logo.jpg`;
+    const logoName = fs.readdirSync(
+      path.join(__dirname, '..', '..', uploadPath, 'logo'),
+    )[0];
 
+    
+    const logoUrl = `${serverDomain}/${uploadPath}/logo/${logoName}`;
+    
     emailHtml = emailHtml.replace('{{logo_url}}', logoUrl);
 
     const emailData: IEmailDto = {
