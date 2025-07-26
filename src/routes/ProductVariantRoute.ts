@@ -10,7 +10,7 @@ import { Role } from '../constants';
 export const productVariantRoute: Router = Router();
 
 productVariantRoute.post(
-  '/product/:productId',
+  '/products/:productId',
   authMiddleware,
   uploadMiddleware,
   roleMiddleware([Role.ADMIN]),
@@ -31,7 +31,7 @@ productVariantRoute.patch(
 );
 productVariantRoute.get('/:id', ProductVariantController.getProductVariantById);
 productVariantRoute.get(
-  '/product/:productId',
+  '/products/:productId',
   ProductVariantController.getAllProductVariants,
 );
 productVariantRoute.delete(

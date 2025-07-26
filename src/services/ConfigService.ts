@@ -25,7 +25,7 @@ export class ConfigService {
   }
 
   static async getLogo(): Promise<string> {
-    const mainDirectory = process.env.UPLOADS_PATH
+    const mainDirectory = process.env.UPLOADS_PATH;
     const logoPath = path.join(__dirname, '..', '..', mainDirectory, 'logo');
     const files = fs.readdirSync(logoPath);
 

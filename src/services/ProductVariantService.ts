@@ -186,9 +186,7 @@ export class ProductVariantService {
     };
   }
 
-  static async addStock(
-    request: IAddStockRequest,
-  ): Promise<IAddStockResponse> {
+  static async addStock(request: IAddStockRequest): Promise<IAddStockResponse> {
     const validData = Validator.validate(
       ProductVariantValidation.ADD_STOCK,
       request,

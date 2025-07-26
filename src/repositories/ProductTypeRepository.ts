@@ -17,10 +17,7 @@ export class ProductTypeRepository {
     });
   }
 
-  static async findByName(
-    name: string,
-    tx: Prisma.TransactionClient = db,
-  ) {
+  static async findByName(name: string, tx: Prisma.TransactionClient = db) {
     return tx.productType.findFirst({
       where: {
         name: name,

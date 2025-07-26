@@ -48,8 +48,8 @@ export class ProductService {
       productType: {
         connect: { id: validData.productTypeId },
       },
-      composition: validData.composition, 
-      imageUrl: validData.imageUrl, 
+      composition: validData.composition,
+      imageUrl: validData.imageUrl,
       storageInstructions: validData.storageInstructions,
       expiredDurationInYears: validData.expiredDurationInYears,
       usageInstructions: validData.usageInstructions,

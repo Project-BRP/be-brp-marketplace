@@ -15,7 +15,7 @@ export class ConfigController {
     next: NextFunction,
   ): Promise<void> {
     let resizedImagePath: string | undefined;
-    
+
     try {
       await ConfigService.uploadLogo();
 
@@ -47,7 +47,7 @@ export class ConfigController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const logoUrl = await ConfigService.getLogo(); 
+      const logoUrl = await ConfigService.getLogo();
       successResponse(res, 200, 'Logo berhasil diambil', { imageUrl: logoUrl });
     } catch (error) {
       next(error);

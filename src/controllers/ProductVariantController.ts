@@ -84,7 +84,12 @@ export class ProductVariantController {
         stock: req.body.stock,
       };
       const response = await ProductVariantService.addStock(request);
-      successResponse(res, 200, 'Stok varian produk berhasil ditambahkan', response);
+      successResponse(
+        res,
+        200,
+        'Stok varian produk berhasil ditambahkan',
+        response,
+      );
     } catch (error) {
       next(error);
     }
@@ -129,8 +134,6 @@ export class ProductVariantController {
       next(error);
     }
   }
-
-
 
   static async deleteProductVariant(
     req: Request,

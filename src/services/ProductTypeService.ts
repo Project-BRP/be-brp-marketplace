@@ -28,7 +28,10 @@ export class ProductTypeService {
     );
 
     if (existingProductType) {
-      throw new ResponseError(StatusCodes.CONFLICT, 'Nama tipe produk sudah ada');
+      throw new ResponseError(
+        StatusCodes.CONFLICT,
+        'Nama tipe produk sudah ada',
+      );
     }
 
     const newProductType = await ProductTypeRepository.create({

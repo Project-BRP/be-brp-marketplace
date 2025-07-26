@@ -6,3 +6,4 @@ export * from './ProductTypeRepository';
 export * from './ProductRepository';
 export * from './PackagingRepository';
 export * from './ProductVariantRepository';
+export * from './CartRepository';

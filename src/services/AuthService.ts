@@ -30,11 +30,12 @@ import {
   UserRepository,
   ResetTokenRepository,
   VerifyEmailRepository,
+  CartRepository,
 } from '../repositories';
 import { JwtToken, PasswordUtils, Validator } from '../utils';
 import { CLIENT_URL_CURRENT } from '../utils/client-url-utils';
 import { AuthValidation } from '../validations';
-
+import { db } from '../configs/database';
 export class AuthService {
   static async register(request: IRegisterRequest) {
     const validData = Validator.validate(AuthValidation.REGISTER, request);
@@ -104,52 +105,71 @@ export class AuthService {
     request: IVerifyEmailRequest,
   ): Promise<IVerifyEmailResponse> {
     const validData = Validator.validate(AuthValidation.VERIFY_EMAIL, request);
-
     const token = validData.token;
 
     try {
       const decoded = JwtToken.verifyEmailVerificationToken(token);
 
-      const user = await UserRepository.findById(decoded.userId);
+      const result = await db.$transaction(async tx => {
+        const user = await UserRepository.findById(decoded.userId, tx);
 
-      if (user) {
-        throw new ResponseError(
-          StatusCodes.BAD_REQUEST,
-          'User sudah terverifikasi',
+        // Cek jika user sudah ada -> berarti email sudah diverifikasi
+        if (user) {
+          throw new ResponseError(
+            StatusCodes.BAD_REQUEST,
+            'User sudah terverifikasi',
+          );
+        }
+
+        // Ambil token dari Redis dan validasi
+        const validEmailToken = await VerifyEmailRepository.get(decoded.email);
+        if (!validEmailToken || validEmailToken !== token) {
+          throw new ResponseError(StatusCodes.UNAUTHORIZED, 'Unauthorized!');
+        }
+
+        // Buat user baru
+        const newUser = await UserRepository.create(
+          {
+            id: decoded.userId,
+            email: decoded.email,
+            name: decoded.name,
+            password: decoded.password, // pastikan ini sudah hash
+          },
+          tx,
         );
-      }
 
-      const validEmailToken = await VerifyEmailRepository.get(decoded.email);
+        // Buat cart untuk user
+        await CartRepository.create(
+          {
+            id: 'CRT-' + uuid(),
+            user: {
+              connect: { id: newUser.id },
+            },
+          },
+          tx,
+        );
 
-      if (validEmailToken !== token) {
-        throw new ResponseError(StatusCodes.UNAUTHORIZED, 'Unauthorized!');
-      }
+        // Buat access token
+        const payload = { userId: newUser.id };
+        const accessToken = JwtToken.generateAccessToken(payload);
 
-      const newUser = await UserRepository.create({
-        id: decoded.userId,
-        email: decoded.email,
-        name: decoded.name,
-        password: decoded.password,
+        // Hapus token dari Redis
+        await VerifyEmailRepository.delete(decoded.email);
+
+        return { accessToken };
       });
 
-      const payload = {
-        userId: newUser.id,
-      };
-
-      const accessToken = JwtToken.generateAccessToken(payload);
-
-      await VerifyEmailRepository.delete(decoded.email);
-
-      return {
-        accessToken,
-      };
+      return result;
     } catch (error) {
       if (error instanceof ResponseError) {
         throw error;
-      } else if (error instanceof jwt.JsonWebTokenError) {
+      }
+
+      if (error instanceof jwt.JsonWebTokenError) {
         throw new ResponseError(StatusCodes.UNAUTHORIZED, 'Unauthorized!');
       }
 
+      console.error('verifyEmail error:', error);
       throw new ResponseError(
         StatusCodes.INTERNAL_SERVER_ERROR,
         'Internal Server Error',
@@ -395,9 +415,8 @@ export class AuthService {
       path.join(__dirname, '..', '..', uploadPath, 'logo'),
     )[0];
 
-    
     const logoUrl = `${serverDomain}/${uploadPath}/logo/${logoName}`;
-    
+
     emailHtml = emailHtml.replace('{{logo_url}}', logoUrl);
 
     const emailData: IEmailDto = {

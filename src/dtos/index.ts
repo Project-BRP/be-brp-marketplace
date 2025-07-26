@@ -4,3 +4,5 @@ export * from './ProductTypeDto';
 export * from './PackagingDto';
 export * from './ProductDto';
 export * from './ProductVariantDto';
+export * from './CartDto';
+export * from './CartItemDto';
