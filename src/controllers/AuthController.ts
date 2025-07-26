@@ -78,8 +78,7 @@ export class AuthController {
         maxAge: JWT_CONFIG.JWT_EXPIRES_IN,
       });
 
-      // jika memutuskan menggunakan header, hapus set cookie diatas
-      successResponse(res, 200, 'Login Sukses', response);
+      successResponse(res, 200, 'Login Sukses');
     } catch (error) {
       next(error);
     }
