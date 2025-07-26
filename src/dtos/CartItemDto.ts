@@ -1,17 +1,11 @@
 export interface IAddToCartRequest {
+  userId: string;
   variantId: string;
   quantity: number;
 }
 
-export interface IAddToCartResponse {
-  id: string;
-  userId: string;
-  items: ICartItem[];
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 export interface IUpdateCartItemRequest {
+  userId: string;
   cartItemId: string;
   quantity: number;
 }
@@ -37,6 +31,7 @@ export interface IUpdateCartItemResponse {
 }
 
 export interface IRemoveCartItemRequest {
+  userId: string;
   cartItemId: string;
 }
 

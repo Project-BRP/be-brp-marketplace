@@ -6,3 +6,4 @@ export * from './PackagingRoute';
 export * from './ProductVariantRoute';
 export * from './ConfigRoute';
 export * from './CartRoute';
+export * from './CartItemRoute';

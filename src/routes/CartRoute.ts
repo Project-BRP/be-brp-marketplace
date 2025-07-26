@@ -5,3 +5,4 @@ import { authMiddleware } from '../middlewares';
 export const cartRoute: Router = Router();
 
 cartRoute.get('/', authMiddleware, CartController.getCart);
+cartRoute.patch('/clear', authMiddleware, CartController.clearCart);

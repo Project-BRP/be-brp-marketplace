@@ -6,3 +6,4 @@ export * from './PackagingController';
 export * from './ProductVariantController';
 export * from './ConfigController';
 export * from './CartController';
+export * from './CartItemController';

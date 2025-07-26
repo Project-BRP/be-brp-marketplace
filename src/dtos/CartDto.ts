@@ -11,3 +11,7 @@ export interface IGetCartResponse {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface IClearCartRequest {
+  userId: string;
+}

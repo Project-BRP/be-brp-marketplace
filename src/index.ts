@@ -1,9 +1,10 @@
 import './configs/env';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-// eslint-disable-next-line
 import express, { Express } from 'express';
 import path from 'path';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 
 import { appLogger } from './configs/logger';
 import { currentEnv, Env, CLIENT_URL } from './constants';
@@ -17,16 +18,13 @@ import {
   productVariantRoute,
   configRoute,
   cartRoute,
+  cartItemRoute,
 } from './routes';
 
 const app: Express = express();
+const httpServer = createServer(app);
 
-app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
-
-// menentukan origin berdasarkan environment
-
-let origin = [];
+let origin: string[] = [];
 
 if (currentEnv === Env.DEVELOPMENT) {
   origin = [CLIENT_URL.DEVELOPMENT, CLIENT_URL.LOCAL];
@@ -36,8 +34,18 @@ if (currentEnv === Env.DEVELOPMENT) {
   origin = [CLIENT_URL.LOCAL];
 } else {
   appLogger.error('Invalid environment');
-  process.exit(1); // exit ketika environment tidak valid
+  process.exit(1);
 }
+
+export const io = new Server(httpServer, {
+  cors: {
+    origin: origin,
+    methods: ['GET', 'POST'],
+  },
+});
+
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
@@ -48,10 +56,8 @@ app.use(
 
 app.use(express.json());
 
-// menambahkan path untuk mengakses file yang diupload
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
-// untuk mengecek kesehatan server
 app.use('/api/', healthRoute);
 app.use('/api/config', configRoute);
 app.use('/api/auth', authRoute);
@@ -59,12 +65,21 @@ app.use('/api/product-types', productTypeRoute);
 app.use('/api/products', productRoute);
 app.use('/api/packagings', packagingRoute);
 app.use('/api/product-variants', productVariantRoute);
-app.use('/api/carts', cartRoute);
+app.use('/api/cart', cartRoute);
+app.use('/api/cart-items', cartItemRoute);
 
 app.use(errorMiddleware);
 
 const port = Number(process.env.PORT_SERVER) || 5000;
 
-export const server = app.listen(port, '0.0.0.0', () => {
+io.on('connection', socket => {
+  console.log('A user connected:', socket.id);
+
+  socket.on('disconnect', () => {
+    console.log('User  disconnected:', socket.id);
+  });
+});
+
+httpServer.listen(port, '0.0.0.0', () => {
   appLogger.info(`Server is running on port ${port}`);
 });

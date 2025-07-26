@@ -1,8 +1,13 @@
 import { StatusCodes } from 'http-status-codes';
 
-import type { IGetCartRequest, IGetCartResponse, ICartItem } from '../dtos';
+import type {
+  IGetCartRequest,
+  IGetCartResponse,
+  ICartItem,
+  IClearCartRequest,
+} from '../dtos';
 import { ResponseError } from '../error/ResponseError';
-import { CartRepository } from '../repositories';
+import { CartItemRepository, CartRepository } from '../repositories';
 import { Validator } from '../utils';
 import { CartValidation } from '../validations';
 
@@ -12,10 +17,7 @@ export class CartService {
 
     const cart = await CartRepository.findByUserId(validData.userId);
     if (!cart) {
-      throw new ResponseError(
-        StatusCodes.NOT_FOUND,
-        'Keranjang tidak ditemukan',
-      );
+      throw new ResponseError(StatusCodes.NOT_FOUND, 'Keranjang tidak ditemukan');
     }
 
     return {
@@ -45,5 +47,26 @@ export class CartService {
       createdAt: cart.createdAt,
       updatedAt: cart.updatedAt,
     };
+  }
+
+  static async clearCart(request: IClearCartRequest): Promise<void> {
+    const validData = Validator.validate(CartValidation.CLEAR_CART, request);
+    const cart = await CartRepository.findByUserId(validData.userId);
+
+    if (!cart) {
+      throw new ResponseError(
+        StatusCodes.NOT_FOUND,
+        'Keranjang tidak ditemukan untuk pengguna ini',
+      );
+    }
+
+    if (cart.items.length === 0) {
+      throw new ResponseError(
+        StatusCodes.BAD_REQUEST,
+        'Keranjang sudah kosong',
+      );
+    }
+
+    await CartItemRepository.deleteByCartId(cart.id);
   }
 }

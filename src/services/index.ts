@@ -6,3 +6,5 @@ export * from './PackagingService';
 export * from './ProductVariantService';
 export * from './ConfigService';
 export * from './CartService';
+export * from './CartItemService';
+export * from './IoService';
