@@ -6,6 +6,7 @@ import type {
   IUpdateCartItemRequest,
   IUpdateCartItemResponse,
   IRemoveCartItemRequest,
+  IAddToCartResponse,
 } from '../dtos/CartItemDto';
 import { ResponseError } from '../error/ResponseError';
 import {
@@ -19,7 +20,7 @@ import { CartItemValidation } from '../validations';
 export class CartItemService {
   static async addToCart(
     request: IAddToCartRequest,
-  ): Promise<void> {
+  ): Promise<IAddToCartResponse> {
     const validData = Validator.validate(
       CartItemValidation.ADD_TO_CART,
       request,
@@ -53,9 +54,33 @@ export class CartItemService {
       if (newQuantity <= 0) {
         await CartItemRepository.delete(existingCartItem.id);
       } else {
-        await CartItemRepository.update(existingCartItem.id, {
-          quantity: newQuantity,
-        });
+        const updatedCartItem = await CartItemRepository.update(
+          existingCartItem.id,
+          {
+            quantity: newQuantity,
+          },
+        );
+        return {
+          id: updatedCartItem.id,
+          variantId: updatedCartItem.variantId!,
+          quantity: updatedCartItem.quantity,
+          productVariant: {
+            id: productVariant.id,
+            productId: productVariant.productId,
+            weight_in_kg: productVariant.weight_in_kg,
+            packaging: productVariant.packaging
+              ? {
+                  id: productVariant.packaging.id,
+                  name: productVariant.packaging.name,
+                }
+              : undefined,
+            imageUrl: productVariant.imageUrl,
+            priceRupiah: productVariant.priceRupiah,
+            stock: productVariant.stock,
+          },
+          createdAt: updatedCartItem.createdAt,
+          updatedAt: updatedCartItem.updatedAt,
+        };
       }
     } else {
       if (validData.quantity <= 0) {
@@ -65,12 +90,34 @@ export class CartItemService {
         );
       }
 
-      await CartItemRepository.create({
+      const newCartItem = await CartItemRepository.create({
         id: 'CIT-' + uuid(),
         cart: { connect: { id: cart.id } },
         variant: { connect: { id: validData.variantId } },
         quantity: validData.quantity,
       });
+
+      return {
+        id: newCartItem.id,
+        variantId: newCartItem.variantId!,
+        quantity: newCartItem.quantity,
+        productVariant: {
+          id: productVariant.id,
+          productId: productVariant.productId,
+          weight_in_kg: productVariant.weight_in_kg,
+          packaging: productVariant.packaging
+            ? {
+                id: productVariant.packaging.id,
+                name: productVariant.packaging.name,
+              }
+            : undefined,
+          imageUrl: productVariant.imageUrl,
+          priceRupiah: productVariant.priceRupiah,
+          stock: productVariant.stock,
+        },
+        createdAt: newCartItem.createdAt,
+        updatedAt: newCartItem.updatedAt,
+      };
     }
   }
 
@@ -143,9 +190,7 @@ export class CartItemService {
     };
   }
 
-  static async removeCartItem(
-    request: IRemoveCartItemRequest,
-  ): Promise<void> {
+  static async removeCartItem(request: IRemoveCartItemRequest): Promise<void> {
     const validData = Validator.validate(
       CartItemValidation.REMOVE_CART_ITEM,
       request,

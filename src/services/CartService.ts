@@ -17,7 +17,10 @@ export class CartService {
 
     const cart = await CartRepository.findByUserId(validData.userId);
     if (!cart) {
-      throw new ResponseError(StatusCodes.NOT_FOUND, 'Keranjang tidak ditemukan');
+      throw new ResponseError(
+        StatusCodes.NOT_FOUND,
+        'Keranjang tidak ditemukan',
+      );
     }
 
     return {

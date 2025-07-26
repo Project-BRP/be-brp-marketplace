@@ -4,6 +4,26 @@ export interface IAddToCartRequest {
   quantity: number;
 }
 
+export interface IAddToCartResponse {
+  id: string;
+  variantId: string;
+  quantity: number;
+  productVariant: {
+    id: string;
+    productId: string;
+    weight_in_kg: number;
+    packaging?: {
+      id: string;
+      name: string;
+    };
+    imageUrl: string;
+    priceRupiah: number;
+    stock: number;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface IUpdateCartItemRequest {
   userId: string;
   cartItemId: string;

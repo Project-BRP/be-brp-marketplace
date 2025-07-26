@@ -21,7 +21,12 @@ export class CartItemController {
         quantity: req.body.quantity,
       };
       const response = await CartItemService.addToCart(request);
-      successResponse(res, 201, 'Item berhasil ditambahkan ke keranjang', response);
+      successResponse(
+        res,
+        201,
+        'Item berhasil ditambahkan ke keranjang',
+        response,
+      );
     } catch (error) {
       next(error);
     }

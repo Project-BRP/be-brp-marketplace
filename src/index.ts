@@ -65,7 +65,7 @@ app.use('/api/product-types', productTypeRoute);
 app.use('/api/products', productRoute);
 app.use('/api/packagings', packagingRoute);
 app.use('/api/product-variants', productVariantRoute);
-app.use('/api/cart', cartRoute);
+app.use('/api/carts', cartRoute);
 app.use('/api/cart-items', cartItemRoute);
 
 app.use(errorMiddleware);
