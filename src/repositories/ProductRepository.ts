@@ -21,6 +21,17 @@ export class ProductRepository {
     });
   }
 
+  static async findByName(
+    name: string,
+    tx: Prisma.TransactionClient = db,
+  ) {
+    return tx.product.findFirst({
+      where: {
+        name: name,
+      },
+    });
+  }
+
   static async findAllWithPagination(
     skip: number,
     take: number,

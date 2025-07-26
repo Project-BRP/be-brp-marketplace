@@ -63,3 +63,5 @@ prisma/migrations
 uploads/
 
 /src/generated/prisma
+
+list_dev.txt

@@ -27,13 +27,14 @@ model User {
   role           Role     @default(USER) @map("role")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
+  Cart           Cart?
 
   @@map("users")
 }
 
 model Product {
   id                     String   @id @map("id")
-  name                   String   @map("name")
+  name                   String   @unique @map("name")
   description            String   @map("description")
   productTypeId          String?  @map("product_type_id")
   composition            String   @map("composition")
@@ -57,12 +58,14 @@ model ProductVariant {
   weight_in_kg Int      @map("weight_in_kg")
   packagingId  String?  @map("packaging_id")
   imageUrl     String   @map("image_url")
+  stock        Int      @default(0) @map("stock")
   priceRupiah  Int      @map("price_rupiah")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
   packaging Packaging? @relation(fields: [packagingId], references: [id], onDelete: SetNull)
+  CartItem  CartItem[]
 
   @@map("product_variants")
 }
@@ -87,4 +90,41 @@ model ProductType {
   products Product[]
 
   @@map("product_types")
+}
+
+model Cart {
+  id        String   @id @map("id")
+  userId    String   @unique @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id        String   @id @map("id")
+  cartId    String   @map("cart_id")
+  variantId String?  @map("variant_id")
+  quantity  Int      @default(1) @map("quantity")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  cart    Cart            @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  variant ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  @@unique([cartId, variantId], name: "unique_cart_variant")
+  @@map("cart_items")
+}
+
+model CurrentPPN {
+  id         String   @id @map("id")
+  name       String   @unique @default("PPN Saat Ini") @map("name")
+  percentage Int      @map("percentage")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("current_ppn")
 }

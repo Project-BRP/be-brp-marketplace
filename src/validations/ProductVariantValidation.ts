@@ -8,6 +8,25 @@ export class ProductVariantValidation {
         invalid_type_error: 'ID Produk tidak valid',
       })
       .min(1, 'ID Produk tidak boleh kosong'),
+    stock: z.preprocess(
+      val => {
+        if (
+          val === undefined ||
+          val === null ||
+          (typeof val === 'string' && val.trim() === '')
+        ) {
+          return undefined;
+        }
+        const num = Number(val);
+        return Number.isNaN(num) ? undefined : num;
+      },
+      z
+        .number({
+          required_error: 'Stok tidak boleh kosong',
+          invalid_type_error: 'Stok tidak valid',
+        })
+        .min(0, 'Stok tidak boleh negatif'),
+    ),
     weight_in_kg: z.preprocess(
       val => {
         if (
@@ -91,6 +110,24 @@ export class ProductVariantValidation {
       ),
       packagingId: z.string().optional(),
       imageUrl: z.string().optional(),
+      stock: z.preprocess(
+        val => {
+          if (
+            val === undefined ||
+            val === null ||
+            (typeof val === 'string' && val.trim() === '')
+          ) {
+            return undefined;
+          }
+          const num = Number(val);
+          return Number.isNaN(num) ? undefined : num;
+        },
+        z
+          .number({
+            invalid_type_error: 'Stok tidak valid',
+          })
+          .optional(),
+      ),
       priceRupiah: z.preprocess(
         val => {
           if (
@@ -111,10 +148,30 @@ export class ProductVariantValidation {
           .optional(),
       ),
     })
-    .refine(data => Object.keys(data).some(key => key !== 'id'), {
-      message: 'Setidaknya satu field harus diisi untuk update',
-      path: [],
-    });
+.refine(data => {
+  const keys = Object.keys(data).filter(
+    key => data[key as keyof typeof data] !== undefined && key !== 'id'
+  );
+  return keys.length > 0;
+}, {
+  message: 'Setidaknya satu field harus diisi untuk update',
+  path: [],
+});
+  
+  static readonly ADD_STOCK: ZodType = z.object({
+    id: z
+      .string({
+        required_error: 'ID Varian tidak boleh kosong',
+        invalid_type_error: 'ID Varian tidak valid',
+      })
+      .min(1, 'ID Varian tidak boleh kosong'),
+    stock: z
+      .number({
+        required_error: 'Jumlah stok tidak boleh kosong',
+        invalid_type_error: 'Jumlah stok tidak valid',
+      })
+      .min(1, 'Jumlah stok tidak boleh kurang dari 1'),
+  });
 
   static readonly GET_ALL: ZodType = z.object({
     productId: z

@@ -23,6 +23,14 @@ export class ProductTypeService {
   ): Promise<ICreateProductTypeResponse> {
     const validData = Validator.validate(ProductTypeValidation.CREATE, request);
 
+    const existingProductType = await ProductTypeRepository.findByName(
+      validData.name,
+    );
+
+    if (existingProductType) {
+      throw new ResponseError(StatusCodes.CONFLICT, 'Nama tipe produk sudah ada');
+    }
+
     const newProductType = await ProductTypeRepository.create({
       id: 'PTY-' + uuid(),
       name: validData.name,

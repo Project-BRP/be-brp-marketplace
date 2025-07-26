@@ -6,6 +6,7 @@ import {
   IUpdateProductVariantRequest,
   IGetProductVariantRequest,
   IGetAllProductVariantsRequest,
+  IAddStockRequest,
   IDeleteProductVariantRequest,
 } from '../dtos';
 import { ProductVariantService } from '../services';
@@ -47,7 +48,7 @@ export class ProductVariantController {
     res: Response,
     next: NextFunction,
   ): Promise<void> {
-    let resizedImagePath: string | undefined;
+    let resizedImagePath: string;
 
     try {
       if (req.file) {
@@ -55,8 +56,6 @@ export class ProductVariantController {
           req.file.path,
         );
       }
-
-      console.log(req.body);
 
       const request: IUpdateProductVariantRequest = {
         id: req.params.id,
@@ -70,6 +69,23 @@ export class ProductVariantController {
       if (resizedImagePath && fs.existsSync(resizedImagePath)) {
         fs.unlinkSync(resizedImagePath);
       }
+      next(error);
+    }
+  }
+
+  static async addStock(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const request: IAddStockRequest = {
+        id: req.params.id,
+        stock: req.body.stock,
+      };
+      const response = await ProductVariantService.addStock(request);
+      successResponse(res, 200, 'Stok varian produk berhasil ditambahkan', response);
+    } catch (error) {
       next(error);
     }
   }
@@ -113,6 +129,8 @@ export class ProductVariantController {
       next(error);
     }
   }
+
+
 
   static async deleteProductVariant(
     req: Request,

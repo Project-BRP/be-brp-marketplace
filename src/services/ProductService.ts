@@ -25,6 +25,12 @@ export class ProductService {
   ): Promise<ICreateProductResponse> {
     const validData = Validator.validate(ProductValidation.CREATE, request);
 
+    const existingProduct = await ProductRepository.findByName(validData.name);
+
+    if (existingProduct) {
+      throw new ResponseError(StatusCodes.CONFLICT, 'Nama produk sudah ada');
+    }
+
     const productType = await ProductTypeRepository.findById(
       validData.productTypeId,
     );
@@ -42,8 +48,8 @@ export class ProductService {
       productType: {
         connect: { id: validData.productTypeId },
       },
-      composition: validData.composition, // Tambahkan composition
-      imageUrl: validData.imageUrl, // Tambahkan imageUrl
+      composition: validData.composition, 
+      imageUrl: validData.imageUrl, 
       storageInstructions: validData.storageInstructions,
       expiredDurationInYears: validData.expiredDurationInYears,
       usageInstructions: validData.usageInstructions,
@@ -106,8 +112,8 @@ export class ProductService {
       productType: validData.productTypeId
         ? { connect: { id: validData.productTypeId } }
         : undefined,
-      composition: validData.composition, // Tambahkan composition
-      imageUrl: validData.imageUrl, // Tambahkan imageUrl
+      composition: validData.composition,
+      imageUrl: validData.imageUrl,
       storageInstructions: validData.storageInstructions,
       expiredDurationInYears: validData.expiredDurationInYears,
       usageInstructions: validData.usageInstructions,
@@ -132,8 +138,8 @@ export class ProductService {
         id: productType.id,
         name: productType.name,
       },
-      composition: updatedProduct.composition, // Tambahkan composition
-      imageUrl: updatedProduct.imageUrl, // Tambahkan imageUrl
+      composition: updatedProduct.composition,
+      imageUrl: updatedProduct.imageUrl,
       storageInstructions: updatedProduct.storageInstructions,
       expiredDurationInYears: updatedProduct.expiredDurationInYears,
       usageInstructions: updatedProduct.usageInstructions,
@@ -160,8 +166,8 @@ export class ProductService {
       productType: product.productType
         ? { id: product.productType.id, name: product.productType.name }
         : undefined,
-      composition: product.composition, // Tambahkan composition
-      imageUrl: product.imageUrl, // Tambahkan imageUrl
+      composition: product.composition,
+      imageUrl: product.imageUrl,
       storageInstructions: product.storageInstructions,
       expiredDurationInYears: product.expiredDurationInYears,
       usageInstructions: product.usageInstructions,
@@ -173,6 +179,7 @@ export class ProductService {
         packagingId: variant.packagingId,
         imageUrl: variant.imageUrl,
         priceRupiah: variant.priceRupiah,
+        stock: variant.stock,
         createdAt: variant.createdAt,
         updatedAt: variant.updatedAt,
       })),
@@ -204,8 +211,8 @@ export class ProductService {
           productType: product.productType
             ? { id: product.productType.id, name: product.productType.name }
             : undefined,
-          composition: product.composition, // Tambahkan composition
-          imageUrl: product.imageUrl, // Tambahkan imageUrl
+          composition: product.composition,
+          imageUrl: product.imageUrl,
           storageInstructions: product.storageInstructions,
           expiredDurationInYears: product.expiredDurationInYears,
           usageInstructions: product.usageInstructions,
@@ -216,6 +223,7 @@ export class ProductService {
             weight_in_kg: variant.weight_in_kg,
             packagingId: variant.packagingId,
             imageUrl: variant.imageUrl,
+            stock: variant.stock,
             priceRupiah: variant.priceRupiah,
             createdAt: variant.createdAt,
             updatedAt: variant.updatedAt,
@@ -260,8 +268,8 @@ export class ProductService {
         productType: product.productType
           ? { id: product.productType.id, name: product.productType.name }
           : undefined,
-        composition: product.composition, // Tambahkan composition
-        imageUrl: product.imageUrl, // Tambahkan imageUrl
+        composition: product.composition,
+        imageUrl: product.imageUrl,
         storageInstructions: product.storageInstructions,
         expiredDurationInYears: product.expiredDurationInYears,
         usageInstructions: product.usageInstructions,
@@ -272,6 +280,7 @@ export class ProductService {
           weight_in_kg: variant.weight_in_kg,
           packagingId: variant.packagingId,
           imageUrl: variant.imageUrl,
+          stock: variant.stock,
           priceRupiah: variant.priceRupiah,
           createdAt: variant.createdAt,
           updatedAt: variant.updatedAt,

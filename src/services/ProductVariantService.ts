@@ -12,6 +12,8 @@ import type {
   IGetProductVariantResponse,
   IGetAllProductVariantsRequest,
   IGetAllProductVariantsResponse,
+  IAddStockRequest,
+  IAddStockResponse,
   IDeleteProductVariantRequest,
 } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
@@ -22,6 +24,7 @@ import {
 } from '../repositories';
 import { Validator } from '../utils';
 import { ProductVariantValidation } from '../validations';
+import { db } from '../configs/database';
 
 export class ProductVariantService {
   static async create(
@@ -60,6 +63,7 @@ export class ProductVariantService {
       },
       imageUrl: validData.imageUrl,
       priceRupiah: validData.priceRupiah,
+      stock: validData.stock,
     });
 
     return {
@@ -73,6 +77,7 @@ export class ProductVariantService {
           }
         : undefined,
       imageUrl: newProductVariant.imageUrl,
+      stock: newProductVariant.stock,
       priceRupiah: newProductVariant.priceRupiah,
       createdAt: newProductVariant.createdAt,
       updatedAt: newProductVariant.updatedAt,
@@ -147,6 +152,7 @@ export class ProductVariantService {
           name: updatedProductVariant.packaging.name,
         },
         imageUrl: updatedProductVariant.imageUrl,
+        stock: updatedProductVariant.stock,
         priceRupiah: updatedProductVariant.priceRupiah,
         createdAt: updatedProductVariant.createdAt,
         updatedAt: updatedProductVariant.updatedAt,
@@ -174,9 +180,65 @@ export class ProductVariantService {
         : undefined,
       imageUrl: updatedProductVariant.imageUrl,
       priceRupiah: updatedProductVariant.priceRupiah,
+      stock: updatedProductVariant.stock,
       createdAt: updatedProductVariant.createdAt,
       updatedAt: updatedProductVariant.updatedAt,
     };
+  }
+
+  static async addStock(
+    request: IAddStockRequest,
+  ): Promise<IAddStockResponse> {
+    const validData = Validator.validate(
+      ProductVariantValidation.ADD_STOCK,
+      request,
+    );
+
+    const dbConnection = db;
+
+    try {
+      const beginTransaction = await dbConnection.$transaction(async tx => {
+        const productVariant = await ProductVariantRepository.findById(
+          validData.id,
+          tx,
+        );
+        if (!productVariant) {
+          throw new ResponseError(
+            StatusCodes.NOT_FOUND,
+            'Varian produk tidak ditemukan',
+          );
+        }
+
+        const updatedProductVariant = await ProductVariantRepository.update(
+          validData.id,
+          {
+            stock: productVariant.stock + validData.stock,
+          },
+          tx,
+        );
+
+        return {
+          id: updatedProductVariant.id,
+          stock: updatedProductVariant.stock,
+          productId: updatedProductVariant.productId,
+          weight_in_kg: updatedProductVariant.weight_in_kg,
+          packaging: updatedProductVariant.packaging
+            ? {
+                id: updatedProductVariant.packaging.id,
+                name: updatedProductVariant.packaging.name,
+              }
+            : undefined,
+          imageUrl: updatedProductVariant.imageUrl,
+          priceRupiah: updatedProductVariant.priceRupiah,
+          createdAt: updatedProductVariant.createdAt,
+          updatedAt: updatedProductVariant.updatedAt,
+        };
+      });
+
+      return beginTransaction;
+    } catch (error) {
+      throw error;
+    }
   }
 
   static async getById(
@@ -208,6 +270,7 @@ export class ProductVariantService {
           }
         : undefined,
       imageUrl: productVariant.imageUrl,
+      stock: productVariant.stock,
       priceRupiah: productVariant.priceRupiah,
       createdAt: productVariant.createdAt,
       updatedAt: productVariant.updatedAt,
@@ -244,6 +307,7 @@ export class ProductVariantService {
             : undefined,
           imageUrl: variant.imageUrl,
           priceRupiah: variant.priceRupiah,
+          stock: variant.stock,
           createdAt: variant.createdAt,
           updatedAt: variant.updatedAt,
         })),
@@ -290,6 +354,7 @@ export class ProductVariantService {
           : undefined,
         imageUrl: variant.imageUrl,
         priceRupiah: variant.priceRupiah,
+        stock: variant.stock,
         createdAt: variant.createdAt,
         updatedAt: variant.updatedAt,
       })),

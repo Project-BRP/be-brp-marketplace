@@ -141,10 +141,15 @@ export class ProductValidation {
         })
         .optional(),
     })
-    .refine(data => Object.keys(data).some(key => key !== 'id'), {
-      message: 'Setidaknya satu field harus diisi untuk update',
-      path: [],
-    });
+.refine(data => {
+  const keys = Object.keys(data).filter(
+    key => data[key as keyof typeof data] !== undefined && key !== 'id'
+  );
+  return keys.length > 0;
+}, {
+  message: 'Setidaknya satu field harus diisi untuk update',
+  path: [],
+});
 
   static readonly GET_BY_ID: ZodType = z.object({
     id: z

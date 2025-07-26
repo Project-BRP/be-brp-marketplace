@@ -4,6 +4,7 @@ export interface ICreateProductVariantRequest {
   packagingId: string;
   imageUrl: string;
   priceRupiah: number;
+  stock: number;
 }
 
 export interface ICreateProductVariantResponse {
@@ -16,6 +17,7 @@ export interface ICreateProductVariantResponse {
   };
   imageUrl: string;
   priceRupiah: number;
+  stock: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -34,6 +36,7 @@ export interface IGetProductVariantResponse {
   };
   imageUrl: string;
   priceRupiah: number;
+  stock: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -58,6 +61,26 @@ export interface IUpdateProductVariantRequest {
   priceRupiah?: number;
 }
 
+export interface IAddStockRequest {
+  id: string;
+  stock: number;
+}
+
+export interface IAddStockResponse {
+  id: string;
+  productId: string;
+  weight_in_kg: number;
+  packaging?: {
+    id: string;
+    name: string;
+  };
+  imageUrl: string;
+  priceRupiah: number;
+  stock: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface IUpdateProductVariantResponse {
   id: string;
   productId: string;
@@ -66,6 +89,7 @@ export interface IUpdateProductVariantResponse {
     id: string;
     name: string;
   };
+  stock: number;
   imageUrl: string;
   priceRupiah: number;
   createdAt: Date;
