@@ -20,6 +20,7 @@ export class CartRepository {
             variant: {
               include: {
                 packaging: true,
+                product: true,
               },
             },
           },

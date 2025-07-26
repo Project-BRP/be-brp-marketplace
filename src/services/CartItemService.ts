@@ -66,7 +66,10 @@ export class CartItemService {
           quantity: updatedCartItem.quantity,
           productVariant: {
             id: productVariant.id,
-            productId: productVariant.productId,
+            product: {
+              id: updatedCartItem.variant.product.id,
+              name: updatedCartItem.variant.product.name,
+            },
             weight_in_kg: productVariant.weight_in_kg,
             packaging: productVariant.packaging
               ? {
@@ -103,7 +106,10 @@ export class CartItemService {
         quantity: newCartItem.quantity,
         productVariant: {
           id: productVariant.id,
-          productId: productVariant.productId,
+          product: {
+            id: newCartItem.variant.product.id,
+            name: newCartItem.variant.product.name,
+          },
           weight_in_kg: productVariant.weight_in_kg,
           packaging: productVariant.packaging
             ? {
@@ -173,7 +179,10 @@ export class CartItemService {
       quantity: updatedCartItem.quantity,
       productVariant: {
         id: productVariant.id,
-        productId: productVariant.productId,
+        product: {
+          id: updatedCartItem.variant.product.id,
+          name: updatedCartItem.variant.product.name,
+        },
         weight_in_kg: productVariant.weight_in_kg,
         packaging: productVariant.packaging
           ? {

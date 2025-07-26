@@ -24,7 +24,11 @@ export class CartItemRepository {
     return db.cartItem.create({
       data: data,
       include: {
-        variant: true,
+        variant: {
+          include: {
+            product: true,
+          },
+        },
       },
     });
   }
@@ -34,7 +38,11 @@ export class CartItemRepository {
       where: { id: cartItemId },
       data: data,
       include: {
-        variant: true,
+        variant: {
+          include: {
+            product: true,
+          },
+        },
       },
     });
   }

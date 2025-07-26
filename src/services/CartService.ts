@@ -32,7 +32,10 @@ export class CartService {
         quantity: item.quantity,
         productVariant: {
           id: item.variant!.id,
-          productId: item.variant!.productId,
+          product: {
+            id: item.variant!.product.id,
+            name: item.variant!.product.name,
+          },
           weight_in_kg: item.variant!.weight_in_kg,
           packaging: item.variant!.packaging
             ? {

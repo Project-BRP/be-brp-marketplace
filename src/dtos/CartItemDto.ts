@@ -10,7 +10,10 @@ export interface IAddToCartResponse {
   quantity: number;
   productVariant: {
     id: string;
-    productId: string;
+    product: {
+      id: string;
+      name: string;
+    };
     weight_in_kg: number;
     packaging?: {
       id: string;
@@ -36,7 +39,10 @@ export interface IUpdateCartItemResponse {
   quantity: number;
   productVariant: {
     id: string;
-    productId: string;
+    product: {
+      id: string;
+      name: string;
+    };
     weight_in_kg: number;
     packaging?: {
       id: string;
@@ -61,7 +67,10 @@ export interface ICartItem {
   quantity: number;
   productVariant: {
     id: string;
-    productId: string;
+    product: {
+      id: string;
+      name: string;
+    };
     weight_in_kg: number;
     packaging?: {
       id: string;
