@@ -383,6 +383,9 @@ export class ProductVariantService {
       }
     }
 
-    await ProductVariantRepository.delete(validData.id);
+    await ProductVariantRepository.update(validData.id, {
+      isDeleted: true,
+      imageUrl: null,
+    });
   }
 }

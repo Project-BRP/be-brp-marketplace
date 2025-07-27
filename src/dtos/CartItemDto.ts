@@ -70,6 +70,7 @@ export interface ICartItem {
     product: {
       id: string;
       name: string;
+      is_deleted: boolean;
     };
     weight_in_kg: number;
     packaging?: {
@@ -79,6 +80,7 @@ export interface ICartItem {
     imageUrl: string;
     priceRupiah: number;
     stock: number;
+    is_deleted: boolean;
   };
   createdAt: Date;
   updatedAt: Date;

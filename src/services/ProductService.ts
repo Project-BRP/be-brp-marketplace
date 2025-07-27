@@ -15,7 +15,7 @@ import type {
   IDeleteProductRequest,
 } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
-import { ProductRepository, ProductTypeRepository } from '../repositories';
+import { ProductRepository, ProductTypeRepository, ProductVariantRepository } from '../repositories';
 import { Validator } from '../utils';
 import { ProductValidation } from '../validations';
 
@@ -299,6 +299,23 @@ export class ProductService {
       throw new ResponseError(StatusCodes.NOT_FOUND, 'Produk tidak ditemukan');
     }
 
+    if (product.productVariants.length > 0) {
+      for (const variant of product.productVariants) {
+        if (variant.imageUrl) {
+          const assetDir = process.env.UPLOADS_PATH;
+          const imagePath = path.join(assetDir, variant.imageUrl);
+          if (fs.existsSync(imagePath)) {
+            fs.unlinkSync(imagePath);
+          }
+        }
+      }
+
+      await ProductVariantRepository.updateByProductId(validData.id, {
+        isDeleted: true,
+        imageUrl: null,
+      });
+    }
+
     if (product.imageUrl) {
       const assetDir = process.env.UPLOADS_PATH;
       const imagePath = path.join(assetDir, product.imageUrl);
@@ -307,6 +324,9 @@ export class ProductService {
       }
     }
 
-    await ProductRepository.delete(validData.id);
+    await ProductRepository.update(validData.id, {
+      isDeleted: true,
+      imageUrl: null,
+    });
   }
 }

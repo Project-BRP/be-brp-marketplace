@@ -35,6 +35,7 @@ export class CartService {
           product: {
             id: item.variant!.product.id,
             name: item.variant!.product.name,
+            is_deleted: item.variant!.product.isDeleted,
           },
           weight_in_kg: item.variant!.weight_in_kg,
           packaging: item.variant!.packaging
@@ -46,6 +47,7 @@ export class CartService {
           imageUrl: item.variant!.imageUrl,
           priceRupiah: item.variant!.priceRupiah,
           stock: item.variant!.stock,
+          is_deleted: item.variant!.isDeleted,
         },
         createdAt: item.createdAt,
         updatedAt: item.updatedAt,

@@ -14,7 +14,7 @@ export class ProductVariantRepository {
 
   static async findById(id: string, tx: Prisma.TransactionClient = db) {
     return tx.productVariant.findUnique({
-      where: { id },
+      where: { id, isDeleted: false },
       include: { packaging: true },
     });
   }
@@ -23,6 +23,7 @@ export class ProductVariantRepository {
     return tx.productVariant.findMany({
       where: {
         productId: productId,
+        isDeleted: false,
       },
       orderBy: { createdAt: 'desc' },
       include: { packaging: true },
@@ -38,6 +39,7 @@ export class ProductVariantRepository {
     return tx.productVariant.findMany({
       where: {
         productId: productId,
+        isDeleted: false,
       },
       skip: skip,
       take: take,
@@ -50,6 +52,7 @@ export class ProductVariantRepository {
     return tx.productVariant.count({
       where: {
         productId: productId,
+        isDeleted: false,
       },
     });
   }
@@ -60,9 +63,20 @@ export class ProductVariantRepository {
     tx: Prisma.TransactionClient = db,
   ) {
     return tx.productVariant.update({
-      where: { id },
+      where: { id, isDeleted: false },
       data: data,
       include: { packaging: true },
+    });
+  }
+
+  static async updateByProductId(
+    productId: string,
+    data: Prisma.ProductVariantUpdateInput,
+    tx: Prisma.TransactionClient = db,
+  ) {
+    return tx.productVariant.updateMany({
+      where: { productId, isDeleted: false },
+      data: data,
     });
   }
 

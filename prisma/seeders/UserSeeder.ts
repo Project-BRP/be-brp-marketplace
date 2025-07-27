@@ -12,6 +12,7 @@ export const userSeeder = async () => {
       name: 'Test User',
       email: 'testuser@example.com',
       password: await PasswordUtils.hashPassword('test1234'),
+      role: Role.USER,
     },
     {
       id: `USR-${uuid()}`,
@@ -32,14 +33,40 @@ export const userSeeder = async () => {
       name: 'Aqil Dominic',
       email: 'aquaq1l.farrukh@gmail.com',
       password: await PasswordUtils.hashPassword('Q1q10beron'),
-    }
+      role: Role.USER,
+    },
   ];
 
   for (const user of users) {
     try {
-      await prisma.user.create({
-        data: user,
+      // Cek apakah user sudah ada berdasarkan email
+      const existingUser = await prisma.user.findUnique({
+        where: { email: user.email },
       });
+
+      let userId = user.id;
+
+      if (!existingUser) {
+        // Buat user jika belum ada
+        const createdUser = await prisma.user.create({ data: user });
+        userId = createdUser.id;
+      } else {
+        userId = existingUser.id;
+      }
+
+      // Cek apakah user sudah memiliki cart
+      const existingCart = await prisma.cart.findUnique({
+        where: { userId },
+      });
+
+      if (!existingCart) {
+        await prisma.cart.create({
+          data: {
+            id: `CRT-${uuid()}`,
+            userId,
+          },
+        });
+      }
     } catch (error: any) {
       if (error.code === 'P2002') {
         continue;
@@ -47,4 +74,6 @@ export const userSeeder = async () => {
       throw error;
     }
   }
+
+  console.log('Users seeded successfully!');
 };

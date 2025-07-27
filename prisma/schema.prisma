@@ -18,6 +18,15 @@ enum Role {
   ADMIN
 }
 
+enum OrderStatus {
+  UNPAID
+  PAID
+
+  SHIPPED
+  DELIVERED
+  CANCELED
+}
+
 model User {
   id             String   @id @map("id")
   email          String   @unique @map("email")
@@ -28,6 +37,7 @@ model User {
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
   Cart           Cart?
+  Order          Order[]
 
   @@map("users")
 }
@@ -43,6 +53,7 @@ model Product {
   expiredDurationInYears Int      @map("expired_duration_in_years")
   usageInstructions      String   @map("usage_instructions")
   benefits               String   @map("benefits")
+  isDeleted              Boolean  @default(false) @map("is_deleted")
   createdAt              DateTime @default(now()) @map("created_at")
   updatedAt              DateTime @updatedAt @map("updated_at")
 
@@ -60,12 +71,14 @@ model ProductVariant {
   imageUrl     String   @map("image_url")
   stock        Int      @default(0) @map("stock")
   priceRupiah  Int      @map("price_rupiah")
+  isDeleted    Boolean  @default(false) @map("is_deleted")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
-  packaging Packaging? @relation(fields: [packagingId], references: [id], onDelete: SetNull)
+  product   Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  packaging Packaging?  @relation(fields: [packagingId], references: [id], onDelete: SetNull)
   CartItem  CartItem[]
+  OrderItem OrderItem[]
 
   @@map("product_variants")
 }
@@ -107,13 +120,13 @@ model Cart {
 model CartItem {
   id        String   @id @map("id")
   cartId    String   @map("cart_id")
-  variantId String?  @map("variant_id")
+  variantId String   @map("variant_id")
   quantity  Int      @default(1) @map("quantity")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  cart    Cart            @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  variant ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  cart    Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
 
   @@unique([cartId, variantId], name: "unique_cart_variant")
   @@map("cart_items")
@@ -127,4 +140,34 @@ model CurrentPPN {
   updatedAt  DateTime @updatedAt @map("updated_at")
 
   @@map("current_ppn")
+}
+
+model Order {
+  id         String      @id @map("id")
+  userId     String      @map("user_id")
+  status     OrderStatus @default(UNPAID) @map("status")
+  totalPrice Int         @map("total_price")
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime    @updatedAt @map("updated_at")
+
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  OrderItem OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String   @id @map("id")
+  orderId     String   @map("order_id")
+  variantId   String   @map("variant_id")
+  quantity    Int      @default(1) @map("quantity")
+  priceRupiah Int      @map("price_rupiah")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  order   Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@unique([orderId, variantId], name: "unique_order_variant")
+  @@map("order_items")
 }
