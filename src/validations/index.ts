@@ -5,3 +5,4 @@ export * from './PackagingValidation';
 export * from './ProductVariantValidation';
 export * from './CartValidation';
 export * from './CartItemValidation';
+export * from './PPNValidation';

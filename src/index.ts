@@ -19,6 +19,7 @@ import {
   configRoute,
   cartRoute,
   cartItemRoute,
+  ppnRoute,
 } from './routes';
 
 const app: Express = express();
@@ -67,6 +68,7 @@ app.use('/api/packagings', packagingRoute);
 app.use('/api/product-variants', productVariantRoute);
 app.use('/api/carts', cartRoute);
 app.use('/api/cart-items', cartItemRoute);
+app.use('/api/ppn', ppnRoute);
 
 app.use(errorMiddleware);
 

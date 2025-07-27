@@ -7,3 +7,5 @@ export * from './ProductVariantRoute';
 export * from './ConfigRoute';
 export * from './CartRoute';
 export * from './CartItemRoute';
+export * from './PPNRoute';
+

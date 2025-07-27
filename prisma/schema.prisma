@@ -143,12 +143,13 @@ model CurrentPPN {
 }
 
 model Order {
-  id         String      @id @map("id")
-  userId     String      @map("user_id")
-  status     OrderStatus @default(UNPAID) @map("status")
-  totalPrice Int         @map("total_price")
-  createdAt  DateTime    @default(now()) @map("created_at")
-  updatedAt  DateTime    @updatedAt @map("updated_at")
+  id            String      @id @map("id")
+  userId        String      @map("user_id")
+  status        OrderStatus @default(UNPAID) @map("status")
+  totalPrice    Int         @map("total_price")
+  PPNPercentage Int?        @map("ppn_percentage")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
 
   user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   OrderItem OrderItem[]

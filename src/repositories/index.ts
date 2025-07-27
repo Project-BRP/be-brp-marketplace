@@ -8,3 +8,4 @@ export * from './PackagingRepository';
 export * from './ProductVariantRepository';
 export * from './CartRepository';
 export * from './CartItemRepository';
+export * from './PPNRepository';

@@ -8,3 +8,4 @@ export * from './ConfigService';
 export * from './CartService';
 export * from './CartItemService';
 export * from './IoService';
+export * from './PPNService';
