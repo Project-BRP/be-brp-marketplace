@@ -13,10 +13,12 @@ export class ProductRepository {
 
   static async findById(id: string, tx: Prisma.TransactionClient = db) {
     return tx.product.findUnique({
-      where: { id },
+      where: { id, isDeleted: false },
       include: {
         productType: true,
-        productVariants: true,
+        productVariants: {
+          where: { isDeleted: false },
+        },
       },
     });
   }
@@ -25,6 +27,7 @@ export class ProductRepository {
     return tx.product.findFirst({
       where: {
         name: name,
+        isDeleted: false,
       },
     });
   }
@@ -36,7 +39,9 @@ export class ProductRepository {
     productTypeId?: string,
     tx: Prisma.TransactionClient = db,
   ) {
-    const whereCondition: Prisma.ProductWhereInput = {};
+    const whereCondition: Prisma.ProductWhereInput = {
+      isDeleted: false,
+    };
 
     if (search) {
       whereCondition.name = {
@@ -54,7 +59,9 @@ export class ProductRepository {
       take: take,
       include: {
         productType: true,
-        productVariants: true,
+        productVariants: {
+          where: { isDeleted: false },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -65,7 +72,9 @@ export class ProductRepository {
     productTypeId?: string,
     tx: Prisma.TransactionClient = db,
   ) {
-    const whereCondition: Prisma.ProductWhereInput = {};
+    const whereCondition: Prisma.ProductWhereInput = {
+      isDeleted: false,
+    };
 
     if (search) {
       whereCondition.name = {
@@ -87,7 +96,9 @@ export class ProductRepository {
     productTypeId?: string,
     tx: Prisma.TransactionClient = db,
   ) {
-    const whereCondition: Prisma.ProductWhereInput = {};
+    const whereCondition: Prisma.ProductWhereInput = {
+      isDeleted: false,
+    };
 
     if (search) {
       whereCondition.name = {
@@ -103,7 +114,9 @@ export class ProductRepository {
       where: whereCondition,
       include: {
         productType: true,
-        productVariants: true,
+        productVariants: {
+          where: { isDeleted: false },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
