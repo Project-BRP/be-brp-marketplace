@@ -68,7 +68,7 @@ model ProductVariant {
   productId    String   @map("product_id")
   weight_in_kg Int      @map("weight_in_kg")
   packagingId  String?  @map("packaging_id")
-  imageUrl     String   @map("image_url")
+  imageUrl     String?  @map("image_url")
   stock        Int      @default(0) @map("stock")
   priceRupiah  Int      @map("price_rupiah")
   isDeleted    Boolean  @default(false) @map("is_deleted")
