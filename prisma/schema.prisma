@@ -48,7 +48,7 @@ model Product {
   description            String   @map("description")
   productTypeId          String?  @map("product_type_id")
   composition            String   @map("composition")
-  imageUrl               String   @map("image_url")
+  imageUrl               String?  @map("image_url")
   storageInstructions    String   @map("storage_instructions")
   expiredDurationInYears Int      @map("expired_duration_in_years")
   usageInstructions      String   @map("usage_instructions")
