@@ -6,7 +6,7 @@ import {
   IUpdateProductVariantRequest,
   IGetProductVariantRequest,
   IGetAllProductVariantsRequest,
-  IAddStockRequest,
+  IEditStockRequest,
   IDeleteProductVariantRequest,
 } from '../dtos';
 import { ProductVariantService } from '../services';
@@ -73,21 +73,22 @@ export class ProductVariantController {
     }
   }
 
-  static async addStock(
+  static async editStock(
     req: Request,
     res: Response,
     next: NextFunction,
   ): Promise<void> {
     try {
-      const request: IAddStockRequest = {
+      const request: IEditStockRequest = {
         id: req.params.id,
         stock: req.body.stock,
       };
-      const response = await ProductVariantService.addStock(request);
+
+      const response = await ProductVariantService.editStock(request);
       successResponse(
         res,
         200,
-        'Stok varian produk berhasil ditambahkan',
+        'Stok varian produk berhasil diperbarui',
         response,
       );
     } catch (error) {

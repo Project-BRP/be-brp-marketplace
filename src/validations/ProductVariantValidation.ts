@@ -161,19 +161,17 @@ export class ProductVariantValidation {
       },
     );
 
-  static readonly ADD_STOCK: ZodType = z.object({
+  static readonly EDIT_STOCK: ZodType = z.object({
     id: z
       .string({
         required_error: 'ID Varian tidak boleh kosong',
         invalid_type_error: 'ID Varian tidak valid',
       })
       .min(1, 'ID Varian tidak boleh kosong'),
-    stock: z
-      .number({
-        required_error: 'Jumlah stok tidak boleh kosong',
-        invalid_type_error: 'Jumlah stok tidak valid',
-      })
-      .min(1, 'Jumlah stok tidak boleh kurang dari 1'),
+    stock: z.number({
+      required_error: 'Jumlah stok tidak boleh kosong',
+      invalid_type_error: 'Jumlah stok tidak valid',
+    }),
   });
 
   static readonly GET_ALL: ZodType = z.object({

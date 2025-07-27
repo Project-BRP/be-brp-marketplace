@@ -15,7 +15,11 @@ import type {
   IDeleteProductRequest,
 } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
-import { ProductRepository, ProductTypeRepository, ProductVariantRepository } from '../repositories';
+import {
+  ProductRepository,
+  ProductTypeRepository,
+  ProductVariantRepository,
+} from '../repositories';
 import { Validator } from '../utils';
 import { ProductValidation } from '../validations';
 

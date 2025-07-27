@@ -12,8 +12,8 @@ import type {
   IGetProductVariantResponse,
   IGetAllProductVariantsRequest,
   IGetAllProductVariantsResponse,
-  IAddStockRequest,
-  IAddStockResponse,
+  IEditStockRequest,
+  IEditStockResponse,
   IDeleteProductVariantRequest,
 } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
@@ -186,11 +186,20 @@ export class ProductVariantService {
     };
   }
 
-  static async addStock(request: IAddStockRequest): Promise<IAddStockResponse> {
+  static async editStock(
+    request: IEditStockRequest,
+  ): Promise<IEditStockResponse> {
     const validData = Validator.validate(
-      ProductVariantValidation.ADD_STOCK,
+      ProductVariantValidation.EDIT_STOCK,
       request,
     );
+
+    if (validData.stock === 0) {
+      throw new ResponseError(
+        StatusCodes.BAD_REQUEST,
+        'Jumlah stok tidak boleh nol',
+      );
+    }
 
     const dbConnection = db;
 
@@ -207,13 +216,25 @@ export class ProductVariantService {
           );
         }
 
-        const updatedProductVariant = await ProductVariantRepository.update(
-          validData.id,
-          {
-            stock: productVariant.stock + validData.stock,
-          },
-          tx,
-        );
+        let updatedProductVariant;
+
+        if (validData.stock + productVariant.stock < 0) {
+          updatedProductVariant = await ProductVariantRepository.update(
+            validData.id,
+            {
+              stock: 0,
+            },
+            tx,
+          );
+        } else {
+          updatedProductVariant = await ProductVariantRepository.update(
+            validData.id,
+            {
+              stock: productVariant.stock + validData.stock,
+            },
+            tx,
+          );
+        }
 
         return {
           id: updatedProductVariant.id,

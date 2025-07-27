@@ -24,10 +24,10 @@ productVariantRoute.patch(
   ProductVariantController.updateProductVariant,
 );
 productVariantRoute.patch(
-  '/:id/add-stock',
+  '/:id/stock',
   authMiddleware,
   roleMiddleware([Role.ADMIN]),
-  ProductVariantController.addStock,
+  ProductVariantController.editStock,
 );
 productVariantRoute.get('/:id', ProductVariantController.getProductVariantById);
 productVariantRoute.get(

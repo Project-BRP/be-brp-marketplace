@@ -61,12 +61,12 @@ export interface IUpdateProductVariantRequest {
   priceRupiah?: number;
 }
 
-export interface IAddStockRequest {
+export interface IEditStockRequest {
   id: string;
   stock: number;
 }
 
-export interface IAddStockResponse {
+export interface IEditStockResponse {
   id: string;
   productId: string;
   weight_in_kg: number;
