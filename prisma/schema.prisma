@@ -18,13 +18,12 @@ enum Role {
   ADMIN
 }
 
-enum OrderStatus {
+enum TxStatus {
   UNPAID
   PAID
-
   SHIPPED
   DELIVERED
-  CANCELED
+  CANCELLED
 }
 
 model User {
@@ -143,23 +142,23 @@ model CurrentPPN {
 }
 
 model Transaction {
-  id              String      @id @map("id")
-  userId          String      @map("user_id")
-  userName        String      @map("user_name")
-  userEmail       String      @map("user_email")
-  status          OrderStatus @default(UNPAID) @map("status")
-  totalPrice      Int         @map("total_price")
-  PPNPercentage   Int?        @map("ppn_percentage")
-  snapToken       String?     @map("snap_token")
-  snapUrl         String?     @map("snap_url")
-  shippingAddress String?     @map("shipping_address")
-  shippingCost    Int?        @map("shipping_cost")
-  paymentMethod   String?     @map("payment_method")
-  createdAt       DateTime    @default(now()) @map("created_at")
-  updatedAt       DateTime    @updatedAt @map("updated_at")
+  id              String   @id @map("id")
+  userId          String   @map("user_id")
+  userName        String   @map("user_name")
+  userEmail       String   @map("user_email")
+  status          TxStatus @default(UNPAID) @map("status")
+  totalPrice      Int      @map("total_price")
+  PPNPercentage   Int?     @map("ppn_percentage")
+  snapToken       String?  @map("snap_token")
+  snapUrl         String?  @map("snap_url")
+  shippingAddress String?  @map("shipping_address")
+  shippingCost    Int?     @map("shipping_cost")
+  paymentMethod   String?  @map("payment_method")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
-  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  TransactionItem TransactionItem[]
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactionItems TransactionItem[]
 
   @@map("transactions")
 }

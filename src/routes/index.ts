@@ -8,4 +8,4 @@ export * from './ConfigRoute';
 export * from './CartRoute';
 export * from './CartItemRoute';
 export * from './PPNRoute';
-
+export * from './TransactionRoute';

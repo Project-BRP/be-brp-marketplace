@@ -3,35 +3,38 @@ import axios from 'axios';
 import { MIDTRANS_SECRET } from '../constants';
 import { CLIENT_URL_CURRENT } from './client-url-utils';
 import { ResponseError } from '../error/ResponseError';
+import { ITransactionItem } from 'dtos';
 
 export class PaymentUtils {
   static async sendToPaymentGateway(
     transactionId: string,
     grossAmount: number,
-    transactionItems: {
-      variantId: string;
-      variantName: string;
-      productId: string;
-      quantity: number;
-      priceRupiah: number;
-      productName: string;
-    }[],
+    transactionItems: ITransactionItem[],
     customerDetails: {
       name: string;
       email: string;
     },
+    shippingCost: number,
   ): Promise<any> {
     const authString = btoa(`${MIDTRANS_SECRET.MIDTRANS_SERVER_KEY}:`);
-    
-    const itemDetails = transactionItems.map(item => ({
-      id: item.variantId,
-      price: item.priceRupiah,
-      quantity: item.quantity,
-      name: item.productName,
-      variant_name: item.variantName,
-      product_id: item.productId,
-    }));
 
+    const itemDetails = [
+      ...transactionItems.map(item => ({
+        id: item.variantId,
+        price: item.priceRupiah / item.quantity,
+        quantity: item.quantity,
+        name: item.productName,
+        weight_in_kg: item.weight_in_kg,
+        packaging: item.packaging,
+        product_id: item.productId,
+      })),
+      {
+        id: 'shipping_cost',
+        price: shippingCost,
+        quantity: 1,
+        name: 'Biaya Pengiriman',
+      },
+    ]
     const transactionPayload = {
       transaction_details: {
         order_id: transactionId,
@@ -68,7 +71,8 @@ export class PaymentUtils {
         console.error('Midtrans API Error:', error.response?.data);
         throw new ResponseError(
           error.response?.status || 500,
-          error.response?.data?.error_messages?.join(', ') || 'Failed to create transaction',
+          error.response?.data?.error_messages?.join(', ') ||
+            'Failed to create transaction',
         );
       }
 

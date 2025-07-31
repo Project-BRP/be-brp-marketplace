@@ -12,7 +12,8 @@ export class PPNController {
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<void> {``
+  ): Promise<void> {
+    ``;
     try {
       const response = await PPNService.getCurrentPPN();
       successResponse(res, 200, 'PPN berhasil ditemukan', response);

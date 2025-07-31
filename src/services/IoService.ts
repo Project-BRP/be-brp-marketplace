@@ -1,7 +1,7 @@
 import { io } from '../index';
 
 export class IoService {
-  static async emitOrderCreated(): Promise<void> {
+  static async emitTransaction(): Promise<void> {
     console.log('Will be implemented later');
   }
 }

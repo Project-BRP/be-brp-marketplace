@@ -13,6 +13,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 15000,
+      stock: 100,
     },
     {
       id: 'NPK_15_15_15_Premium_25kg',
@@ -21,6 +22,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 350000,
+      stock: 100,
     },
     {
       id: 'NPK_15_15_15_Premium_50kg',
@@ -29,6 +31,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 680000,
+      stock: 100,
     },
     // NPK Phonska Plus (2 variants)
     {
@@ -38,6 +41,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 320000,
+      stock: 100,
     },
     {
       id: 'NPK_Phonska_Plus_50kg',
@@ -46,6 +50,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 620000,
+      stock: 100,
     },
     // NPK Grower Special (2 variants)
     {
@@ -55,6 +60,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 380000,
+      stock: 100,
     },
     {
       id: 'NPK_Grower_Special_50kg',
@@ -63,6 +69,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 750000,
+      stock: 100,
     },
     // NPK Booster Buah (3 variants)
     {
@@ -72,6 +79,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 25000,
+      stock: 100,
     },
     {
       id: 'NPK_Booster_Buah_25kg',
@@ -80,6 +88,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 450000,
+      stock: 100,
     },
     {
       id: 'NPK_Booster_Buah_50kg',
@@ -88,6 +97,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 880000,
+      stock: 100,
     },
     // NPK Compact Slow Release (2 variants)
     {
@@ -97,6 +107,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 45000,
+      stock: 100,
     },
     {
       id: 'NPK_Compact_SlowRelease_25kg',
@@ -105,6 +116,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 950000,
+      stock: 100,
     },
     // Organik Granul Super (2 variants)
     {
@@ -114,6 +126,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 50000,
+      stock: 100,
     },
     {
       id: 'Organik_Granul_Super_50kg',
@@ -122,6 +135,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 95000,
+      stock: 100,
     },
     // Kompos Super Matang (2 variants)
     {
@@ -131,6 +145,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 40000,
+      stock: 100,
     },
     {
       id: 'Kompos_Super_Matang_50kg',
@@ -139,6 +154,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 75000,
+      stock: 100,
     },
     // Organik Cair Plus Giberelin (2 variants)
     {
@@ -148,6 +164,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Botol_1L',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 75000,
+      stock: 100,
     },
     {
       id: 'Organik_Cair_Plus_Giberelin_500ml',
@@ -156,6 +173,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Botol_1L', // Assuming 500ml uses a 1L bottle type for simplicity
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 45000,
+      stock: 100,
     },
     // Guano Fosfat Alami (3 variants)
     {
@@ -165,6 +183,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 30000,
+      stock: 100,
     },
     {
       id: 'Guano_Fosfat_Alami_25kg',
@@ -173,6 +192,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 550000,
+      stock: 100,
     },
     {
       id: 'Guano_Fosfat_Alami_50kg',
@@ -181,6 +201,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 1050000,
+      stock: 100,
     },
     // Bio Trichoderma Hayati (2 variants)
     {
@@ -190,6 +211,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 60000,
+      stock: 100,
     },
     {
       id: 'Bio_Trichoderma_Hayati_500g',
@@ -198,6 +220,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 35000,
+      stock: 100,
     },
     // Mikroba Rhizobium Plus (2 variants)
     {
@@ -207,6 +230,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 80000,
+      stock: 100,
     },
     {
       id: 'Mikroba_Rhizobium_Plus_250g',
@@ -215,6 +239,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 25000,
+      stock: 100,
     },
     // Myco Plus Mikoriza (2 variants)
     {
@@ -224,6 +249,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 120000,
+      stock: 100,
     },
     {
       id: 'Myco_Plus_Mikoriza_5kg',
@@ -232,6 +258,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_25kg', // Using a generic bag type
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 550000,
+      stock: 100,
     },
     // Urea Non-Subsidi (2 variants)
     {
@@ -241,6 +268,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 280000,
+      stock: 100,
     },
     {
       id: 'Urea_NonSubsidi_50kg',
@@ -249,6 +277,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 550000,
+      stock: 100,
     },
     // ZA Amonium Sulfat (2 variants)
     {
@@ -258,6 +287,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 180000,
+      stock: 100,
     },
     {
       id: 'ZA_Amonium_Sulfat_50kg',
@@ -266,6 +296,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 350000,
+      stock: 100,
     },
     // KCL Kalium Klorida (3 variants)
     {
@@ -275,6 +306,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 20000,
+      stock: 100,
     },
     {
       id: 'KCL_Kalium_Klorida_25kg',
@@ -283,6 +315,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 480000,
+      stock: 100,
     },
     {
       id: 'KCL_Kalium_Klorida_50kg',
@@ -291,6 +324,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 950000,
+      stock: 100,
     },
     // SP-36 Super Fosfat (2 variants)
     {
@@ -300,6 +334,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 220000,
+      stock: 100,
     },
     {
       id: 'SP36_Super_Fosfat_50kg',
@@ -308,6 +343,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 430000,
+      stock: 100,
     },
     // Mikro Boron Plus (2 variants)
     {
@@ -317,6 +353,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 50000,
+      stock: 100,
     },
     {
       id: 'Mikro_Boron_Plus_500g',
@@ -325,6 +362,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 30000,
+      stock: 100,
     },
     // Mikro Fe-Chelate (2 variants)
     {
@@ -334,6 +372,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 150000,
+      stock: 100,
     },
     {
       id: 'Mikro_Fe_Chelate_250g',
@@ -342,6 +381,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 45000,
+      stock: 100,
     },
     // Kalsium Nitrat Super (3 variants)
     {
@@ -351,6 +391,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 28000,
+      stock: 100,
     },
     {
       id: 'Kalsium_Nitrat_Super_25kg',
@@ -359,6 +400,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 650000,
+      stock: 100,
     },
     {
       id: 'Kalsium_Nitrat_Super_50kg',
@@ -367,6 +409,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 1250000,
+      stock: 100,
     },
     // Magnesium Sulfat Epsom (3 variants)
     {
@@ -376,6 +419,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Sachet_1kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 18000,
+      stock: 100,
     },
     {
       id: 'Magnesium_Sulfat_Epsom_25kg',
@@ -384,6 +428,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_25kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 400000,
+      stock: 100,
     },
     {
       id: 'Magnesium_Sulfat_Epsom_50kg',
@@ -392,6 +437,7 @@ export const productVariantSeeder = async () => {
       packagingId: 'Karung_50kg',
       imageUrl: '/dashboard/Hero.jpg',
       priceRupiah: 780000,
+      stock: 100,
     },
   ];
 

@@ -51,6 +51,12 @@ export class CartItemService {
 
     if (existingCartItem) {
       const newQuantity = existingCartItem.quantity + validData.quantity;
+      if (newQuantity > productVariant.stock) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Stok produk tidak mencukupi',
+        );
+      }
       if (newQuantity <= 0) {
         await CartItemRepository.delete(existingCartItem.id);
       } else {
@@ -90,6 +96,12 @@ export class CartItemService {
         throw new ResponseError(
           StatusCodes.BAD_REQUEST,
           'Kuantitas harus lebih dari 0 untuk menambah item baru',
+        );
+      }
+      if (validData.quantity > productVariant.stock) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Stok produk tidak mencukupi',
         );
       }
 
@@ -162,6 +174,13 @@ export class CartItemService {
     }
 
     const newQuantity = cartItem.quantity + validData.quantity;
+
+    if (newQuantity > productVariant.stock) {
+      throw new ResponseError(
+        StatusCodes.BAD_REQUEST,
+        'Stok produk tidak mencukupi',
+      );
+    }
 
     if (newQuantity <= 0) {
       await CartItemRepository.delete(cartItem.id);

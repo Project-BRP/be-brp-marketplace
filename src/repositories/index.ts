@@ -9,3 +9,5 @@ export * from './ProductVariantRepository';
 export * from './CartRepository';
 export * from './CartItemRepository';
 export * from './PPNRepository';
+export * from './TransactionItemRepository';
+export * from './TransactionRepository';
