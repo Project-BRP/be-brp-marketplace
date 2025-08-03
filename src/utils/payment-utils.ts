@@ -8,11 +8,23 @@ import { ITransactionItem } from 'dtos';
 export class PaymentUtils {
   static async sendToPaymentGateway(
     transactionId: string,
+    ppnAmount: number,
     grossAmount: number,
     transactionItems: ITransactionItem[],
     customerDetails: {
-      name: string;
+      first_name: string;
+      last_name?: string;
       email: string;
+      phone: string;
+      address: string;
+      shipping_address?: {
+        first_name: string;
+        last_name?: string;
+        address: string;
+        phone: string;
+        city: string;
+        postal_code: string;
+      };
     },
     shippingCost: number,
   ): Promise<any> {
@@ -34,7 +46,13 @@ export class PaymentUtils {
         quantity: 1,
         name: 'Biaya Pengiriman',
       },
-    ]
+      {
+        id: 'ppn',
+        price: ppnAmount,
+        quantity: 1,
+        name: 'PPN',
+      },
+    ];
     const transactionPayload = {
       transaction_details: {
         order_id: transactionId,
@@ -42,8 +60,21 @@ export class PaymentUtils {
       },
       item_details: itemDetails,
       customer_details: {
-        name: customerDetails.name,
+        first_name: customerDetails.first_name,
+        last_name: customerDetails.last_name,
         email: customerDetails.email,
+        phone: customerDetails.phone,
+        address: customerDetails.address,
+        shipping_address: customerDetails.shipping_address
+          ? {
+              first_name: customerDetails.shipping_address.first_name,
+              last_name: customerDetails.shipping_address.last_name,
+              address: customerDetails.shipping_address.address,
+              city: customerDetails.shipping_address.city,
+              phone: customerDetails.shipping_address.phone,
+              postal_code: customerDetails.shipping_address.postal_code,
+            }
+          : undefined,
       },
       callbacks: {
         finish: `${CLIENT_URL_CURRENT}/transaction?transaction_id=${transactionId}`,
@@ -54,7 +85,7 @@ export class PaymentUtils {
 
     try {
       const response = await axios.post(
-        `${MIDTRANS_SECRET.MIDTRANS_APP_URL}`,
+        `${MIDTRANS_SECRET.MIDTRANS_APP_URL}/snap/v1/transactions`,
         transactionPayload,
         {
           headers: {
@@ -64,6 +95,8 @@ export class PaymentUtils {
           },
         },
       );
+
+      console.log('Midtrans API Response:', response.data);
 
       return response.data;
     } catch (error) {
@@ -77,6 +110,78 @@ export class PaymentUtils {
       }
 
       console.error('Unexpected error in sendToPaymentGateway:', error);
+      throw error;
+    }
+  }
+
+  static async checkTransactionStatus(transactionId: string): Promise<any> {
+    const authString = btoa(`${MIDTRANS_SECRET.MIDTRANS_SERVER_KEY}:`);
+
+    try {
+      const response = await axios.get(
+        `${MIDTRANS_SECRET.MIDTRANS_APP_URL}/v2/${transactionId}/status`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            Authorization: `Basic ${authString}`,
+          },
+        },
+      );
+
+      console.log('Midtrans Transaction Status Response:', response.data);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Midtrans API Error:', error.response?.data);
+        throw new ResponseError(
+          error.response?.status || 500,
+          error.response?.data?.error_messages?.join(', ') ||
+            'Failed to check transaction status',
+        );
+      }
+
+      console.error('Unexpected error in checkTransactionStatus:', error);
+      throw error;
+    }
+  }
+
+  static async refundTransaction(
+    transactionId: string,
+    reason: string,
+  ): Promise<any> {
+    const authString = btoa(`${MIDTRANS_SECRET.MIDTRANS_SERVER_KEY}:`);
+
+    const refundPayload = {
+      reason,
+    };
+
+    try {
+      const response = await axios.post(
+        `${MIDTRANS_SECRET.MIDTRANS_APP_URL}/v2/${transactionId}/refund`,
+        refundPayload,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            Authorization: `Basic ${authString}`,
+          },
+        },
+      );
+
+      console.log('Midtrans Refund Response:', response.data);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Midtrans Refund Error:', error.response?.data);
+        throw new ResponseError(
+          error.response?.status || 500,
+          error.response?.data?.error_messages?.join(', ') ||
+            'Failed to process refund',
+        );
+      }
+
+      console.error('Unexpected error in refundTransaction:', error);
       throw error;
     }
   }

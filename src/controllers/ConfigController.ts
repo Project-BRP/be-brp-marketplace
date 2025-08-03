@@ -1,9 +1,9 @@
 import type { Request, Response, NextFunction } from 'express';
 import fs from 'fs';
 import path from 'path';
+import { StatusCodes } from 'http-status-codes';
 
 import { ResponseError } from '../error/ResponseError';
-import { StatusCodes } from 'http-status-codes';
 import { SharpUtils } from '../utils';
 import { successResponse } from '../utils/api-response';
 import { ConfigService } from '../services/ConfigService';

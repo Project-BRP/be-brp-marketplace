@@ -13,6 +13,7 @@ export const userSeeder = async () => {
       email: 'testuser@example.com',
       password: await PasswordUtils.hashPassword('test1234'),
       role: Role.USER,
+      phoneNumber: '+6281111111111',
     },
     {
       id: `USR-${uuid()}`,
@@ -20,6 +21,7 @@ export const userSeeder = async () => {
       email: 'testadmin@example.com',
       password: await PasswordUtils.hashPassword('admin1234'),
       role: Role.ADMIN,
+      phoneNumber: '+6281222222222',
     },
     {
       id: `USR-${uuid()}`,
@@ -27,6 +29,7 @@ export const userSeeder = async () => {
       email: 'aquq1q1.farrukh@gmail.com',
       password: await PasswordUtils.hashPassword('Q1q10beron'),
       role: Role.ADMIN,
+      phoneNumber: '+6281333333333',
     },
     {
       id: `USR-${uuid()}`,
@@ -34,6 +37,7 @@ export const userSeeder = async () => {
       email: 'aquaq1l.farrukh@gmail.com',
       password: await PasswordUtils.hashPassword('Q1q10beron'),
       role: Role.USER,
+      phoneNumber: '+6281444444444',
     },
   ];
 

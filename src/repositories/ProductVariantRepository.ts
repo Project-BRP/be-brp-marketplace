@@ -19,6 +19,16 @@ export class ProductVariantRepository {
     });
   }
 
+  static async findMany(ids: string[], tx: Prisma.TransactionClient = db) {
+    return tx.productVariant.findMany({
+      where: {
+        id: { in: ids },
+        isDeleted: false,
+      },
+      include: { packaging: true },
+    });
+  }
+
   static async findAll(productId: string, tx: Prisma.TransactionClient = db) {
     return tx.productVariant.findMany({
       where: {

@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import fs from 'fs';
+import { StatusCodes } from 'http-status-codes';
 
 import { JWT_CONFIG } from '../constants';
 import type {
@@ -29,7 +30,12 @@ export class AuthController {
       const request = req.body as IRegisterRequest;
       const response = await AuthService.register(request);
 
-      successResponse(res, 200, 'Email verifikasi berhasil dikirim', response);
+      successResponse(
+        res,
+        StatusCodes.CREATED,
+        'Email verifikasi berhasil dikirim',
+        response,
+      );
     } catch (error) {
       next(error);
     }
@@ -55,7 +61,7 @@ export class AuthController {
       });
 
       // jika memutuskan menggunakan header, hapus set cookie diatas
-      successResponse(res, 201, 'Verifikasi email berhasil');
+      successResponse(res, StatusCodes.OK, 'Verifikasi email berhasil');
     } catch (error) {
       next(error);
     }
@@ -78,7 +84,7 @@ export class AuthController {
         maxAge: JWT_CONFIG.JWT_EXPIRES_IN,
       });
 
-      successResponse(res, 200, 'Login Sukses');
+      successResponse(res, StatusCodes.OK, 'Login Sukses');
     } catch (error) {
       next(error);
     }
@@ -95,7 +101,12 @@ export class AuthController {
       } as IGetUserRequest;
       const response = await AuthService.getUser(request);
 
-      successResponse(res, 200, 'Berhasil mendapatkan user', response);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Berhasil mendapatkan user',
+        response,
+      );
     } catch (error) {
       next(error);
     }
@@ -114,7 +125,12 @@ export class AuthController {
       } as IGetAllUserRequest;
       const response = await AuthService.getAll(request);
 
-      successResponse(res, 200, 'Berhasil mendapatkan semua user', response);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Berhasil mendapatkan semua user',
+        response,
+      );
     } catch (error) {
       next(error);
     }
@@ -140,7 +156,12 @@ export class AuthController {
 
       const response = await AuthService.updateUser(request);
 
-      successResponse(res, 200, 'Berhasil mengupdate user', response);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Berhasil mengupdate user',
+        response,
+      );
     } catch (error) {
       // Hapus file hasil resize jika error
       if (resizedPhotoPath && fs.existsSync(resizedPhotoPath)) {
@@ -162,7 +183,7 @@ export class AuthController {
       } as IDeleteUserRequest;
       await AuthService.deleteUser(request);
 
-      successResponse(res, 200, 'Berhasil menghapus user');
+      successResponse(res, StatusCodes.OK, 'Berhasil menghapus user');
     } catch (error) {
       next(error);
     }
@@ -177,7 +198,11 @@ export class AuthController {
       const request = req.body as IForgotPasswordRequest;
       await AuthService.forgotPassword(request);
 
-      successResponse(res, 200, 'Berhasil mengirim email reset password');
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Berhasil mengirim email reset password',
+      );
     } catch (error) {
       next(error);
     }
@@ -192,7 +217,7 @@ export class AuthController {
       const request = req.body as ICheckResetTokenRequest;
       await AuthService.checkResetToken(request);
 
-      successResponse(res, 200, 'OK');
+      successResponse(res, StatusCodes.OK, 'OK');
     } catch (error) {
       next(error);
     }
@@ -207,7 +232,7 @@ export class AuthController {
       const request = req.body as IResetPasswordRequest;
       await AuthService.resetPassword(request);
 
-      successResponse(res, 200, 'Berhasil mereset password');
+      successResponse(res, StatusCodes.OK, 'Berhasil mereset password');
     } catch (error) {
       next(error);
     }
@@ -224,7 +249,7 @@ export class AuthController {
        *  Jika memilih menggunakan header, maka gunakan pendekatan blacklist token atau cukup menghapus token di sisi client
        */
       res.clearCookie('token');
-      successResponse(res, 200, 'Logged out berhasil');
+      successResponse(res, StatusCodes.OK, 'Logged out berhasil');
     } catch (error) {
       next(error);
     }

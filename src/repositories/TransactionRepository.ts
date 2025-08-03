@@ -19,6 +19,18 @@ export class TransactionRepository {
     return tx.transaction.update({
       where: { id },
       data: data,
+      include: {
+        transactionItems: {
+          include: {
+            variant: {
+              include: {
+                product: true,
+                packaging: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 
@@ -37,6 +49,102 @@ export class TransactionRepository {
           },
         },
       },
+    });
+  }
+
+  static async findAll(tx: Prisma.TransactionClient = db) {
+    return tx.transaction.findMany({
+      include: {
+        transactionItems: {
+          include: {
+            variant: {
+              include: {
+                product: true,
+                packaging: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  static async findAllWithPagination(
+    skip: number,
+    take: number,
+    tx: Prisma.TransactionClient = db,
+  ) {
+    return tx.transaction.findMany({
+      skip: skip,
+      take: take,
+      include: {
+        transactionItems: {
+          include: {
+            variant: {
+              include: {
+                product: true,
+                packaging: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  static async count(tx: Prisma.TransactionClient = db) {
+    return tx.transaction.count();
+  }
+
+  static async findByUserId(userId: string, tx: Prisma.TransactionClient = db) {
+    return tx.transaction.findMany({
+      where: { userId },
+      include: {
+        transactionItems: {
+          include: {
+            variant: {
+              include: {
+                product: true,
+                packaging: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  static async findByUserIdWithPagination(
+    userId: string,
+    skip: number,
+    take: number,
+    tx: Prisma.TransactionClient = db,
+  ) {
+    return tx.transaction.findMany({
+      where: { userId },
+      skip: skip,
+      take: take,
+      include: {
+        transactionItems: {
+          include: {
+            variant: {
+              include: {
+                product: true,
+                packaging: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  static async countByUserId(
+    userId: string,
+    tx: Prisma.TransactionClient = db,
+  ) {
+    return tx.transaction.count({
+      where: { userId },
     });
   }
 }

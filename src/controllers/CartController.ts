@@ -1,4 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
+import { StatusCodes } from 'http-status-codes';
+
 import { IAuthDTO, IClearCartRequest, IGetCartRequest } from '../dtos';
 import { CartService } from '../services';
 import { successResponse } from '../utils/api-response';
@@ -14,7 +16,12 @@ export class CartController {
         userId: req.user.userId,
       };
       const response = await CartService.getCart(request);
-      successResponse(res, 200, 'Keranjang berhasil diambil', response);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Keranjang berhasil diambil',
+        response,
+      );
     } catch (error) {
       next(error);
     }
@@ -30,7 +37,7 @@ export class CartController {
         userId: req.user.userId,
       };
       await CartService.clearCart(request);
-      successResponse(res, 200, 'Keranjang berhasil dikosongkan');
+      successResponse(res, StatusCodes.OK, 'Keranjang berhasil dikosongkan');
     } catch (error) {
       next(error);
     }

@@ -27,4 +27,15 @@ export class TransactionItemRepository {
       data: data,
     });
   }
+
+  static async updateById(
+    id: string,
+    data: Prisma.TransactionItemUpdateInput,
+    tx: Prisma.TransactionClient = db,
+  ) {
+    return tx.transactionItem.update({
+      where: { id: id },
+      data: data,
+    });
+  }
 }

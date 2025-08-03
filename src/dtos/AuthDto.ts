@@ -4,6 +4,7 @@ export interface IRegisterRequest {
   email: string;
   name: string;
   password: string;
+  phoneNumber: string;
 }
 
 export interface IVerifyEmailRequest {
@@ -32,6 +33,7 @@ export interface IGetUserResponse {
   email: string;
   name: string;
   role: string;
+  phoneNumber: string;
   photoProfile?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -56,6 +58,7 @@ export interface IUpdateUserRequest {
   oldPassword?: string;
   password?: string;
   photoProfile?: string;
+  phoneNumber?: string;
 }
 
 export interface IUpdateUserResponse {
@@ -63,6 +66,7 @@ export interface IUpdateUserResponse {
   name?: string;
   email?: string;
   photoProfile?: string;
+  phoneNumber?: string;
 }
 
 export interface IDeleteUserRequest {
@@ -78,6 +82,7 @@ export interface IEmailVerificationPayload {
   email: string;
   password: string;
   name: string;
+  phoneNumber: string;
 }
 
 export interface IForgotTokenPayload {

@@ -1,6 +1,8 @@
 import type { Request, Response, NextFunction } from 'express';
 import fs from 'fs';
 import { SharpUtils } from '../utils';
+import { StatusCodes } from 'http-status-codes';
+
 import {
   ICreateProductRequest,
   IUpdateProductRequest,
@@ -30,7 +32,12 @@ export class ProductController {
       };
 
       const response = await ProductService.create(request);
-      successResponse(res, 201, 'Produk berhasil ditambahkan', response);
+      successResponse(
+        res,
+        StatusCodes.CREATED,
+        'Produk berhasil ditambahkan',
+        response,
+      );
     } catch (error) {
       if (resizedImagePath && fs.existsSync(resizedImagePath)) {
         fs.unlinkSync(resizedImagePath);
@@ -58,7 +65,12 @@ export class ProductController {
       };
 
       const response = await ProductService.update(request);
-      successResponse(res, 200, 'Produk berhasil diperbarui', response);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Produk berhasil diperbarui',
+        response,
+      );
     } catch (error) {
       if (resizedImagePath && fs.existsSync(resizedImagePath)) {
         fs.unlinkSync(resizedImagePath);
@@ -77,7 +89,12 @@ export class ProductController {
         id: req.params.id,
       } as IGetProductRequest;
       const response = await ProductService.getById(request);
-      successResponse(res, 200, 'Produk berhasil ditemukan', response);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Produk berhasil ditemukan',
+        response,
+      );
     } catch (error) {
       next(error);
     }
@@ -102,7 +119,12 @@ export class ProductController {
           : undefined,
       } as IGetAllProductsRequest;
       const response = await ProductService.getAll(request);
-      successResponse(res, 200, 'Daftar produk berhasil diambil', response);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Daftar produk berhasil diambil',
+        response,
+      );
     } catch (error) {
       next(error);
     }
@@ -118,7 +140,7 @@ export class ProductController {
         id: req.params.id,
       } as IDeleteProductRequest;
       await ProductService.delete(request);
-      successResponse(res, 200, 'Produk berhasil dihapus');
+      successResponse(res, StatusCodes.OK, 'Produk berhasil dihapus');
     } catch (error) {
       next(error);
     }

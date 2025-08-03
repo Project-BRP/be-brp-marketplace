@@ -1,4 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
+import { StatusCodes } from 'http-status-codes';
+
 import {
   ICreateProductTypeRequest,
   IUpdateProductTypeRequest,
@@ -18,7 +20,12 @@ export class ProductTypeController {
     try {
       const request = req.body as ICreateProductTypeRequest;
       const response = await ProductTypeService.create(request);
-      successResponse(res, 201, 'Tipe produk berhasil ditambahkan', response);
+      successResponse(
+        res,
+        StatusCodes.CREATED,
+        'Tipe produk berhasil ditambahkan',
+        response,
+      );
     } catch (error) {
       next(error);
     }
@@ -35,7 +42,12 @@ export class ProductTypeController {
         ...req.body,
       } as IUpdateProductTypeRequest;
       const response = await ProductTypeService.update(request);
-      successResponse(res, 200, 'Tipe produk berhasil diperbarui', response);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Tipe produk berhasil diperbarui',
+        response,
+      );
     } catch (error) {
       next(error);
     }
@@ -51,7 +63,12 @@ export class ProductTypeController {
         id: req.params.id,
       } as IGetProductTypeRequest;
       const response = await ProductTypeService.getById(request);
-      successResponse(res, 200, 'Tipe produk berhasil ditemukan', response);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Tipe produk berhasil ditemukan',
+        response,
+      );
     } catch (error) {
       next(error);
     }
@@ -71,7 +88,7 @@ export class ProductTypeController {
       const response = await ProductTypeService.getAll(request);
       successResponse(
         res,
-        200,
+        StatusCodes.OK,
         'Daftar tipe produk berhasil diambil',
         response,
       );
@@ -90,7 +107,7 @@ export class ProductTypeController {
         id: req.params.id,
       } as IDeleteProductTypeRequest;
       await ProductTypeService.delete(request);
-      successResponse(res, 200, 'Tipe produk berhasil dihapus');
+      successResponse(res, StatusCodes.OK, 'Tipe produk berhasil dihapus');
     } catch (error) {
       next(error);
     }

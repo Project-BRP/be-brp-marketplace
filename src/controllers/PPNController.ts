@@ -1,4 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
+import { StatusCodes } from 'http-status-codes';
+
 import {
   IUpdatePPNRequest,
   IUpdatePPNResponse,
@@ -16,7 +18,7 @@ export class PPNController {
     ``;
     try {
       const response = await PPNService.getCurrentPPN();
-      successResponse(res, 200, 'PPN berhasil ditemukan', response);
+      successResponse(res, StatusCodes.OK, 'PPN berhasil ditemukan', response);
     } catch (error) {
       next(error);
     }
@@ -30,7 +32,7 @@ export class PPNController {
     try {
       const request = req.body as IUpdatePPNRequest;
       const response = await PPNService.updatePPN(request);
-      successResponse(res, 200, 'PPN berhasil diperbarui', response);
+      successResponse(res, StatusCodes.OK, 'PPN berhasil diperbarui', response);
     } catch (error) {
       next(error);
     }

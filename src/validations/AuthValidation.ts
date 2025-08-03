@@ -5,10 +5,10 @@ export class AuthValidation {
   static readonly REGISTER: ZodType = z.object({
     name: z
       .string({
-        required_error: 'Name tidak boleh kosong',
-        invalid_type_error: 'Name tidak valid',
+        required_error: 'Nama tidak boleh kosong',
+        invalid_type_error: 'Nama tidak valid',
       })
-      .max(255, 'Name tidak boleh lebih dari 255 karakter'),
+      .max(255, 'Nama tidak boleh lebih dari 255 karakter'),
 
     email: z
       .string({
@@ -19,12 +19,24 @@ export class AuthValidation {
 
     password: z
       .string({
-        required_error: 'Password tidak boleh kosong',
-        invalid_type_error: 'Password tidak valid',
+        required_error: 'Kata sandi tidak boleh kosong',
+        invalid_type_error: 'Kata sandi tidak valid',
       })
-      .max(255, 'Password tidak boleh lebih dari 255 karakter')
-      .min(8, 'Password harus minimal 8 karakter')
-      .regex(/\d/, 'Password harus mengandung setidaknya 1 angka'),
+      .max(255, 'Kata sandi tidak boleh lebih dari 255 karakter')
+      .min(8, 'Kata sandi harus minimal 8 karakter')
+      .regex(/\d/, 'Kata sandi harus mengandung setidaknya 1 angka'),
+
+    phoneNumber: z
+      .string({
+        required_error: 'Nomor telepon tidak boleh kosong',
+        invalid_type_error: 'Format nomor telepon tidak valid',
+      })
+      .min(10, 'Nomor telepon harus minimal 10 digit')
+      .max(15, 'Nomor telepon tidak boleh lebih dari 15 digit')
+      .regex(
+        /^(?:\+62|0)[2-9]{1}[0-9]{7,13}$/,
+        'Nomor telepon harus dimulai dengan +62 atau 0 dan hanya berupa angka',
+      ),
   });
 
   static readonly VERIFY_EMAIL: ZodType = z.object({
@@ -84,6 +96,19 @@ export class AuthValidation {
         .string({
           invalid_type_error: 'Photo profile tidak valid',
         })
+        .optional(),
+
+      phoneNumber: z
+        .string({
+          required_error: 'Nomor telepon tidak boleh kosong',
+          invalid_type_error: 'Format nomor telepon tidak valid',
+        })
+        .min(10, 'Nomor telepon harus minimal 10 digit')
+        .max(15, 'Nomor telepon tidak boleh lebih dari 15 digit')
+        .regex(
+          /^(?:\+62|0)[2-9]{1}[0-9]{7,13}$/,
+          'Nomor telepon harus dimulai dengan +62 atau 0 dan hanya berupa angka',
+        )
         .optional(),
 
       password: z

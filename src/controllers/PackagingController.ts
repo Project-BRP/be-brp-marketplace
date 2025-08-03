@@ -1,4 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
+import { StatusCodes } from 'http-status-codes';
+
 import {
   ICreatePackagingRequest,
   IUpdatePackagingRequest,
@@ -18,7 +20,12 @@ export class PackagingController {
     try {
       const request = req.body as ICreatePackagingRequest;
       const response = await PackagingService.create(request);
-      successResponse(res, 201, 'Kemasan berhasil ditambahkan', response);
+      successResponse(
+        res,
+        StatusCodes.CREATED,
+        'Kemasan berhasil ditambahkan',
+        response,
+      );
     } catch (error) {
       next(error);
     }
@@ -35,7 +42,12 @@ export class PackagingController {
         ...req.body,
       } as IUpdatePackagingRequest;
       const response = await PackagingService.update(request);
-      successResponse(res, 200, 'Kemasan berhasil diperbarui', response);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Kemasan berhasil diperbarui',
+        response,
+      );
     } catch (error) {
       next(error);
     }
@@ -51,7 +63,12 @@ export class PackagingController {
         id: req.params.id,
       } as IGetPackagingRequest;
       const response = await PackagingService.getById(request);
-      successResponse(res, 200, 'Kemasan berhasil ditemukan', response);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Kemasan berhasil ditemukan',
+        response,
+      );
     } catch (error) {
       next(error);
     }
@@ -69,7 +86,12 @@ export class PackagingController {
         limit: req.query.limit ? parseInt(req.query.limit as string, 10) : null,
       } as IGetAllPackagingsRequest;
       const response = await PackagingService.getAll(request);
-      successResponse(res, 200, 'Daftar kemasan berhasil diambil', response);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Daftar kemasan berhasil diambil',
+        response,
+      );
     } catch (error) {
       next(error);
     }
@@ -85,7 +107,7 @@ export class PackagingController {
         id: req.params.id,
       } as IDeletePackagingRequest;
       await PackagingService.delete(request);
-      successResponse(res, 200, 'Kemasan berhasil dihapus');
+      successResponse(res, StatusCodes.OK, 'Kemasan berhasil dihapus');
     } catch (error) {
       next(error);
     }

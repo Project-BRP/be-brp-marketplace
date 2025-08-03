@@ -57,6 +57,7 @@ export class AuthService {
       email: validData.email,
       name: validData.name,
       password: hashedPassword,
+      phoneNumber: validData.phoneNumber,
     };
 
     const emailVerificationToken =
@@ -133,7 +134,8 @@ export class AuthService {
             id: decoded.userId,
             email: decoded.email,
             name: decoded.name,
-            password: decoded.password, // pastikan ini sudah hash
+            password: decoded.password,
+            phoneNumber: decoded.phoneNumber,
           },
           tx,
         );
@@ -225,6 +227,7 @@ export class AuthService {
       name: user.name,
       role: user.role,
       photoProfile: user.profilePicture,
+      phoneNumber: user.phoneNumber,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
@@ -250,6 +253,7 @@ export class AuthService {
           name: user.name,
           email: user.email,
           role: user.role,
+          phoneNumber: user.phoneNumber,
           photoProfile: user.profilePicture,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
@@ -289,6 +293,7 @@ export class AuthService {
         name: user.name,
         email: user.email,
         role: user.role,
+        phoneNumber: user.phoneNumber,
         photoProfile: user.profilePicture,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,

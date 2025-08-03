@@ -1,6 +1,8 @@
 import type { Request, Response, NextFunction } from 'express';
 import fs from 'fs';
 import { SharpUtils } from '../utils';
+import { StatusCodes } from 'http-status-codes';
+
 import {
   ICreateProductVariantRequest,
   IUpdateProductVariantRequest,
@@ -34,7 +36,12 @@ export class ProductVariantController {
       };
 
       const response = await ProductVariantService.create(request);
-      successResponse(res, 201, 'Varian produk berhasil ditambahkan', response);
+      successResponse(
+        res,
+        StatusCodes.CREATED,
+        'Varian produk berhasil ditambahkan',
+        response,
+      );
     } catch (error) {
       if (resizedImagePath && fs.existsSync(resizedImagePath)) {
         fs.unlinkSync(resizedImagePath);
@@ -64,7 +71,12 @@ export class ProductVariantController {
       };
 
       const response = await ProductVariantService.update(request);
-      successResponse(res, 200, 'Varian produk berhasil diperbarui', response);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Varian produk berhasil diperbarui',
+        response,
+      );
     } catch (error) {
       if (resizedImagePath && fs.existsSync(resizedImagePath)) {
         fs.unlinkSync(resizedImagePath);
@@ -87,7 +99,7 @@ export class ProductVariantController {
       const response = await ProductVariantService.editStock(request);
       successResponse(
         res,
-        200,
+        StatusCodes.OK,
         'Stok varian produk berhasil diperbarui',
         response,
       );
@@ -106,7 +118,12 @@ export class ProductVariantController {
         id: req.params.id,
       };
       const response = await ProductVariantService.getById(request);
-      successResponse(res, 200, 'Varian produk berhasil ditemukan', response);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Varian produk berhasil ditemukan',
+        response,
+      );
     } catch (error) {
       next(error);
     }
@@ -127,7 +144,7 @@ export class ProductVariantController {
       const response = await ProductVariantService.getAll(request);
       successResponse(
         res,
-        200,
+        StatusCodes.OK,
         'Daftar varian produk berhasil diambil',
         response,
       );
@@ -146,7 +163,7 @@ export class ProductVariantController {
         id: req.params.id,
       };
       await ProductVariantService.delete(request);
-      successResponse(res, 200, 'Varian produk berhasil dihapus');
+      successResponse(res, StatusCodes.OK, 'Varian produk berhasil dihapus');
     } catch (error) {
       next(error);
     }

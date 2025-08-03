@@ -5,12 +5,18 @@ import { db } from '../configs/database';
 import { appLogger } from '../configs/logger';
 import { MIDTRANS_SECRET } from '../constants';
 import { ResponseError } from '../error/ResponseError';
-import { TransactionRepository } from '../repositories';
+import {
+  TransactionRepository,
+  ProductVariantRepository,
+  TransactionItemRepository,
+} from '../repositories';
 import { TxStatus } from '@prisma/client';
+import { IGetTransactionResponse } from '../dtos';
+import { IoService } from '../services';
 
 export class TransactionUtils {
   static async updateTransactionStatus(
-    transaction: any,
+    transaction: IGetTransactionResponse,
     data: any,
     tx: any,
   ): Promise<void> {
@@ -39,6 +45,27 @@ export class TransactionUtils {
           },
           tx,
         );
+
+        for (const item of transaction.transactionItems) {
+          if (item.variant.stock >= item.quantity) {
+            await ProductVariantRepository.update(
+              item.variant.id,
+              {
+                stock: {
+                  decrement: item.quantity,
+                },
+              },
+              tx,
+            );
+            continue;
+          }
+          await TransactionItemRepository.updateById(item.id, {
+            isStockIssue: true,
+          });
+        }
+
+        IoService.emitNewTransaction();
+
         responseData = updatedTransaction;
       }
     } else if (transactionStatus == 'settlement') {
@@ -50,6 +77,27 @@ export class TransactionUtils {
         },
         tx,
       );
+
+      for (const item of transaction.transactionItems) {
+        if (item.variant.stock >= item.quantity) {
+          await ProductVariantRepository.update(
+            item.variant.id,
+            {
+              stock: {
+                decrement: item.quantity,
+              },
+            },
+            tx,
+          );
+          continue;
+        }
+        await TransactionItemRepository.updateById(item.id, {
+          isStockIssue: true,
+        });
+      }
+
+      IoService.emitNewTransaction();
+
       responseData = updatedTransaction;
     } else if (
       transactionStatus == 'cancel' ||

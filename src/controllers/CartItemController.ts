@@ -1,4 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
+import { StatusCodes } from 'http-status-codes';
+
 import {
   IAuthDTO,
   IAddToCartRequest,
@@ -23,7 +25,7 @@ export class CartItemController {
       const response = await CartItemService.addToCart(request);
       successResponse(
         res,
-        201,
+        StatusCodes.CREATED,
         'Item berhasil ditambahkan ke keranjang',
         response,
       );
@@ -44,7 +46,12 @@ export class CartItemController {
         quantity: req.body.quantity,
       };
       const response = await CartItemService.updateCartItem(request);
-      successResponse(res, 200, 'Item keranjang berhasil diperbarui', response);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Item keranjang berhasil diperbarui',
+        response,
+      );
     } catch (error) {
       next(error);
     }
