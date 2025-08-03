@@ -317,6 +317,7 @@ export class AuthService {
       email?: string;
       password?: string;
       profilePicture?: string;
+      phoneNumber?: string;
     } = {};
 
     if (validData.photoProfile) {
@@ -343,6 +344,10 @@ export class AuthService {
       }
 
       updateData.email = validData.email;
+    }
+
+    if (validData.phoneNumber) {
+      updateData.phoneNumber = validData.phoneNumber;
     }
 
     if (validData.password) {
