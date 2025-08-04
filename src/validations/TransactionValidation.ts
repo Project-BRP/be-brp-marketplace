@@ -32,6 +32,10 @@ export class TransactionValidation {
         invalid_type_error: 'Kode pos tidak valid',
       })
       .min(1, 'Kode pos tidak boleh kosong'),
+    method: z.enum(['DELIVERY', 'MANUAL'], {
+      required_error: 'Metode transaksi tidak boleh kosong',
+      invalid_type_error: 'Metode transaksi tidak valid',
+    }),
   });
 
   static readonly NOTIF: ZodType = z.object({
@@ -66,12 +70,6 @@ export class TransactionValidation {
   });
 
   static readonly GET_ALL: ZodType = z.object({
-    search: z
-      .string({
-        invalid_type_error: 'Pencarian tidak valid',
-      })
-      .nullish()
-      .optional(),
     page: z
       .number({
         invalid_type_error: 'Jumlah halaman tidak valid',
@@ -126,12 +124,8 @@ export class TransactionValidation {
         invalid_type_error: 'ID transaksi tidak valid',
       })
       .min(1, 'ID transaksi tidak boleh kosong'),
-    status: z
-      .string({
-        required_error: 'Status transaksi tidak boleh kosong',
-        invalid_type_error: 'Status transaksi tidak valid',
-      })
-      .min(1, 'Status transaksi tidak boleh kosong'),
+    deliveryStatus: z.string().optional(),
+    manualStatus: z.string().optional(),
   });
 
   static readonly CANCEL: ZodType = z.object({

@@ -13,7 +13,7 @@ import {
 } from '../dtos';
 import { TransactionService } from '../services';
 import { successResponse } from '../utils/api-response';
-import { TxStatus } from '@prisma/client';
+import { TxMethod, TxDeliveryStatus, TxManualStatus } from '@prisma/client';
 
 export class TransactionController {
   static async createTransaction(
@@ -28,6 +28,7 @@ export class TransactionController {
         province: req.body.province,
         postalCode: req.body.postalCode,
         shippingAddress: req.body.shippingAddress,
+        method: req.body.method as TxMethod,
       };
       const response = await TransactionService.createTransaction(request);
 
@@ -149,10 +150,17 @@ export class TransactionController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const request = {
+      const request: IUpdateTransactionRequest = {
         id: req.params.id,
-        status: req.body.status as TxStatus,
-      } as IUpdateTransactionRequest;
+        deliveryStatus:
+          req.body.deliveryStatus !== undefined
+            ? (req.body.deliveryStatus as TxDeliveryStatus)
+            : undefined,
+        manualStatus:
+          req.body.manualStatus !== undefined
+            ? (req.body.manualStatus as TxManualStatus)
+            : undefined,
+      };
 
       const response = await TransactionService.updateTransaction(request);
       successResponse(

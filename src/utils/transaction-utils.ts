@@ -10,7 +10,7 @@ import {
   ProductVariantRepository,
   TransactionItemRepository,
 } from '../repositories';
-import { TxStatus } from '@prisma/client';
+import { TxMethod, TxDeliveryStatus, TxManualStatus } from '@prisma/client';
 import { IGetTransactionResponse } from '../dtos';
 import { IoService } from '../services';
 
@@ -35,16 +35,31 @@ export class TransactionUtils {
     let transactionStatus = data.transactionStatus;
     let fraudStatus = data.fraudStatus;
 
+    const transactionMethod = transaction.method as TxMethod;
+
     if (transactionStatus == 'capture') {
       if (fraudStatus == 'accept') {
-        const updatedTransaction = await TransactionRepository.update(
-          transaction.id,
-          {
-            status: TxStatus.PAID,
-            paymentMethod: data.paymentType,
-          },
-          tx,
-        );
+        let updatedTransaction;
+
+        if (transactionMethod === TxMethod.DELIVERY) {
+          updatedTransaction = await TransactionRepository.update(
+            transaction.id,
+            {
+              deliveryStatus: TxDeliveryStatus.PAID,
+              paymentMethod: data.paymentType,
+            },
+            tx,
+          );
+        } else if (transactionMethod === TxMethod.MANUAL) {
+          updatedTransaction = await TransactionRepository.update(
+            transaction.id,
+            {
+              manualStatus: TxManualStatus.PAID,
+              paymentMethod: data.paymentType,
+            },
+            tx,
+          );
+        }
 
         for (const item of transaction.transactionItems) {
           if (item.variant.stock >= item.quantity) {
@@ -69,14 +84,27 @@ export class TransactionUtils {
         responseData = updatedTransaction;
       }
     } else if (transactionStatus == 'settlement') {
-      const updatedTransaction = await TransactionRepository.update(
-        transaction.id,
-        {
-          status: TxStatus.PAID,
-          paymentMethod: data.paymentType,
-        },
-        tx,
-      );
+      let updatedTransaction;
+
+      if (transactionMethod === TxMethod.DELIVERY) {
+        updatedTransaction = await TransactionRepository.update(
+          transaction.id,
+          {
+            deliveryStatus: TxDeliveryStatus.PAID,
+            paymentMethod: data.paymentType,
+          },
+          tx,
+        );
+      } else if (transactionMethod === TxMethod.MANUAL) {
+        updatedTransaction = await TransactionRepository.update(
+          transaction.id,
+          {
+            manualStatus: TxManualStatus.PAID,
+            paymentMethod: data.paymentType,
+          },
+          tx,
+        );
+      }
 
       for (const item of transaction.transactionItems) {
         if (item.variant.stock >= item.quantity) {
@@ -104,22 +132,52 @@ export class TransactionUtils {
       transactionStatus == 'deny' ||
       transactionStatus == 'expire'
     ) {
-      const updatedTransaction = await TransactionRepository.update(
-        transaction.id,
-        {
-          status: TxStatus.CANCELLED,
-        },
-        tx,
-      );
+      let updatedTransaction;
+
+      if (transactionMethod === TxMethod.DELIVERY) {
+        updatedTransaction = await TransactionRepository.update(
+          transaction.id,
+          {
+            deliveryStatus: TxDeliveryStatus.CANCELLED,
+            paymentMethod: data.paymentType,
+            cancelReason: data.cancelReason || 'Transaction cancelled',
+          },
+          tx,
+        );
+      } else if (transactionMethod === TxMethod.MANUAL) {
+        updatedTransaction = await TransactionRepository.update(
+          transaction.id,
+          {
+            manualStatus: TxManualStatus.CANCELLED,
+            paymentMethod: data.paymentType,
+            cancelReason: data.cancelReason || 'Transaction cancelled',
+          },
+          tx,
+        );
+      }
+      
       responseData = updatedTransaction;
     } else if (transactionStatus == 'pending') {
-      const updatedTransaction = await TransactionRepository.update(
-        transaction.id,
-        {
-          status: TxStatus.UNPAID,
-        },
-        tx,
-      );
+      let updatedTransaction;
+      if (transactionMethod === TxMethod.DELIVERY) {
+        updatedTransaction = await TransactionRepository.update(
+          transaction.id,
+          {
+            deliveryStatus: TxDeliveryStatus.UNPAID,
+            paymentMethod: data.paymentType,
+          },
+          tx,
+        );
+      } else if (transactionMethod === TxMethod.MANUAL) {
+        updatedTransaction = await TransactionRepository.update(
+          transaction.id,
+          {
+            manualStatus: TxManualStatus.UNPAID,
+            paymentMethod: data.paymentType,
+          },
+          tx,
+        );
+      }
       responseData = updatedTransaction;
     }
 

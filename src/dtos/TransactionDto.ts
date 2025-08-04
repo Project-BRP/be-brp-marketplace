@@ -1,4 +1,4 @@
-import { TxStatus } from '@prisma/client';
+import { TxDeliveryStatus, TxManualStatus, TxMethod } from '@prisma/client';
 
 export interface ICreateTransactionRequest {
   userId: string;
@@ -6,6 +6,7 @@ export interface ICreateTransactionRequest {
   province: string;
   postalCode: string;
   shippingAddress: string;
+  method: TxMethod;
 }
 
 export interface ICreateTransactionResponse {
@@ -14,7 +15,9 @@ export interface ICreateTransactionResponse {
   userName: string;
   userEmail: string;
   userPhoneNumber: string;
-  status: TxStatus;
+  method: TxMethod;
+  deliveryStatus?: TxDeliveryStatus;
+  manualStatus?: TxManualStatus;
   cleanPrice: number;
   priceWithPPN: number;
   totalPrice: number;
@@ -25,8 +28,10 @@ export interface ICreateTransactionResponse {
   province: string;
   postalCode: string;
   shippingAddress: string;
-  shippingCost: number;
-  paymentMethod: string;
+  shippingCost?: number;
+  paymentMethod?: string;
+  isRefundFailed?: boolean;
+  cancelReason?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -43,7 +48,9 @@ export interface IGetTransactionResponse {
   userName: string;
   userEmail: string;
   userPhoneNumber: string;
-  status: TxStatus;
+  method: TxMethod;
+  deliveryStatus?: TxDeliveryStatus;
+  manualStatus?: TxManualStatus;
   cleanPrice: number;
   priceWithPPN: number;
   totalPrice: number;
@@ -75,6 +82,8 @@ export interface IGetTransactionResponse {
       stock: number;
     };
   }[];
+  isRefundFailed?: boolean;
+  cancelReason?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -106,7 +115,8 @@ export interface IGetTransactionByUserResponse {
 
 export interface IUpdateTransactionRequest {
   id: string;
-  status: TxStatus;
+  deliveryStatus?: TxDeliveryStatus;
+  manualStatus?: TxManualStatus;
 }
 
 export interface IUpdateTransactionResponse {
@@ -115,7 +125,9 @@ export interface IUpdateTransactionResponse {
   userName: string;
   userEmail: string;
   userPhoneNumber: string;
-  status: TxStatus;
+  method: TxMethod;
+  deliveryStatus?: TxDeliveryStatus;
+  manualStatus?: TxManualStatus;
   cleanPrice: number;
   priceWithPPN: number;
   totalPrice: number;
@@ -125,6 +137,8 @@ export interface IUpdateTransactionResponse {
   shippingAddress?: string;
   shippingCost?: number;
   paymentMethod?: string;
+  isRefunndFailed?: boolean;
+  cancelReason?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -142,7 +156,9 @@ export interface ICancelTransactionResponse {
   userName: string;
   userEmail: string;
   userPhoneNumber: string;
-  status: TxStatus;
+  method: TxMethod;
+  deliveryStatus?: TxDeliveryStatus;
+  manualStatus?: TxManualStatus;
   cleanPrice: number;
   priceWithPPN: number;
   totalPrice: number;
@@ -152,12 +168,15 @@ export interface ICancelTransactionResponse {
   shippingAddress?: string;
   shippingCost?: number;
   paymentMethod?: string;
+  isRefundFailed?: boolean;
+  cancelReason?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export interface IGetTxStatusListResponse {
-  statusList: TxStatus[];
+  deliveryStatusList: TxDeliveryStatus[];
+  manualStatusList: TxManualStatus[];
 }
 
 export interface ITransactionNotifRequest {

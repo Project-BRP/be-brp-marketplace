@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import { v4 as uuid } from 'uuid';
-import { TxStatus } from '@prisma/client';
+import { TxDeliveryStatus, TxManualStatus, TxMethod } from '@prisma/client';
 
 import { db as database } from '../configs/database';
 import type {
@@ -75,7 +75,18 @@ export class TransactionService {
       0,
     );
 
-    const shippingCost = 20000;
+    let shippingCost = 0;
+
+    if (validData.method === TxMethod.DELIVERY) {
+      if (!validData.shippingAddress) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Alamat pengiriman tidak boleh kosong',
+        );
+      }
+      shippingCost = 20000;
+    }
+
     const transactionId = `TX-${uuid()}`;
     const PPN = (PPNPercentage.percentage / 100) * totalAmount;
     const grossAmount = totalAmount + PPN + shippingCost;
@@ -116,6 +127,8 @@ export class TransactionService {
       shippingCost,
     );
 
+    const isDelivery = validData.method === TxMethod.DELIVERY;
+
     const db = database;
 
     try {
@@ -134,7 +147,9 @@ export class TransactionService {
             city: validData.city,
             province: validData.province,
             postalCode: validData.postalCode,
-            shippingCost,
+            method: validData.method,
+            deliveryStatus: isDelivery ? TxDeliveryStatus.UNPAID : null,
+            manualStatus: isDelivery ? null : TxManualStatus.UNPAID,
             shippingAddress: validData.shippingAddress,
             snapUrl: payment.redirect_url,
             snapToken: payment.token,
@@ -179,7 +194,9 @@ export class TransactionService {
         userName: transaction.userName,
         userEmail: transaction.userEmail,
         userPhoneNumber: transaction.userPhoneNumber,
-        status: transaction.status,
+        method: transaction.method,
+        deliveryStatus: transaction.deliveryStatus,
+        manualStatus: transaction.manualStatus,
         cleanPrice: transaction.cleanPrice,
         priceWithPPN: transaction.priceWithPPN,
         totalPrice: transaction.totalPrice,
@@ -253,7 +270,9 @@ export class TransactionService {
       userName: transaction.userName,
       userEmail: transaction.userEmail,
       userPhoneNumber: transaction.userPhoneNumber,
-      status: transaction.status,
+      method: transaction.method,
+      deliveryStatus: transaction.deliveryStatus,
+      manualStatus: transaction.manualStatus,
       cleanPrice: transaction.cleanPrice,
       priceWithPPN: transaction.priceWithPPN,
       totalPrice: transaction.totalPrice,
@@ -263,6 +282,8 @@ export class TransactionService {
       shippingAddress: transaction.shippingAddress,
       shippingCost: transaction.shippingCost,
       paymentMethod: transaction.paymentMethod,
+      isRefundFailed: transaction.isRefundFailed,
+      cancelReason: transaction.cancelReason,
       createdAt: transaction.createdAt,
       updatedAt: transaction.updatedAt,
       transactionItems: transaction.transactionItems.map(item => ({
@@ -313,7 +334,9 @@ export class TransactionService {
           userName: transaction.userName,
           userEmail: transaction.userEmail,
           userPhoneNumber: transaction.userPhoneNumber,
-          status: transaction.status,
+          method: transaction.method,
+          deliveryStatus: transaction.deliveryStatus,
+          manualStatus: transaction.manualStatus,
           cleanPrice: transaction.cleanPrice,
           priceWithPPN: transaction.priceWithPPN,
           totalPrice: transaction.totalPrice,
@@ -323,6 +346,8 @@ export class TransactionService {
           shippingAddress: transaction.shippingAddress,
           shippingCost: transaction.shippingCost,
           paymentMethod: transaction.paymentMethod,
+          isRefundFailed: transaction.isRefundFailed,
+          cancelReason: transaction.cancelReason,
           createdAt: transaction.createdAt,
           updatedAt: transaction.updatedAt,
           transactionItems: transaction.transactionItems.map(item => ({
@@ -382,7 +407,9 @@ export class TransactionService {
         userName: transaction.userName,
         userEmail: transaction.userEmail,
         userPhoneNumber: transaction.userPhoneNumber,
-        status: transaction.status,
+        method: transaction.method,
+        deliveryStatus: transaction.deliveryStatus,
+        manualStatus: transaction.manualStatus,
         cleanPrice: transaction.cleanPrice,
         priceWithPPN: transaction.priceWithPPN,
         totalPrice: transaction.totalPrice,
@@ -392,6 +419,8 @@ export class TransactionService {
         shippingAddress: transaction.shippingAddress,
         shippingCost: transaction.shippingCost,
         paymentMethod: transaction.paymentMethod,
+        isRefundFailed: transaction.isRefundFailed,
+        cancelReason: transaction.cancelReason,
         createdAt: transaction.createdAt,
         updatedAt: transaction.updatedAt,
         transactionItems: transaction.transactionItems.map(item => ({
@@ -455,7 +484,9 @@ export class TransactionService {
           userName: transaction.userName,
           userEmail: transaction.userEmail,
           userPhoneNumber: transaction.userPhoneNumber,
-          status: transaction.status,
+          method: transaction.method,
+          deliveryStatus: transaction.deliveryStatus,
+          manualStatus: transaction.manualStatus,
           cleanPrice: transaction.cleanPrice,
           priceWithPPN: transaction.priceWithPPN,
           totalPrice: transaction.totalPrice,
@@ -465,6 +496,8 @@ export class TransactionService {
           shippingAddress: transaction.shippingAddress,
           shippingCost: transaction.shippingCost,
           paymentMethod: transaction.paymentMethod,
+          isRefundFailed: transaction.isRefundFailed,
+          cancelReason: transaction.cancelReason,
           createdAt: transaction.createdAt,
           updatedAt: transaction.updatedAt,
           transactionItems: transaction.transactionItems.map(item => ({
@@ -509,12 +542,11 @@ export class TransactionService {
       throw new ResponseError(StatusCodes.BAD_REQUEST, 'Halaman tidak valid');
     }
 
-    const transactions =
-      await TransactionRepository.findByUserIdWithPagination(
-        validData.userId,
-        skip,
-        take,
-      );
+    const transactions = await TransactionRepository.findByUserIdWithPagination(
+      validData.userId,
+      skip,
+      take,
+    );
 
     const totalPage = Math.ceil(totalTransactions / take);
     const currentPage = Math.ceil(skip / take) + 1;
@@ -528,7 +560,9 @@ export class TransactionService {
         userName: transaction.userName,
         userEmail: transaction.userEmail,
         userPhoneNumber: transaction.userPhoneNumber,
-        status: transaction.status,
+        method: transaction.method,
+        deliveryStatus: transaction.deliveryStatus,
+        manualStatus: transaction.manualStatus,
         cleanPrice: transaction.cleanPrice,
         priceWithPPN: transaction.priceWithPPN,
         totalPrice: transaction.totalPrice,
@@ -538,6 +572,8 @@ export class TransactionService {
         shippingAddress: transaction.shippingAddress,
         shippingCost: transaction.shippingCost,
         paymentMethod: transaction.paymentMethod,
+        isRefundFailed: transaction.isRefundFailed,
+        cancelReason: transaction.cancelReason,
         createdAt: transaction.createdAt,
         updatedAt: transaction.updatedAt,
         transactionItems: transaction.transactionItems.map(item => ({
@@ -579,110 +615,246 @@ export class TransactionService {
       );
     }
 
-    const currentStatus = transaction.status;
-    const newStatus = validData.status;
+    const txMethod = transaction.method;
 
-    const statusOrder = {
-      [TxStatus.UNPAID]: 0,
-      [TxStatus.PAID]: 1,
-      [TxStatus.SHIPPED]: 2,
-      [TxStatus.DELIVERED]: 3,
-      [TxStatus.CANCELLED]: 4,
-    };
-
-    if (!(newStatus in statusOrder)) {
+    if (validData.manualStatus && validData.deliveryStatus) {
       throw new ResponseError(
         StatusCodes.BAD_REQUEST,
-        'Status transaksi tidak valid',
+        'Hanya satu jenis status yang boleh diubah dalam satu waktu',
       );
     }
 
-    if (currentStatus === TxStatus.CANCELLED) {
-      throw new ResponseError(
-        StatusCodes.BAD_REQUEST,
-        'Transaksi yang sudah dibatalkan tidak dapat diubah',
-      );
-    }
+    const db = database;
 
-    if (statusOrder[newStatus] < statusOrder[currentStatus]) {
-      throw new ResponseError(
-        StatusCodes.BAD_REQUEST,
-        'Status tidak boleh mundur',
-      );
-    }
-
-    if (currentStatus === TxStatus.DELIVERED) {
-      throw new ResponseError(
-        StatusCodes.BAD_REQUEST,
-        'Transaksi yang sudah selesai tidak dapat diubah',
-      );
-    }
-
-    if (currentStatus === newStatus) {
-      throw new ResponseError(
-        StatusCodes.BAD_REQUEST,
-        'Status transaksi tidak berubah',
-      );
-    }
-
-    if (newStatus === TxStatus.PAID) {
-      const midtransStatus = await PaymentUtils.checkTransactionStatus(
-        validData.id,
-      );
-      if (
-        midtransStatus.transaction_status !== 'settlement' &&
-        midtransStatus.transaction_status !== 'capture'
-      ) {
+    if (txMethod === TxMethod.DELIVERY) {
+      if (!validData.deliveryStatus) {
         throw new ResponseError(
           StatusCodes.BAD_REQUEST,
-          'Status pembayaran di Midtrans belum valid untuk ditandai sebagai PAID',
+          'Status pengiriman tidak boleh kosong',
         );
       }
-      const db = database;
-
-      try {
-        const updatedTransaction = await db.$transaction(async tx => {
-          const transactionToUpdate = await TransactionRepository.update(
-            validData.id,
-            { status: newStatus },
-            tx,
-          );
-
-          for (const item of transactionToUpdate.transactionItems) {
-            if (item.variant.stock >= item.quantity) {
-              await ProductVariantRepository.update(
-                item.variant.id,
-                {
-                  stock: {
-                    decrement: item.quantity,
-                  },
-                },
-                tx,
-              );
-              continue;
-            }
-            await TransactionItemRepository.updateById(item.id, {
-              isStockIssue: true,
-            });
-          }
-
-          return transactionToUpdate;
-        });
-
-        IoService.emitTransaction();
-        return updatedTransaction;
-      } catch (error) {
-        throw error;
+      if (validData.manualStatus) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Status manual tidak boleh diisi untuk transaksi dengan metode pengiriman',
+        );
       }
+
+      const statusOrder = {
+        [TxDeliveryStatus.UNPAID]: 0,
+        [TxDeliveryStatus.PAID]: 1,
+        [TxDeliveryStatus.SHIPPED]: 2,
+        [TxDeliveryStatus.DELIVERED]: 3,
+        [TxDeliveryStatus.CANCELLED]: 4,
+      };
+
+      const current = transaction.deliveryStatus;
+      const next = validData.deliveryStatus;
+
+      if (!(next in statusOrder)) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Status pengiriman tidak valid',
+        );
+      }
+
+      if (current === TxDeliveryStatus.CANCELLED) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Transaksi sudah dibatalkan',
+        );
+      }
+
+      if (statusOrder[next] < statusOrder[current]) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Status tidak boleh mundur',
+        );
+      }
+
+      if (next === current) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Status tidak berubah',
+        );
+      }
+
+      if (next === TxDeliveryStatus.PAID) {
+        const midtransStatus = await PaymentUtils.checkTransactionStatus(
+          validData.id,
+        );
+        if (
+          !['settlement', 'capture'].includes(midtransStatus.transaction_status)
+        ) {
+          throw new ResponseError(
+            StatusCodes.BAD_REQUEST,
+            'Status pembayaran di Midtrans belum valid',
+          );
+        }
+
+        try {
+          const updated = await db.$transaction(async tx => {
+            const updatedTransaction = await TransactionRepository.update(
+              validData.id,
+              {
+                deliveryStatus: next,
+              },
+              tx,
+            );
+
+            for (const item of updatedTransaction.transactionItems) {
+              if (item.variant.stock >= item.quantity) {
+                await ProductVariantRepository.update(
+                  item.variant.id,
+                  {
+                    stock: { decrement: item.quantity },
+                  },
+                  tx,
+                );
+              } else {
+                await TransactionItemRepository.updateById(
+                  item.id,
+                  {
+                    isStockIssue: true,
+                  },
+                  tx,
+                );
+              }
+            }
+
+            return updatedTransaction;
+          });
+
+          IoService.emitTransaction();
+          return updated;
+        } catch (error) {
+          throw error;
+        }
+      }
+
+      const updated = await TransactionRepository.update(validData.id, {
+        deliveryStatus: next,
+      });
+
+      IoService.emitTransaction();
+      return updated;
+    } else if (txMethod === TxMethod.MANUAL) {
+      if (!validData.manualStatus) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Status manual tidak boleh kosong',
+        );
+      }
+      if (validData.deliveryStatus) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Status pengiriman tidak boleh diisi untuk transaksi manual',
+        );
+      }
+
+      const statusOrder = {
+        [TxManualStatus.UNPAID]: 0,
+        [TxManualStatus.PAID]: 1,
+        [TxManualStatus.COMPLETE]: 2,
+        [TxManualStatus.CANCELLED]: 3,
+      };
+
+      const current = transaction.manualStatus;
+      const next = validData.manualStatus;
+
+      if (!(next in statusOrder)) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Status manual tidak valid',
+        );
+      }
+
+      if (current === TxManualStatus.CANCELLED) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Transaksi sudah dibatalkan',
+        );
+      }
+
+      if (statusOrder[next] < statusOrder[current]) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Status tidak boleh mundur',
+        );
+      }
+
+      if (next === current) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Status tidak berubah',
+        );
+      }
+
+      if (next === TxManualStatus.PAID) {
+        const midtransStatus = await PaymentUtils.checkTransactionStatus(
+          validData.id,
+        );
+        if (
+          !['settlement', 'capture'].includes(midtransStatus.transaction_status)
+        ) {
+          throw new ResponseError(
+            StatusCodes.BAD_REQUEST,
+            'Status pembayaran di Midtrans belum valid',
+          );
+        }
+
+        try {
+          const updated = await db.$transaction(async tx => {
+            const updatedTransaction = await TransactionRepository.update(
+              validData.id,
+              {
+                manualStatus: next,
+              },
+              tx,
+            );
+
+            for (const item of updatedTransaction.transactionItems) {
+              if (item.variant.stock >= item.quantity) {
+                await ProductVariantRepository.update(
+                  item.variant.id,
+                  {
+                    stock: { decrement: item.quantity },
+                  },
+                  tx,
+                );
+              } else {
+                await TransactionItemRepository.updateById(
+                  item.id,
+                  {
+                    isStockIssue: true,
+                  },
+                  tx,
+                );
+              }
+            }
+
+            return updatedTransaction;
+          });
+
+          IoService.emitTransaction();
+          return updated;
+        } catch (error) {
+          throw error;
+        }
+      }
+
+      const updated = await TransactionRepository.update(validData.id, {
+        manualStatus: next,
+      });
+
+      IoService.emitTransaction();
+      return updated;
     }
 
-    const updatedTransaction = await TransactionRepository.update(
-      validData.id,
-      { status: newStatus },
+    throw new ResponseError(
+      StatusCodes.BAD_REQUEST,
+      'Metode transaksi tidak dikenali',
     );
-
-    IoService.emitTransaction();
-    return updatedTransaction;
   }
 
   static async cancelTransaction(
@@ -698,6 +870,8 @@ export class TransactionService {
       );
     }
 
+    const txMethod = transaction.method;
+
     if (
       transaction.userId !== validData.userId &&
       validData.userRole !== Role.ADMIN
@@ -708,45 +882,55 @@ export class TransactionService {
       );
     }
 
-    if (transaction.status === TxStatus.CANCELLED) {
+    if (txMethod === TxMethod.DELIVERY) {
+      if (
+        transaction.deliveryStatus === TxDeliveryStatus.CANCELLED ||
+        transaction.deliveryStatus === TxDeliveryStatus.SHIPPED ||
+        transaction.deliveryStatus === TxDeliveryStatus.DELIVERED
+      ) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Transaksi tidak dapat dibatalkan',
+        );
+      }
+    } else if (txMethod === TxMethod.MANUAL) {
+      if (
+        transaction.manualStatus === TxManualStatus.CANCELLED ||
+        transaction.manualStatus === TxManualStatus.COMPLETE
+      ) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Transaksi tidak dapat dibatalkan',
+        );
+      }
+    } else {
       throw new ResponseError(
         StatusCodes.BAD_REQUEST,
-        'Transaksi sudah dibatalkan',
-      );
-    }
-
-    if (transaction.status === TxStatus.SHIPPED) {
-      throw new ResponseError(
-        StatusCodes.BAD_REQUEST,
-        'Transaksi yang sudah dikirim tidak dapat dibatalkan',
-      );
-    }
-
-    if (transaction.status === TxStatus.DELIVERED) {
-      throw new ResponseError(
-        StatusCodes.BAD_REQUEST,
-        'Transaksi yang sudah selesai tidak dapat dibatalkan',
+        'Metode transaksi tidak dikenali',
       );
     }
 
     const midtransStatus = await PaymentUtils.checkTransactionStatus(
       validData.id,
     );
-
-    const isPaid =
-      midtransStatus.transaction_status === 'settlement' ||
-      midtransStatus.transaction_status === 'capture';
+    const isPaid = ['settlement', 'capture'].includes(
+      midtransStatus.transaction_status,
+    );
 
     const db = database;
 
     try {
       const updatedTransaction = await db.$transaction(async tx => {
-        const cancelledTransaction = await TransactionRepository.update(
+        const updatePayload = {
+          cancelReason: validData.cancelReason,
+          ...(txMethod === TxMethod.DELIVERY
+            ? { deliveryStatus: TxDeliveryStatus.CANCELLED }
+            : { manualStatus: TxManualStatus.CANCELLED }),
+        };
+
+        let cancelledTransaction = await TransactionRepository.update(
           validData.id,
-          {
-            status: TxStatus.CANCELLED,
-            cancelReason: validData.cancelReason,
-          },
+          updatePayload,
           tx,
         );
 
@@ -755,9 +939,7 @@ export class TransactionService {
             await ProductVariantRepository.update(
               item.variant.id,
               {
-                stock: {
-                  increment: item.quantity,
-                },
+                stock: { increment: item.quantity },
               },
               tx,
             );
@@ -773,9 +955,12 @@ export class TransactionService {
           );
 
           if (refundResult.status_code !== '200') {
-            throw new ResponseError(
-              StatusCodes.INTERNAL_SERVER_ERROR,
-              'Gagal melakukan refund',
+            cancelledTransaction = await TransactionRepository.update(
+              validData.id,
+              {
+                isRefundFailed: true,
+              },
+              tx,
             );
           }
         }
@@ -790,14 +975,12 @@ export class TransactionService {
   }
 
   static async getTxStatusList(): Promise<IGetTxStatusListResponse> {
-    let statusList: TxStatus[];
+    const deliveryStatusList = Object.values(TxDeliveryStatus);
+    const manualStatusList = Object.values(TxManualStatus);
 
-    for (const status in TxStatus) {
-      if (Object.prototype.hasOwnProperty.call(TxStatus, status)) {
-        statusList = Object.values(TxStatus);
-      }
-    }
-
-    return { statusList };
+    return {
+      deliveryStatusList,
+      manualStatusList,
+    };
   }
 }
