@@ -179,6 +179,10 @@ export interface IGetTxStatusListResponse {
   manualStatusList: TxManualStatus[];
 }
 
+export interface IGetTxMethodListResponse {
+  txMethodList: TxMethod[];
+}
+
 export interface ITransactionNotifRequest {
   transactionId: string;
   transactionStatus: string;

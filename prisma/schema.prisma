@@ -34,6 +34,7 @@ enum TxDeliveryStatus {
 enum TxManualStatus {
   UNPAID
   PAID
+  PROCESSING
   COMPLETE
   CANCELLED
 }

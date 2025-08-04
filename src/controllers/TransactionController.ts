@@ -215,4 +215,22 @@ export class TransactionController {
       next(error);
     }
   }
+
+  static async getTxMethodList(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const response = await TransactionService.getTxMethodList();
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Daftar metode transaksi berhasil diambil',
+        response,
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
 }

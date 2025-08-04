@@ -19,6 +19,7 @@ import type {
   ICancelTransactionRequest,
   ICancelTransactionResponse,
   IGetTxStatusListResponse,
+  IGetTxMethodListResponse,
 } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
 import {
@@ -688,7 +689,7 @@ export class TransactionService {
         ) {
           throw new ResponseError(
             StatusCodes.BAD_REQUEST,
-            'Status pembayaran di Midtrans belum valid',
+            'Status pembayaran belum valid',
           );
         }
 
@@ -755,8 +756,9 @@ export class TransactionService {
       const statusOrder = {
         [TxManualStatus.UNPAID]: 0,
         [TxManualStatus.PAID]: 1,
-        [TxManualStatus.COMPLETE]: 2,
-        [TxManualStatus.CANCELLED]: 3,
+        [TxManualStatus.PROCESSING]: 2,
+        [TxManualStatus.COMPLETE]: 3,
+        [TxManualStatus.CANCELLED]: 4,
       };
 
       const current = transaction.manualStatus;
@@ -799,7 +801,7 @@ export class TransactionService {
         ) {
           throw new ResponseError(
             StatusCodes.BAD_REQUEST,
-            'Status pembayaran di Midtrans belum valid',
+            'Status pembayaran belum valid',
           );
         }
 
@@ -895,6 +897,7 @@ export class TransactionService {
       }
     } else if (txMethod === TxMethod.MANUAL) {
       if (
+        transaction.manualStatus === TxManualStatus.PROCESSING ||
         transaction.manualStatus === TxManualStatus.CANCELLED ||
         transaction.manualStatus === TxManualStatus.COMPLETE
       ) {
@@ -982,5 +985,10 @@ export class TransactionService {
       deliveryStatusList,
       manualStatusList,
     };
+  } 
+
+  static async getTxMethodList(): Promise<IGetTxMethodListResponse> {
+    const txMethodList = Object.values(TxMethod);
+    return { txMethodList };
   }
 }

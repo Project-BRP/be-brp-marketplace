@@ -21,6 +21,11 @@ transactionRoute.get(
   TransactionController.getTxStatusList,
 );
 transactionRoute.get(
+  '/method-list',
+  authMiddleware,
+  TransactionController.getTxMethodList,
+);
+transactionRoute.get(
   '/',
   authMiddleware,
   roleMiddleware([Role.ADMIN]),
