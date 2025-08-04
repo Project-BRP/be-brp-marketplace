@@ -13,6 +13,7 @@ import {
 import { TxMethod, TxDeliveryStatus, TxManualStatus } from '@prisma/client';
 import { IGetTransactionResponse } from '../dtos';
 import { IoService } from '../services';
+import { EmailUtils } from './email-utils';
 
 export class TransactionUtils {
   static async updateTransactionStatus(
@@ -79,6 +80,8 @@ export class TransactionUtils {
           });
         }
 
+        await EmailUtils.sendInvoiceEmail(updatedTransaction);
+
         IoService.emitNewTransaction();
 
         responseData = updatedTransaction;
@@ -124,6 +127,8 @@ export class TransactionUtils {
         });
       }
 
+      await EmailUtils.sendInvoiceEmail(updatedTransaction);
+
       IoService.emitNewTransaction();
 
       responseData = updatedTransaction;
@@ -155,7 +160,7 @@ export class TransactionUtils {
           tx,
         );
       }
-      
+
       responseData = updatedTransaction;
     } else if (transactionStatus == 'pending') {
       let updatedTransaction;

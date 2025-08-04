@@ -16,6 +16,8 @@ COPY ./src/utils/reset-password-template.html ./dist/utils/reset-password-templa
 
 COPY ./src/utils/email-verification.html ./dist/utils/email-verification.html
 
+COPY ./src/utils/invoice-email-template.html ./dist/utils/invoice-email-template.html
+
 EXPOSE 3001 
 
 CMD ["npm", "run", "start:prod"]

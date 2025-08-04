@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import path from 'path';
 import { v4 as uuid } from 'uuid';
 
-import { JWT_CONFIG, SMPTP_CONSTANTS } from '../constants';
+import { JWT_CONFIG } from '../constants';
 import type {
   IRegisterRequest,
   IVerifyEmailRequest,
@@ -21,11 +21,9 @@ import type {
   IForgotPasswordRequest,
   ICheckResetTokenRequest,
   IResetPasswordRequest,
-  IEmailDto,
   IEmailVerificationPayload,
 } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
-import { SendToKafka } from '../kafka';
 import {
   UserRepository,
   ResetTokenRepository,
@@ -36,21 +34,19 @@ import { JwtToken, PasswordUtils, Validator } from '../utils';
 import { CLIENT_URL_CURRENT } from '../utils/client-url-utils';
 import { AuthValidation } from '../validations';
 import { db } from '../configs/database';
+import { EmailUtils } from '../utils/email-utils';
+
 export class AuthService {
   static async register(request: IRegisterRequest) {
     const validData = Validator.validate(AuthValidation.REGISTER, request);
 
     const user = await UserRepository.findByEmail(validData.email);
-
     if (user) {
       throw new ResponseError(StatusCodes.BAD_REQUEST, 'Email sudah ada');
     }
 
     const hashedPassword = await PasswordUtils.hashPassword(validData.password);
-
-    const randomString = uuid();
-
-    const userId = 'USR-' + randomString;
+    const userId = 'USR-' + uuid();
 
     const payload: IEmailVerificationPayload = {
       userId,
@@ -62,38 +58,9 @@ export class AuthService {
 
     const emailVerificationToken =
       JwtToken.generateEmailVerificationToken(payload);
-
     const verificationLink = `${CLIENT_URL_CURRENT}/sign-up/${emailVerificationToken}`;
 
-    const templatePath = path.join(
-      __dirname,
-      '../utils/email-verification.html',
-    );
-
-    let emailHtml = fs.readFileSync(templatePath, 'utf-8');
-
-    emailHtml = emailHtml.replace('{{verification_link}}', verificationLink);
-
-    const serverDomain = process.env.SERVER_DOMAIN;
-
-    const uploadPath = process.env.UPLOADS_PATH;
-
-    const logoName = fs.readdirSync(
-      path.join(__dirname, '..', '..', uploadPath, 'logo'),
-    )[0];
-
-    const logoUrl = `${serverDomain}/${uploadPath}/logo/${logoName}`;
-
-    emailHtml = emailHtml.replace('{{logo_url}}', logoUrl);
-
-    const emailData: IEmailDto = {
-      from: SMPTP_CONSTANTS.SMTP_EMAIL,
-      to: validData.email,
-      subject: 'Verifikasi Email',
-      html: emailHtml,
-    };
-
-    await SendToKafka.sendEmailMessage(emailData);
+    await EmailUtils.sendVerificationEmail(payload, verificationLink);
 
     await VerifyEmailRepository.set(
       validData.email,
@@ -113,8 +80,6 @@ export class AuthService {
 
       const result = await db.$transaction(async tx => {
         const user = await UserRepository.findById(decoded.userId, tx);
-
-        // Cek jika user sudah ada -> berarti email sudah diverifikasi
         if (user) {
           throw new ResponseError(
             StatusCodes.BAD_REQUEST,
@@ -122,13 +87,11 @@ export class AuthService {
           );
         }
 
-        // Ambil token dari Redis dan validasi
         const validEmailToken = await VerifyEmailRepository.get(decoded.email);
         if (!validEmailToken || validEmailToken !== token) {
           throw new ResponseError(StatusCodes.UNAUTHORIZED, 'Unauthorized!');
         }
 
-        // Buat user baru
         const newUser = await UserRepository.create(
           {
             id: decoded.userId,
@@ -140,7 +103,6 @@ export class AuthService {
           tx,
         );
 
-        // Buat cart untuk user
         await CartRepository.create(
           {
             id: 'CRT-' + uuid(),
@@ -151,11 +113,9 @@ export class AuthService {
           tx,
         );
 
-        // Buat access token
         const payload = { userId: newUser.id };
         const accessToken = JwtToken.generateAccessToken(payload);
 
-        // Hapus token dari Redis
         await VerifyEmailRepository.delete(decoded.email);
 
         return { accessToken };
@@ -163,15 +123,11 @@ export class AuthService {
 
       return result;
     } catch (error) {
-      if (error instanceof ResponseError) {
-        throw error;
-      }
-
+      if (error instanceof ResponseError) throw error;
       if (error instanceof jwt.JsonWebTokenError) {
         throw new ResponseError(StatusCodes.UNAUTHORIZED, 'Unauthorized!');
       }
 
-      console.error('verifyEmail error:', error);
       throw new ResponseError(
         StatusCodes.INTERNAL_SERVER_ERROR,
         'Internal Server Error',
@@ -183,7 +139,6 @@ export class AuthService {
     const validData = Validator.validate(AuthValidation.LOGIN, request);
 
     const user = await UserRepository.findByEmail(validData.email);
-
     if (!user) {
       throw new ResponseError(
         StatusCodes.UNAUTHORIZED,
@@ -203,20 +158,14 @@ export class AuthService {
       );
     }
 
-    const payload = {
-      userId: user.id,
-    };
-
+    const payload = { userId: user.id };
     const accessToken = JwtToken.generateAccessToken(payload);
 
-    return {
-      accessToken,
-    };
+    return { accessToken };
   }
 
   static async getUser(request: IGetUserRequest): Promise<IGetUserResponse> {
     const user = await UserRepository.findById(request.userId);
-
     if (!user) {
       throw new ResponseError(StatusCodes.NOT_FOUND, 'User tidak ditemukan');
     }
@@ -237,18 +186,16 @@ export class AuthService {
     request: IGetAllUserRequest,
   ): Promise<IGetAllUserResponse> {
     const validData = Validator.validate(AuthValidation.GET_ALL_USER, request);
-
     const take = validData.limit;
     const skip = (validData.page - 1) * take;
     const search = validData.search;
 
     if (!take || !validData.page) {
       const users = await UserRepository.findAll(search);
-
       return {
         totalPage: 1,
         currentPage: 1,
-        users: users.map((user: any) => ({
+        users: users.map(user => ({
           userId: user.id,
           name: user.name,
           email: user.email,
@@ -262,7 +209,6 @@ export class AuthService {
     }
 
     const totalUsers = await UserRepository.count(search);
-
     if (totalUsers === 0) {
       return {
         totalPage: 1,
@@ -280,15 +226,13 @@ export class AuthService {
       take,
       search,
     );
-
     const totalPage = Math.ceil(totalUsers / take);
-
     const currentPage = Math.ceil(skip / take) + 1;
 
     return {
       totalPage,
       currentPage,
-      users: users.map((user: any) => ({
+      users: users.map(user => ({
         userId: user.id,
         name: user.name,
         email: user.email,
@@ -307,7 +251,6 @@ export class AuthService {
     const validData = Validator.validate(AuthValidation.UPDATE, request);
 
     const user = await UserRepository.findById(request.userId);
-
     if (!user) {
       throw new ResponseError(StatusCodes.NOT_FOUND, 'User tidak ditemukan');
     }
@@ -325,30 +268,21 @@ export class AuthService {
       if (user.profilePicture) {
         const assetDir = process.env.UPLOADS_PATH;
         const imagePath = path.join(assetDir, user.profilePicture);
-
-        if (fs.existsSync(imagePath)) {
-          fs.unlinkSync(imagePath);
-        }
+        if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
       }
     }
 
-    if (validData.name) {
-      updateData.name = validData.name;
-    }
+    if (validData.name) updateData.name = validData.name;
 
     if (validData.email) {
       const existingUser = await UserRepository.findByEmail(validData.email);
-
       if (existingUser && existingUser.id !== request.userId) {
         throw new ResponseError(StatusCodes.BAD_REQUEST, 'Email sudah ada');
       }
-
       updateData.email = validData.email;
     }
 
-    if (validData.phoneNumber) {
-      updateData.phoneNumber = validData.phoneNumber;
-    }
+    if (validData.phoneNumber) updateData.phoneNumber = validData.phoneNumber;
 
     if (validData.password) {
       const isValidPassword = await PasswordUtils.comparePassword(
@@ -380,7 +314,6 @@ export class AuthService {
 
   static async deleteUser(request: IDeleteUserRequest): Promise<void> {
     const user = await UserRepository.findById(request.userId);
-
     if (!user) {
       throw new ResponseError(StatusCodes.NOT_FOUND, 'User tidak ditemukan');
     }
@@ -395,48 +328,14 @@ export class AuthService {
     );
 
     const user = await UserRepository.findByEmail(validData.email);
-
     if (!user) {
       throw new ResponseError(StatusCodes.NOT_FOUND, 'User tidak ditemukan');
     }
 
-    const payload = {
-      email: user.email,
-    };
-
-    const token = JwtToken.generateForgotPasswordToken(payload);
-
+    const token = JwtToken.generateForgotPasswordToken({ email: user.email });
     const resetLink = `${CLIENT_URL_CURRENT}/forget-password/${token}`;
 
-    const templatePath = path.join(
-      __dirname,
-      '../utils/reset-password-template.html',
-    );
-
-    let emailHtml = fs.readFileSync(templatePath, 'utf-8');
-
-    emailHtml = emailHtml.replace('{{reset_link}}', resetLink);
-
-    const serverDomain = process.env.SERVER_DOMAIN;
-
-    const uploadPath = process.env.UPLOADS_PATH;
-
-    const logoName = fs.readdirSync(
-      path.join(__dirname, '..', '..', uploadPath, 'logo'),
-    )[0];
-
-    const logoUrl = `${serverDomain}/${uploadPath}/logo/${logoName}`;
-
-    emailHtml = emailHtml.replace('{{logo_url}}', logoUrl);
-
-    const emailData: IEmailDto = {
-      from: SMPTP_CONSTANTS.SMTP_EMAIL,
-      to: user.email,
-      subject: 'Reset Password',
-      html: emailHtml,
-    };
-
-    await SendToKafka.sendEmailMessage(emailData);
+    await EmailUtils.sendResetPasswordEmail(user.email, resetLink);
 
     await ResetTokenRepository.set(
       user.id,
@@ -452,27 +351,23 @@ export class AuthService {
       AuthValidation.CHECK_RESET_TOKEN,
       request,
     );
-
     const token = validData.token;
 
     try {
       const decoded = JwtToken.verifyForgotPasswordToken(token);
 
       const user = await UserRepository.findByEmail(decoded.email);
-
       if (!user) {
         throw new ResponseError(StatusCodes.NOT_FOUND, 'User tidak ditemukan');
       }
 
       const validResetToken = await ResetTokenRepository.get(user.id);
-
       if (validResetToken !== token) {
         throw new ResponseError(StatusCodes.UNAUTHORIZED, 'Unauthorized!');
       }
     } catch (error) {
-      if (error instanceof ResponseError) {
-        throw error;
-      } else if (error instanceof jwt.JsonWebTokenError) {
+      if (error instanceof ResponseError) throw error;
+      if (error instanceof jwt.JsonWebTokenError) {
         throw new ResponseError(StatusCodes.UNAUTHORIZED, 'Unauthorized!');
       }
 
@@ -488,20 +383,16 @@ export class AuthService {
       AuthValidation.RESET_PASSWORD,
       request,
     );
-
     const token = validData.token;
 
     try {
       const decoded = JwtToken.verifyForgotPasswordToken(token);
-
       const user = await UserRepository.findByEmail(decoded.email);
-
       if (!user) {
         throw new ResponseError(StatusCodes.NOT_FOUND, 'User tidak ditemukan');
       }
 
       const validResetToken = await ResetTokenRepository.get(user.id);
-
       if (validResetToken !== token) {
         throw new ResponseError(StatusCodes.UNAUTHORIZED, 'Unauthorized!');
       }
@@ -509,16 +400,11 @@ export class AuthService {
       const hashedPassword = await PasswordUtils.hashPassword(
         validData.password,
       );
-
-      await UserRepository.update(user.id, {
-        password: hashedPassword,
-      });
-
+      await UserRepository.update(user.id, { password: hashedPassword });
       await ResetTokenRepository.delete(user.id);
     } catch (error) {
-      if (error instanceof ResponseError) {
-        throw error;
-      } else if (error instanceof jwt.JsonWebTokenError) {
+      if (error instanceof ResponseError) throw error;
+      if (error instanceof jwt.JsonWebTokenError) {
         throw new ResponseError(StatusCodes.UNAUTHORIZED, 'Unauthorized!');
       }
 

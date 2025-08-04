@@ -151,6 +151,7 @@ export class TransactionService {
             method: validData.method,
             deliveryStatus: isDelivery ? TxDeliveryStatus.UNPAID : null,
             manualStatus: isDelivery ? null : TxManualStatus.UNPAID,
+            shippingCost: isDelivery ? shippingCost : null,
             shippingAddress: validData.shippingAddress,
             snapUrl: payment.redirect_url,
             snapToken: payment.token,
@@ -985,7 +986,7 @@ export class TransactionService {
       deliveryStatusList,
       manualStatusList,
     };
-  } 
+  }
 
   static async getTxMethodList(): Promise<IGetTxMethodListResponse> {
     const txMethodList = Object.values(TxMethod);

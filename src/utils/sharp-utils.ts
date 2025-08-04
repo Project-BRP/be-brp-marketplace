@@ -95,12 +95,12 @@ export class SharpUtils {
     }
 
     const timestamp = Date.now();
-    const filename = `company-logo_${uuid()}_${timestamp}.webp`;
+    const filename = `company-logo_${uuid()}_${timestamp}.png`;
     const outputFilePath = path.join(absoluteDirectory, filename);
 
     await sharp(filePath)
       .resize(500, 500)
-      .toFormat('webp')
+      .toFormat('png')
       .toFile(outputFilePath);
 
     fs.unlinkSync(filePath);

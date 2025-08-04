@@ -1,4 +1,5 @@
 import type { Consumer } from 'kafkajs';
+import fs from 'fs';
 
 import { appLogger } from '../configs/logger';
 import { transporter } from '../configs/nodemailer';
@@ -15,7 +16,16 @@ class KafkaConsumer {
         to: emailData.to,
         subject: emailData.subject,
         html: emailData.html,
+        attachments: emailData.attachments,
       });
+
+      if (emailData.attachments) {
+        for (const attachment of emailData.attachments) {
+          fs.unlink(attachment.path, err => {
+            if (err) appLogger.error('Failed to delete attachment:', err);
+          });
+        }
+      }
 
       appLogger.info('Email sent', emailData);
     } catch (error) {
