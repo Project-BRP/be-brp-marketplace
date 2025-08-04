@@ -16,6 +16,11 @@ transactionRoute.get(
   TransactionController.getByUserId,
 );
 transactionRoute.get(
+  '/status-list',
+  authMiddleware,
+  TransactionController.getTxStatusList,
+);
+transactionRoute.get(
   '/',
   authMiddleware,
   roleMiddleware([Role.ADMIN]),

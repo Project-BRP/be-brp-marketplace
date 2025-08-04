@@ -189,4 +189,22 @@ export class TransactionController {
       next(error);
     }
   }
+
+  static async getTxStatusList(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const response = await TransactionService.getTxStatusList();
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Daftar status transaksi berhasil diambil',
+        response,
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
 }

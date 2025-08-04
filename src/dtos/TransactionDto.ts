@@ -80,7 +80,6 @@ export interface IGetTransactionResponse {
 }
 
 export interface IGetAllTransactionsRequest {
-  search?: string;
   page?: number;
   limit?: number;
 }
@@ -155,6 +154,10 @@ export interface ICancelTransactionResponse {
   paymentMethod?: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface IGetTxStatusListResponse {
+  statusList: TxStatus[];
 }
 
 export interface ITransactionNotifRequest {

@@ -18,6 +18,7 @@ import type {
   IUpdateTransactionResponse,
   ICancelTransactionRequest,
   ICancelTransactionResponse,
+  IGetTxStatusListResponse,
 } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
 import {
@@ -786,5 +787,17 @@ export class TransactionService {
     } catch (error) {
       throw error;
     }
+  }
+
+  static async getTxStatusList(): Promise<IGetTxStatusListResponse> {
+    let statusList: TxStatus[];
+
+    for (const status in TxStatus) {
+      if (Object.prototype.hasOwnProperty.call(TxStatus, status)) {
+        statusList = Object.values(TxStatus);
+      }
+    }
+
+    return { statusList };
   }
 }
