@@ -61,6 +61,7 @@ prisma/migrations
 # Uopload Directory
 
 uploads/
+invoices/
 
 /src/generated/prisma
 
