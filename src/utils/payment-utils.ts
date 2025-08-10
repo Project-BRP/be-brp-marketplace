@@ -77,9 +77,9 @@ export class PaymentUtils {
           : undefined,
       },
       callbacks: {
-        finish: `${CLIENT_URL_CURRENT}/transaction?transaction_id=${transactionId}`,
-        error: `${CLIENT_URL_CURRENT}/transaction?transaction_id=${transactionId}`,
-        pending: `${CLIENT_URL_CURRENT}/transaction?transaction_id=${transactionId}`,
+        finish: `${CLIENT_URL_CURRENT}/transactions?transaction_id=${transactionId}`,
+        error: `${CLIENT_URL_CURRENT}/transactions?transaction_id=${transactionId}`,
+        pending: `${CLIENT_URL_CURRENT}/transactions?transaction_id=${transactionId}`,
       },
     };
 
