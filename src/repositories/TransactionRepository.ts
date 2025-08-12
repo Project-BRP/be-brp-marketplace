@@ -82,6 +82,9 @@ export class TransactionRepository {
           },
         },
       },
+      orderBy: {
+        updatedAt: 'desc',
+      },
     });
   }
   
@@ -122,6 +125,9 @@ export class TransactionRepository {
             },
           },
         },
+      },
+      orderBy: {
+        updatedAt: 'desc',
       },
     });
   }
@@ -175,6 +181,9 @@ export class TransactionRepository {
           },
         },
       },
+      orderBy: {
+        updatedAt: 'desc',
+      },
     });
   }
 
@@ -214,6 +223,9 @@ export class TransactionRepository {
             },
           },
         },
+      },
+      orderBy: {
+        updatedAt: 'desc',
       },
     });
   }
