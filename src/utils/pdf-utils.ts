@@ -4,7 +4,7 @@ import path from 'path';
 import { DateTime } from 'luxon';
 import { IGetTransactionResponse } from '../dtos';
 import { TxMethod } from '@prisma/client';
-import { appLogger } from 'configs/logger';
+import { appLogger } from '../configs/logger';
 
 const THEME_COLOR = '#28a745';
 const SECONDARY_COLOR = '#333333';
