@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, TxMethod } from '@prisma/client';
 import { db } from '../configs/database';
 
 export class TransactionRepository {
@@ -52,8 +52,24 @@ export class TransactionRepository {
     });
   }
 
-  static async findAll(tx: Prisma.TransactionClient = db) {
+  static async findAll(method?: TxMethod, search?: string, tx: Prisma.TransactionClient = db) {
+    const whereCondition: Prisma.TransactionWhereInput = {}
+
+    if (method) {
+      whereCondition.method = method;
+    }
+
+    if (search) {
+      whereCondition.OR = [
+        { id: { contains: search, mode: 'insensitive' } },
+        { userName: { contains: search, mode: 'insensitive' } }
+      ];
+    }
+
     return tx.transaction.findMany({
+      where: {
+        ...whereCondition
+      },
       include: {
         transactionItems: {
           include: {
@@ -68,15 +84,33 @@ export class TransactionRepository {
       },
     });
   }
-
+  
   static async findAllWithPagination(
     skip: number,
     take: number,
+    method?: TxMethod,
+    search?: string,
     tx: Prisma.TransactionClient = db,
   ) {
+    const whereCondition: Prisma.TransactionWhereInput = {};
+
+    if (method) {
+      whereCondition.method = method;
+    }
+
+    if (search) {
+      whereCondition.OR = [
+        { id: { contains: search, mode: 'insensitive' } },
+        { userName: { contains: search, mode: 'insensitive' } }
+      ];
+    }
+
     return tx.transaction.findMany({
       skip: skip,
       take: take,
+      where: {
+        ...whereCondition
+      },
       include: {
         transactionItems: {
           include: {
@@ -92,13 +126,43 @@ export class TransactionRepository {
     });
   }
 
-  static async count(tx: Prisma.TransactionClient = db) {
-    return tx.transaction.count();
+  static async count(method?: TxMethod, search?: string, tx: Prisma.TransactionClient = db) {
+    const whereCondition: Prisma.TransactionWhereInput = {};
+
+    if (method) {
+      whereCondition.method = method;
+    }
+
+    if (search) {
+      whereCondition.OR = [
+        { id: { contains: search, mode: 'insensitive' } },
+        { userName: { contains: search, mode: 'insensitive' } }
+      ];
+    }
+
+    return tx.transaction.count({
+      where: {
+        ...whereCondition
+      }
+    });
   }
 
-  static async findByUserId(userId: string, tx: Prisma.TransactionClient = db) {
+  static async findByUserId(userId: string, method?: TxMethod, search?: string, tx: Prisma.TransactionClient = db) {
+    const whereCondition: Prisma.TransactionWhereInput = { userId };
+
+    if (method) {
+      whereCondition.method = method;
+    }
+
+    if (search) {
+      whereCondition.OR = [
+        { id: { contains: search, mode: 'insensitive' } },
+        { userName: { contains: search, mode: 'insensitive' } }
+      ];
+    }
+
     return tx.transaction.findMany({
-      where: { userId },
+      where: { ...whereCondition },
       include: {
         transactionItems: {
           include: {
@@ -118,10 +182,25 @@ export class TransactionRepository {
     userId: string,
     skip: number,
     take: number,
+    method?: TxMethod,
+    search?: string,
     tx: Prisma.TransactionClient = db,
   ) {
+    const whereCondition: Prisma.TransactionWhereInput = { userId };
+
+    if (method) {
+      whereCondition.method = method;
+    }
+
+    if (search) {
+      whereCondition.OR = [
+        { id: { contains: search, mode: 'insensitive' } },
+        { userName: { contains: search, mode: 'insensitive' } }
+      ];
+    }
+
     return tx.transaction.findMany({
-      where: { userId },
+      where: { ...whereCondition },
       skip: skip,
       take: take,
       include: {
@@ -141,10 +220,25 @@ export class TransactionRepository {
 
   static async countByUserId(
     userId: string,
+    method?: TxMethod,
+    search?: string,
     tx: Prisma.TransactionClient = db,
   ) {
+    const whereCondition: Prisma.TransactionWhereInput = { userId };
+
+    if (method) {
+      whereCondition.method = method;
+    }
+
+    if (search) {
+      whereCondition.OR = [
+        { id: { contains: search, mode: 'insensitive' } },
+        { userName: { contains: search, mode: 'insensitive' } }
+      ];
+    }
+
     return tx.transaction.count({
-      where: { userId },
+      where: { ...whereCondition },
     });
   }
 }

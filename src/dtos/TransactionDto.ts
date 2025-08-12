@@ -91,6 +91,8 @@ export interface IGetTransactionResponse {
 export interface IGetAllTransactionsRequest {
   page?: number;
   limit?: number;
+  method?: TxMethod;
+  search?: string;
 }
 
 export interface IGetAllTransactionsResponse {
@@ -103,6 +105,8 @@ export interface IGetTransactionByUserRequest {
   userId: string;
   currentUserId: string;
   currentUserRole: string;
+  method?: TxMethod;
+  search?: string;
   page?: number;
   limit?: number;
 }

@@ -325,7 +325,7 @@ export class TransactionService {
     const skip = (validData.page - 1) * take;
 
     if (!take || !validData.page) {
-      const transactions = await TransactionRepository.findAll();
+      const transactions = await TransactionRepository.findAll(validData.method, validData.search);
 
       return {
         totalPage: 1,
@@ -378,7 +378,7 @@ export class TransactionService {
       };
     }
 
-    const totalTransactions = await TransactionRepository.count();
+    const totalTransactions = await TransactionRepository.count(validData.method, validData.search);
 
     if (totalTransactions === 0) {
       return {
@@ -395,6 +395,8 @@ export class TransactionService {
     const transactions = await TransactionRepository.findAllWithPagination(
       skip,
       take,
+      validData.method,
+      validData.search
     );
 
     const totalPage = Math.ceil(totalTransactions / take);
@@ -475,6 +477,8 @@ export class TransactionService {
     if (!take || !validData.page) {
       const transactions = await TransactionRepository.findByUserId(
         validData.userId,
+        validData.method,
+        validData.search
       );
 
       return {
@@ -530,6 +534,8 @@ export class TransactionService {
 
     const totalTransactions = await TransactionRepository.countByUserId(
       validData.userId,
+      validData.method,
+      validData.search
     );
 
     if (totalTransactions === 0) {
@@ -548,6 +554,8 @@ export class TransactionService {
       validData.userId,
       skip,
       take,
+      validData.method,
+      validData.search
     );
 
     const totalPage = Math.ceil(totalTransactions / take);

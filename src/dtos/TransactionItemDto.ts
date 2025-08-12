@@ -27,13 +27,16 @@ export interface IAddTransactionItemResponse {
   updatedAt: Date;
 }
 
-export interface IUpdateTransactionItemRequest {
+export interface IRemoveTransactionItemRequest {
   transactionId: string;
   transactionItemId: string;
-  quantity: number;
 }
 
-export interface IUpdateTransactionItemResponse {
+export interface IResolveStockIssueRequest {
+  id: string;
+}
+
+export interface IResolveStockIssueResponse {
   id: string;
   transactionId: string;
   variantId: string;
@@ -42,9 +45,4 @@ export interface IUpdateTransactionItemResponse {
   productVariant: IGetProductVariantResponse;
   createdAt: Date;
   updatedAt: Date;
-}
-
-export interface IRemoveTransactionItemRequest {
-  transactionId: string;
-  transactionItemId: string;
 }

@@ -70,6 +70,16 @@ export class TransactionValidation {
   });
 
   static readonly GET_ALL: ZodType = z.object({
+    method: z.enum(['DELIVERY', 'MANUAL'], {
+      required_error: 'Metode transaksi tidak boleh kosong',
+      invalid_type_error: 'Metode transaksi tidak valid',
+    }).nullish().optional(),
+    search: z
+      .string({
+        invalid_type_error: 'Pencarian tidak valid',
+      })
+      .nullish()
+      .optional(),
     page: z
       .number({
         invalid_type_error: 'Jumlah halaman tidak valid',
@@ -103,6 +113,16 @@ export class TransactionValidation {
         invalid_type_error: 'Current User Role tidak valid',
       })
       .min(1, 'Current User Role tidak boleh kosong'),
+    method: z.enum(['DELIVERY', 'MANUAL'], {
+      required_error: 'Metode transaksi tidak boleh kosong',
+      invalid_type_error: 'Metode transaksi tidak valid',
+    }).nullish().optional(),
+    search: z
+      .string({
+        invalid_type_error: 'Pencarian tidak valid',
+      })
+      .nullish()
+      .optional(),
     page: z
       .number({
         invalid_type_error: 'Jumlah halaman tidak valid',
