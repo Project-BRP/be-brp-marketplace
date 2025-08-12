@@ -6,4 +6,9 @@ import { Role } from '@prisma/client';
 export const ppnRoute: Router = Router();
 
 ppnRoute.get('/', authMiddleware, PPNController.getCurrentPPN);
-ppnRoute.patch('/', authMiddleware, roleMiddleware([Role.ADMIN]), PPNController.updatePPN);
+ppnRoute.patch(
+  '/',
+  authMiddleware,
+  roleMiddleware([Role.ADMIN]),
+  PPNController.updatePPN,
+);

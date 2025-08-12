@@ -681,6 +681,31 @@ export class TransactionService {
         );
       }
 
+      if (
+        next !== TxDeliveryStatus.CANCELLED &&
+        statusOrder[next] - statusOrder[current] > 1
+      ) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Status tidak boleh lompat lebih dari satu langkah',
+        );
+      }
+
+      if (
+        current === TxDeliveryStatus.PAID &&
+        next !== TxDeliveryStatus.CANCELLED
+      ) {
+        const hasStockIssue = transaction.transactionItems.some(
+          item => item.isStockIssue === true,
+        );
+        if (hasStockIssue) {
+          throw new ResponseError(
+            StatusCodes.BAD_REQUEST,
+            'Stock issue harus di-resolve terlebih dahulu',
+          );
+        }
+      }
+
       if (next === TxDeliveryStatus.PAID) {
         const midtransStatus = await PaymentUtils.checkTransactionStatus(
           validData.id,
@@ -791,6 +816,31 @@ export class TransactionService {
           StatusCodes.BAD_REQUEST,
           'Status tidak berubah',
         );
+      }
+
+      if (
+        next !== TxManualStatus.CANCELLED &&
+        statusOrder[next] - statusOrder[current] > 1
+      ) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Status tidak boleh lompat lebih dari satu langkah',
+        );
+      }
+
+      if (
+        current === TxManualStatus.PAID &&
+        next !== TxManualStatus.CANCELLED
+      ) {
+        const hasStockIssue = transaction.transactionItems.some(
+          item => item.isStockIssue === true,
+        );
+        if (hasStockIssue) {
+          throw new ResponseError(
+            StatusCodes.BAD_REQUEST,
+            'Stock issue harus di-resolve terlebih dahulu',
+          );
+        }
       }
 
       if (next === TxManualStatus.PAID) {
