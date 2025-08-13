@@ -35,7 +35,6 @@ transactionRoute.post('/notification', TransactionController.transactionNotif);
 transactionRoute.get(
   '/:id',
   authMiddleware,
-  roleMiddleware([Role.ADMIN]),
   TransactionController.getById,
 );
 transactionRoute.patch(

@@ -58,9 +58,8 @@ export class AuthService {
 
     const emailVerificationToken =
       JwtToken.generateEmailVerificationToken(payload);
-    const verificationLink = `${CLIENT_URL_CURRENT}/sign-up/${emailVerificationToken}`;
 
-    await EmailUtils.sendVerificationEmail(payload, verificationLink);
+    await EmailUtils.sendVerificationEmail(payload, emailVerificationToken);
 
     await VerifyEmailRepository.set(
       validData.email,

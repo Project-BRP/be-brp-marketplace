@@ -996,15 +996,17 @@ export class TransactionService {
           tx,
         );
 
-        for (const item of cancelledTransaction.transactionItems) {
-          if (!item.isStockIssue) {
-            await ProductVariantRepository.update(
-              item.variant.id,
-              {
-                stock: { increment: item.quantity },
-              },
-              tx,
-            );
+        if (transaction.manualStatus === TxManualStatus.PAID || transaction.deliveryStatus === TxDeliveryStatus.PAID) {
+          for (const item of cancelledTransaction.transactionItems) {
+            if (!item.isStockIssue) {
+              await ProductVariantRepository.update(
+                item.variant.id,
+                {
+                  stock: { increment: item.quantity },
+                },
+                tx,
+              );
+            }
           }
         }
 
