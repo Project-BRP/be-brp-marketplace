@@ -104,6 +104,7 @@ export class TransactionController {
       const request: IGetAllTransactionsRequest = {
         method: req.query.method as TxMethod,
         search: req.query.search as string,
+        status: req.query.status as TxDeliveryStatus | TxManualStatus,
         page: req.query.page ? parseInt(req.query.page as string, 10) : 1,
         limit: req.query.limit ? parseInt(req.query.limit as string, 10) : 10,
       };
@@ -131,6 +132,7 @@ export class TransactionController {
         currentUserId: req.user.userId,
         currentUserRole: req.user.role,
         method: req.query.method as TxMethod,
+        status: req.query.status as TxDeliveryStatus | TxManualStatus,
         page: req.query.page ? parseInt(req.query.page as string, 10) : 1,
         limit: req.query.limit ? parseInt(req.query.limit as string, 10) : 10,
         search: req.query.search as string,

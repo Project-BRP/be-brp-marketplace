@@ -80,6 +80,12 @@ export class TransactionValidation {
       })
       .nullish()
       .optional(),
+    status: z
+      .string({
+        invalid_type_error: 'Status tidak valid',
+      })
+      .nullish()
+      .optional(),
     page: z
       .number({
         invalid_type_error: 'Jumlah halaman tidak valid',
@@ -120,6 +126,12 @@ export class TransactionValidation {
     search: z
       .string({
         invalid_type_error: 'Pencarian tidak valid',
+      })
+      .nullish()
+      .optional(),
+    status: z
+      .string({
+        invalid_type_error: 'Status tidak valid',
       })
       .nullish()
       .optional(),

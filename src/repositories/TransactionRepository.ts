@@ -1,4 +1,4 @@
-import { Prisma, TxMethod } from '@prisma/client';
+import { Prisma, TxDeliveryStatus, TxManualStatus, TxMethod } from '@prisma/client';
 import { db } from '../configs/database';
 
 export class TransactionRepository {
@@ -52,11 +52,16 @@ export class TransactionRepository {
     });
   }
 
-  static async findAll(method?: TxMethod, search?: string, tx: Prisma.TransactionClient = db) {
+  static async findAll(method?: TxMethod, search?: string, status?: TxDeliveryStatus | TxManualStatus, tx: Prisma.TransactionClient = db) {
     const whereCondition: Prisma.TransactionWhereInput = {}
 
     if (method) {
       whereCondition.method = method;
+      if (method === TxMethod.DELIVERY) {
+        whereCondition.deliveryStatus = status as TxDeliveryStatus;
+      } else if (method === TxMethod.MANUAL) {
+        whereCondition.manualStatus = status as TxManualStatus;
+      }
     }
 
     if (search) {
@@ -93,12 +98,18 @@ export class TransactionRepository {
     take: number,
     method?: TxMethod,
     search?: string,
+    status?: TxDeliveryStatus | TxManualStatus,
     tx: Prisma.TransactionClient = db,
   ) {
     const whereCondition: Prisma.TransactionWhereInput = {};
 
     if (method) {
       whereCondition.method = method;
+      if (method === TxMethod.DELIVERY) {
+        whereCondition.deliveryStatus = status as TxDeliveryStatus;
+      } else if (method === TxMethod.MANUAL) {
+        whereCondition.manualStatus = status as TxManualStatus;
+      }
     }
 
     if (search) {
@@ -132,11 +143,16 @@ export class TransactionRepository {
     });
   }
 
-  static async count(method?: TxMethod, search?: string, tx: Prisma.TransactionClient = db) {
+  static async count(method?: TxMethod, search?: string, status?: TxDeliveryStatus | TxManualStatus, tx: Prisma.TransactionClient = db) {
     const whereCondition: Prisma.TransactionWhereInput = {};
 
     if (method) {
       whereCondition.method = method;
+      if (method === TxMethod.DELIVERY) {
+        whereCondition.deliveryStatus = status as TxDeliveryStatus;
+      } else if (method === TxMethod.MANUAL) {
+        whereCondition.manualStatus = status as TxManualStatus;
+      }
     }
 
     if (search) {
@@ -153,11 +169,16 @@ export class TransactionRepository {
     });
   }
 
-  static async findByUserId(userId: string, method?: TxMethod, search?: string, tx: Prisma.TransactionClient = db) {
+  static async findByUserId(userId: string, method?: TxMethod, search?: string, status?: TxDeliveryStatus | TxManualStatus, tx: Prisma.TransactionClient = db) {
     const whereCondition: Prisma.TransactionWhereInput = { userId };
 
     if (method) {
       whereCondition.method = method;
+      if (method === TxMethod.DELIVERY) {
+        whereCondition.deliveryStatus = status as TxDeliveryStatus;
+      } else if (method === TxMethod.MANUAL) {
+        whereCondition.manualStatus = status as TxManualStatus;
+      }
     }
 
     if (search) {
@@ -193,12 +214,18 @@ export class TransactionRepository {
     take: number,
     method?: TxMethod,
     search?: string,
+    status?: TxDeliveryStatus | TxManualStatus,
     tx: Prisma.TransactionClient = db,
   ) {
     const whereCondition: Prisma.TransactionWhereInput = { userId };
 
     if (method) {
       whereCondition.method = method;
+      if (method === TxMethod.DELIVERY) {
+        whereCondition.deliveryStatus = status as TxDeliveryStatus;
+      } else if (method === TxMethod.MANUAL) {
+        whereCondition.manualStatus = status as TxManualStatus;
+      }
     }
 
     if (search) {
@@ -234,12 +261,18 @@ export class TransactionRepository {
     userId: string,
     method?: TxMethod,
     search?: string,
+    status?: TxDeliveryStatus | TxManualStatus,
     tx: Prisma.TransactionClient = db,
   ) {
     const whereCondition: Prisma.TransactionWhereInput = { userId };
 
     if (method) {
       whereCondition.method = method;
+      if (method === TxMethod.DELIVERY) {
+        whereCondition.deliveryStatus = status as TxDeliveryStatus;
+      } else if (method === TxMethod.MANUAL) {
+        whereCondition.manualStatus = status as TxManualStatus;
+      }
     }
 
     if (search) {

@@ -96,6 +96,7 @@ export interface IGetAllTransactionsRequest {
   limit?: number;
   method?: TxMethod;
   search?: string;
+  status?: TxDeliveryStatus | TxManualStatus;
 }
 
 export interface IGetAllTransactionsResponse {
@@ -110,6 +111,7 @@ export interface IGetTransactionByUserRequest {
   currentUserRole: string;
   method?: TxMethod;
   search?: string;
+  status?: TxDeliveryStatus | TxManualStatus;
   page?: number;
   limit?: number;
 }

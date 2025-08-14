@@ -327,11 +327,30 @@ export class TransactionService {
       request,
     );
 
+    const page = validData.page;
     const take = validData.limit;
     const skip = (validData.page - 1) * take;
+    const search = validData.search;
+    const method = validData.method;
+    const status = validData.status;
 
-    if (!take || !validData.page) {
-      const transactions = await TransactionRepository.findAll(validData.method, validData.search);
+    if (method && !Object.values(TxMethod).includes(method)) {
+      throw new ResponseError(StatusCodes.BAD_REQUEST, 'Metode transaksi tidak valid');
+    }
+    if (status) {
+      if (!method) {
+        throw new ResponseError(StatusCodes.BAD_REQUEST, 'Jika Ingin memfilter status, metode transaksi harus ditentukan');
+      }
+      if (method === TxMethod.MANUAL && !Object.values(TxManualStatus).includes(status as TxManualStatus)) {
+      throw new ResponseError(StatusCodes.BAD_REQUEST, 'Status tidak valid');
+      }
+      if (method === TxMethod.DELIVERY && !Object.values(TxDeliveryStatus).includes(status as TxDeliveryStatus)) {
+      throw new ResponseError(StatusCodes.BAD_REQUEST, 'Status tidak valid');
+      }
+    }
+
+    if (!take || !page) {
+      const transactions = await TransactionRepository.findAll(method, search, status);
 
       return {
         totalPage: 1,
@@ -387,7 +406,7 @@ export class TransactionService {
       };
     }
 
-    const totalTransactions = await TransactionRepository.count(validData.method, validData.search);
+    const totalTransactions = await TransactionRepository.count(method, search, status);
 
     if (totalTransactions === 0) {
       return {
@@ -404,8 +423,9 @@ export class TransactionService {
     const transactions = await TransactionRepository.findAllWithPagination(
       skip,
       take,
-      validData.method,
-      validData.search
+      method,
+      search,
+      status
     );
 
     const totalPage = Math.ceil(totalTransactions / take);
@@ -483,14 +503,19 @@ export class TransactionService {
       );
     }
 
+    const page = validData.page;
     const take = validData.limit;
     const skip = (validData.page - 1) * take;
+    const search = validData.search;
+    const method = validData.method;
+    const status = validData.status;
 
-    if (!take || !validData.page) {
+    if (!take || !page) {
       const transactions = await TransactionRepository.findByUserId(
         validData.userId,
-        validData.method,
-        validData.search
+        method,
+        search,
+        status
       );
 
       return {
@@ -549,8 +574,9 @@ export class TransactionService {
 
     const totalTransactions = await TransactionRepository.countByUserId(
       validData.userId,
-      validData.method,
-      validData.search
+      method,
+      search,
+      status
     );
 
     if (totalTransactions === 0) {
@@ -569,8 +595,9 @@ export class TransactionService {
       validData.userId,
       skip,
       take,
-      validData.method,
-      validData.search
+      method,
+      search,
+      status
     );
 
     const totalPage = Math.ceil(totalTransactions / take);
