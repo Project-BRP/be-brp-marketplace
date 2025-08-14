@@ -57,7 +57,10 @@ export interface IGetTransactionResponse {
   PPNPercentage?: number;
   snapToken?: string;
   snapUrl?: string;
-  shippingAddress?: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  shippingAddress: string;
   shippingCost?: number;
   paymentMethod?: string;
   transactionItems: {
@@ -138,10 +141,13 @@ export interface IUpdateTransactionResponse {
   PPNPercentage?: number;
   snapToken?: string;
   snapUrl?: string;
-  shippingAddress?: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  shippingAddress: string;
   shippingCost?: number;
   paymentMethod?: string;
-  isRefunndFailed?: boolean;
+  isRefundFailed?: boolean;
   cancelReason?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -169,7 +175,10 @@ export interface ICancelTransactionResponse {
   PPNPercentage?: number;
   snapToken?: string;
   snapUrl?: string;
-  shippingAddress?: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  shippingAddress: string;
   shippingCost?: number;
   paymentMethod?: string;
   isRefundFailed?: boolean;
