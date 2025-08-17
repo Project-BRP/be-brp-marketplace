@@ -159,7 +159,10 @@ export class PDFUtils {
         .fillColor('#ffffff')
         .text('No', col1 + 5, tableTop + 5)
         .text('Nama Barang', col2, tableTop + 5)
-        .text('Qty', col3, tableTop + 5, { width: colWidths.qty, align: 'right' })
+        .text('Qty', col3, tableTop + 5, {
+          width: colWidths.qty,
+          align: 'right',
+        })
         .text('Harga Satuan', col4, tableTop + 5, {
           width: colWidths.unitPrice,
           align: 'right',
@@ -184,7 +187,9 @@ export class PDFUtils {
         const textHeight = doc
           .font('Helvetica')
           .fontSize(10)
-          .heightOfString(`${productName}${packagingName}`, { width: textWidth });
+          .heightOfString(`${productName}${packagingName}`, {
+            width: textWidth,
+          });
         const rowHeight = Math.max(20, textHeight + 10);
 
         if (index % 2 === 0) {
@@ -199,9 +204,14 @@ export class PDFUtils {
           .fontSize(10)
           .font('Helvetica')
           .text(`${index + 1}.`, col1 + 5, y + (rowHeight / 2 - 4))
-          .text(`${productName}${packagingName}`, col2, y + (rowHeight / 2 - 4), {
-            width: textWidth,
-          })
+          .text(
+            `${productName}${packagingName}`,
+            col2,
+            y + (rowHeight / 2 - 4),
+            {
+              width: textWidth,
+            },
+          )
           .text(item.quantity.toString(), col3, y + (rowHeight / 2 - 4), {
             width: colWidths.qty,
             align: 'right',
@@ -314,4 +324,3 @@ export class PDFUtils {
     }
   }
 }
-

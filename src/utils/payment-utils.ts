@@ -1,9 +1,10 @@
 import axios from 'axios';
 
-import { MIDTRANS_SECRET } from '../constants';
+import { currentEnv, Env, MIDTRANS_SECRET } from '../constants';
 import { CLIENT_URL_CURRENT } from './client-url-utils';
 import { ResponseError } from '../error/ResponseError';
 import { ITransactionItem } from 'dtos';
+import { appLogger } from '../configs/logger';
 
 export class PaymentUtils {
   static async sendToPaymentGateway(
@@ -96,12 +97,14 @@ export class PaymentUtils {
         },
       );
 
-      console.log('Midtrans API Response:', response.data);
+      if (currentEnv === Env.DEVELOPMENT || currentEnv === Env.TESTING) {
+        appLogger.info('Midtrans API Response:', response.data);
+      }
 
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        console.error('Midtrans API Error:', error.response?.data);
+        appLogger.error('Midtrans API Error:', error.response?.data);
         throw new ResponseError(
           error.response?.status || 500,
           error.response?.data?.error_messages?.join(', ') ||
@@ -109,7 +112,7 @@ export class PaymentUtils {
         );
       }
 
-      console.error('Unexpected error in sendToPaymentGateway:', error);
+      appLogger.error('Unexpected error in sendToPaymentGateway:', error);
       throw error;
     }
   }
@@ -129,11 +132,13 @@ export class PaymentUtils {
         },
       );
 
-      console.log('Midtrans Transaction Status Response:', response.data);
+      if (currentEnv === Env.DEVELOPMENT || currentEnv === Env.TESTING) {
+        appLogger.info('Midtrans Transaction Status Response:', response.data);
+      }
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        console.error('Midtrans API Error:', error.response?.data);
+        appLogger.error('Midtrans API Error:', error.response?.data);
         throw new ResponseError(
           error.response?.status || 500,
           error.response?.data?.error_messages?.join(', ') ||
@@ -141,7 +146,7 @@ export class PaymentUtils {
         );
       }
 
-      console.error('Unexpected error in checkTransactionStatus:', error);
+      appLogger.error('Unexpected error in checkTransactionStatus:', error);
       throw error;
     }
   }

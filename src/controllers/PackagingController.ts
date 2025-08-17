@@ -9,7 +9,7 @@ import {
   IDeletePackagingRequest,
 } from '../dtos';
 import { PackagingService } from '../services';
-import { successResponse } from '../utils/api-response';
+import { successResponse } from '../utils';
 
 export class PackagingController {
   static async createPackaging(

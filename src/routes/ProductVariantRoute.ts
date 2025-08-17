@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { ProductVariantController } from '../controllers/ProductVariantController'; // Sesuaikan path jika perlu
+import { ProductVariantController } from '../controllers';
 import {
   authMiddleware,
   roleMiddleware,

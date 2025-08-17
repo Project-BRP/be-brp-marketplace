@@ -6,3 +6,4 @@ export * from './redis-constants';
 export * from './database-constants';
 export * from './smtp-constants';
 export * from './midtrans-constants';
+export * from './rajaongkir-constants';

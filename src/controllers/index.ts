@@ -9,3 +9,4 @@ export * from './CartController';
 export * from './CartItemController';
 export * from './PPNController';
 export * from './TransactionController';
+export * from './ShippingController';

@@ -12,7 +12,7 @@ import {
   ICancelTransactionRequest,
 } from '../dtos';
 import { TransactionService } from '../services';
-import { successResponse } from '../utils/api-response';
+import { successResponse } from '../utils';
 import { TxMethod, TxDeliveryStatus, TxManualStatus } from '@prisma/client';
 
 export class TransactionController {

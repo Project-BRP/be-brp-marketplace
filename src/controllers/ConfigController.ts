@@ -6,7 +6,7 @@ import { StatusCodes } from 'http-status-codes';
 import { ResponseError } from '../error/ResponseError';
 import { SharpUtils } from '../utils';
 import { successResponse } from '../utils/api-response';
-import { ConfigService } from '../services/ConfigService';
+import { ConfigService } from '../services';
 
 export class ConfigController {
   static async uploadLogo(

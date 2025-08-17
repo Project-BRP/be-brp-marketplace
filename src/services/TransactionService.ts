@@ -335,22 +335,38 @@ export class TransactionService {
     const status = validData.status;
 
     if (method && !Object.values(TxMethod).includes(method)) {
-      throw new ResponseError(StatusCodes.BAD_REQUEST, 'Metode transaksi tidak valid');
+      throw new ResponseError(
+        StatusCodes.BAD_REQUEST,
+        'Metode transaksi tidak valid',
+      );
     }
     if (status) {
       if (!method) {
-        throw new ResponseError(StatusCodes.BAD_REQUEST, 'Jika Ingin memfilter status, metode transaksi harus ditentukan');
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Jika Ingin memfilter status, metode transaksi harus ditentukan',
+        );
       }
-      if (method === TxMethod.MANUAL && !Object.values(TxManualStatus).includes(status as TxManualStatus)) {
-      throw new ResponseError(StatusCodes.BAD_REQUEST, 'Status tidak valid');
+      if (
+        method === TxMethod.MANUAL &&
+        !Object.values(TxManualStatus).includes(status as TxManualStatus)
+      ) {
+        throw new ResponseError(StatusCodes.BAD_REQUEST, 'Status tidak valid');
       }
-      if (method === TxMethod.DELIVERY && !Object.values(TxDeliveryStatus).includes(status as TxDeliveryStatus)) {
-      throw new ResponseError(StatusCodes.BAD_REQUEST, 'Status tidak valid');
+      if (
+        method === TxMethod.DELIVERY &&
+        !Object.values(TxDeliveryStatus).includes(status as TxDeliveryStatus)
+      ) {
+        throw new ResponseError(StatusCodes.BAD_REQUEST, 'Status tidak valid');
       }
     }
 
     if (!take || !page) {
-      const transactions = await TransactionRepository.findAll(method, search, status);
+      const transactions = await TransactionRepository.findAll(
+        method,
+        search,
+        status,
+      );
 
       return {
         totalPage: 1,
@@ -406,7 +422,11 @@ export class TransactionService {
       };
     }
 
-    const totalTransactions = await TransactionRepository.count(method, search, status);
+    const totalTransactions = await TransactionRepository.count(
+      method,
+      search,
+      status,
+    );
 
     if (totalTransactions === 0) {
       return {
@@ -425,7 +445,7 @@ export class TransactionService {
       take,
       method,
       search,
-      status
+      status,
     );
 
     const totalPage = Math.ceil(totalTransactions / take);
@@ -515,7 +535,7 @@ export class TransactionService {
         validData.userId,
         method,
         search,
-        status
+        status,
       );
 
       return {
@@ -576,7 +596,7 @@ export class TransactionService {
       validData.userId,
       method,
       search,
-      status
+      status,
     );
 
     if (totalTransactions === 0) {
@@ -597,7 +617,7 @@ export class TransactionService {
       take,
       method,
       search,
-      status
+      status,
     );
 
     const totalPage = Math.ceil(totalTransactions / take);
@@ -1041,7 +1061,10 @@ export class TransactionService {
           tx,
         );
 
-        if (transaction.manualStatus === TxManualStatus.PAID || transaction.deliveryStatus === TxDeliveryStatus.PAID) {
+        if (
+          transaction.manualStatus === TxManualStatus.PAID ||
+          transaction.deliveryStatus === TxDeliveryStatus.PAID
+        ) {
           for (const item of cancelledTransaction.transactionItems) {
             if (!item.isStockIssue) {
               await ProductVariantRepository.update(

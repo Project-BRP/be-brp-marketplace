@@ -18,7 +18,7 @@ import type {
 } from '../dtos';
 import { AuthService } from '../services';
 import { SharpUtils } from '../utils';
-import { successResponse } from '../utils/api-response';
+import { successResponse } from '../utils';
 
 export class AuthController {
   static async register(

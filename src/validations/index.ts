@@ -7,3 +7,4 @@ export * from './CartValidation';
 export * from './CartItemValidation';
 export * from './PPNValidation';
 export * from './TransactionValidation';
+export * from './ShippingValidation';

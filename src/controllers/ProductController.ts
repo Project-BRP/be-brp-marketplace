@@ -11,7 +11,7 @@ import {
   IDeleteProductRequest,
 } from '../dtos';
 import { ProductService } from '../services';
-import { successResponse } from '../utils/api-response';
+import { successResponse } from '../utils';
 
 export class ProductController {
   static async createProduct(

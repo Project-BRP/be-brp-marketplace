@@ -21,6 +21,7 @@ import {
   cartItemRoute,
   ppnRoute,
   transactionRoute,
+  shippingRoute,
 } from './routes';
 
 const app: Express = express();
@@ -71,6 +72,7 @@ app.use('/api/carts', cartRoute);
 app.use('/api/cart-items', cartItemRoute);
 app.use('/api/ppn', ppnRoute);
 app.use('/api/transactions', transactionRoute);
+app.use('/api/shipping', shippingRoute);
 
 app.use(errorMiddleware);
 

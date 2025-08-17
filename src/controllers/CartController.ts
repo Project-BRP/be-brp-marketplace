@@ -3,7 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 
 import { IAuthDTO, IClearCartRequest, IGetCartRequest } from '../dtos';
 import { CartService } from '../services';
-import { successResponse } from '../utils/api-response';
+import { successResponse } from '../utils';
 
 export class CartController {
   static async getCart(

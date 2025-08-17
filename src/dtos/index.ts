@@ -9,3 +9,4 @@ export * from './CartItemDto';
 export * from './PPNDto';
 export * from './TransactionItemDto';
 export * from './TransactionDto';
+export * from './ShippingDto';

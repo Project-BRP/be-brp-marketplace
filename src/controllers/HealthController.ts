@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
 import { HealthService } from '../services';
-import { successResponse } from '../utils/api-response';
+import { successResponse } from '../utils';
 
 export class HealthController {
   static async getHealth(

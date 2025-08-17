@@ -9,7 +9,7 @@ import {
   IDeleteProductTypeRequest,
 } from '../dtos';
 import { ProductTypeService } from '../services';
-import { successResponse } from '../utils/api-response';
+import { successResponse } from '../utils';
 
 export class ProductTypeController {
   static async createProductType(

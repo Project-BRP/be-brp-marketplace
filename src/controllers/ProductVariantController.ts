@@ -12,7 +12,7 @@ import {
   IDeleteProductVariantRequest,
 } from '../dtos';
 import { ProductVariantService } from '../services';
-import { successResponse } from '../utils/api-response';
+import { successResponse } from '../utils';
 
 export class ProductVariantController {
   static async createProductVariant(

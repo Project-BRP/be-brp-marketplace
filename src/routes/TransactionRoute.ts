@@ -32,11 +32,7 @@ transactionRoute.get(
   TransactionController.getAll,
 );
 transactionRoute.post('/notification', TransactionController.transactionNotif);
-transactionRoute.get(
-  '/:id',
-  authMiddleware,
-  TransactionController.getById,
-);
+transactionRoute.get('/:id', authMiddleware, TransactionController.getById);
 transactionRoute.patch(
   '/:id',
   authMiddleware,

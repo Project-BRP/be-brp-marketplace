@@ -8,7 +8,7 @@ import {
   IRemoveCartItemRequest,
 } from '../dtos';
 import { CartItemService } from '../services';
-import { successResponse } from '../utils/api-response';
+import { successResponse } from '../utils';
 
 export class CartItemController {
   static async addToCart(
