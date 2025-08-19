@@ -17,6 +17,14 @@ export const userSeeder = async () => {
     },
     {
       id: `USR-${uuid()}`,
+      name: 'Test User Admin 2',
+      email: 'adyuta123@gmail.com',
+      password: await PasswordUtils.hashPassword('yuta32154'),
+      role: Role.ADMIN,
+      phoneNumber: '+6281111111111',
+    },
+    {
+      id: `USR-${uuid()}`,
       name: 'Test Admin',
       email: 'testadmin@example.com',
       password: await PasswordUtils.hashPassword('admin1234'),

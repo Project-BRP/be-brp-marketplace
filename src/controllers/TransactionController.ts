@@ -26,6 +26,8 @@ export class TransactionController {
         userId: req.user.userId,
         city: req.body.city,
         province: req.body.province,
+        district: req.body.district,
+        subDistrict: req.body.subDistrict,
         postalCode: req.body.postalCode,
         shippingAddress: req.body.shippingAddress,
         method: req.body.method as TxMethod,

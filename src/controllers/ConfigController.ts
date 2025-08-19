@@ -1,4 +1,9 @@
-import type { Request, Response, NextFunction } from 'express';
+import {
+  type Request,
+  type Response,
+  type NextFunction,
+  response,
+} from 'express';
 import fs from 'fs';
 import path from 'path';
 import { StatusCodes } from 'http-status-codes';
@@ -7,6 +12,7 @@ import { ResponseError } from '../error/ResponseError';
 import { SharpUtils } from '../utils';
 import { successResponse } from '../utils/api-response';
 import { ConfigService } from '../services';
+import { IUploadLogoRequest } from 'dtos';
 
 export class ConfigController {
   static async uploadLogo(
@@ -17,17 +23,12 @@ export class ConfigController {
     let resizedImagePath: string | undefined;
 
     try {
-      await ConfigService.uploadLogo();
-
       if (req.file) {
-        resizedImagePath = await SharpUtils.saveLogo(req.file.path);
-      }
-
-      if (!resizedImagePath) {
-        throw new ResponseError(
-          StatusCodes.INTERNAL_SERVER_ERROR,
-          'Gagal mengunggah logo perusahaan',
-        );
+        const uploadRequest: IUploadLogoRequest = {
+          logoPath: req.file.path,
+        };
+        const response = await ConfigService.uploadLogo(uploadRequest);
+        resizedImagePath = response.resizedLogoPath;
       }
 
       successResponse(res, 201, 'Logo perusahaan berhasil diunggah', {

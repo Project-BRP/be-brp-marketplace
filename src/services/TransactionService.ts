@@ -29,6 +29,8 @@ import {
   CartRepository,
   PPNRepository,
   ProductVariantRepository,
+  ShippingRepository,
+  CompanyInfoRepository,
 } from '../repositories';
 import { PaymentUtils } from '../utils/payment-utils';
 import { TransactionUtils } from '../utils/transaction-utils';
@@ -76,15 +78,48 @@ export class TransactionService {
       0,
     );
 
+    const province = await ShippingRepository.getProvince(validData.province);
+
+    if (!province) {
+      throw new ResponseError(StatusCodes.NOT_FOUND, 'Provinsi tidak valid');
+    }
+
+    const city = await ShippingRepository.getCity(province.id, validData.city);
+
+    if (!city) {
+      throw new ResponseError(StatusCodes.NOT_FOUND, 'Kota tidak valid');
+    }
+
+    const district = await ShippingRepository.getDistrict(
+      city.id,
+      validData.district,
+    );
+
+    if (!district) {
+      throw new ResponseError(StatusCodes.NOT_FOUND, 'Kecamatan tidak valid');
+    }
+
+    const subdistrict = await ShippingRepository.getSubDistrict(
+      district.id,
+      validData.subDistrict,
+    );
+
+    if (!subdistrict) {
+      throw new ResponseError(StatusCodes.NOT_FOUND, 'Kelurahan tidak valid');
+    }
+
+    const companyInfo = await CompanyInfoRepository.findFirst();
+
+    if (!companyInfo) {
+      throw new ResponseError(
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        'Terjadi kesalahan saat membuat transaksi',
+      );
+    }
+
     let shippingCost = 0;
 
     if (validData.method === TxMethod.DELIVERY) {
-      if (!validData.shippingAddress) {
-        throw new ResponseError(
-          StatusCodes.BAD_REQUEST,
-          'Alamat pengiriman tidak boleh kosong',
-        );
-      }
       shippingCost = 20000;
     }
 
@@ -113,9 +148,9 @@ export class TransactionService {
         first_name: userFirstName,
         last_name: userLastName,
         address: validData.shippingAddress,
-        city: validData.city,
+        city: city.name,
         phone: user.phoneNumber,
-        postal_code: validData.postalCode,
+        postal_code: subdistrict.zip_code,
       },
     };
 
@@ -145,9 +180,11 @@ export class TransactionService {
             priceWithPPN: PPN + totalAmount,
             totalPrice: grossAmount,
             PPNPercentage: PPNPercentage.percentage,
-            city: validData.city,
-            province: validData.province,
-            postalCode: validData.postalCode,
+            city: city.name,
+            province: province.name,
+            district: district.name,
+            subDistrict: subdistrict.name,
+            postalCode: subdistrict.zip_code,
             method: validData.method,
             deliveryStatus: isDelivery ? TxDeliveryStatus.UNPAID : null,
             manualStatus: isDelivery ? null : TxManualStatus.UNPAID,
@@ -207,6 +244,8 @@ export class TransactionService {
         snapUrl: transaction.snapUrl,
         city: transaction.city,
         province: transaction.province,
+        district: transaction.district,
+        subDistrict: transaction.subDistrict,
         postalCode: transaction.postalCode,
         shippingAddress: transaction.shippingAddress,
         shippingCost: transaction.shippingCost,
@@ -286,6 +325,8 @@ export class TransactionService {
       snapUrl: transaction.snapUrl,
       city: transaction.city,
       province: transaction.province,
+      district: transaction.district,
+      subDistrict: transaction.subDistrict,
       postalCode: transaction.postalCode,
       shippingAddress: transaction.shippingAddress,
       shippingCost: transaction.shippingCost,
@@ -388,6 +429,8 @@ export class TransactionService {
           snapUrl: transaction.snapUrl,
           city: transaction.city,
           province: transaction.province,
+          district: transaction.district,
+          subDistrict: transaction.subDistrict,
           postalCode: transaction.postalCode,
           shippingAddress: transaction.shippingAddress,
           shippingCost: transaction.shippingCost,
@@ -471,6 +514,8 @@ export class TransactionService {
         snapUrl: transaction.snapUrl,
         city: transaction.city,
         province: transaction.province,
+        district: transaction.district,
+        subDistrict: transaction.subDistrict,
         postalCode: transaction.postalCode,
         shippingAddress: transaction.shippingAddress,
         shippingCost: transaction.shippingCost,
@@ -558,6 +603,8 @@ export class TransactionService {
           snapUrl: transaction.snapUrl,
           city: transaction.city,
           province: transaction.province,
+          district: transaction.district,
+          subDistrict: transaction.subDistrict,
           postalCode: transaction.postalCode,
           shippingAddress: transaction.shippingAddress,
           shippingCost: transaction.shippingCost,
@@ -643,6 +690,8 @@ export class TransactionService {
         snapUrl: transaction.snapUrl,
         city: transaction.city,
         province: transaction.province,
+        district: transaction.district,
+        subDistrict: transaction.subDistrict,
         postalCode: transaction.postalCode,
         shippingAddress: transaction.shippingAddress,
         shippingCost: transaction.shippingCost,

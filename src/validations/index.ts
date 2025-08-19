@@ -8,3 +8,5 @@ export * from './CartItemValidation';
 export * from './PPNValidation';
 export * from './TransactionValidation';
 export * from './ShippingValidation';
+export * from './CompanyInfoValidation';
+export * from './ConfigValidation';

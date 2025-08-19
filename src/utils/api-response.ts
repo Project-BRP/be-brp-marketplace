@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import { ZodError } from 'zod';
 
 import { ResponseError } from '../error/ResponseError';
+import { appLogger } from '../configs/logger';
 
 export const successResponse = (
   res: Response,
@@ -40,7 +41,7 @@ export const errorResponse = (res: Response, error: Error): void => {
       message: error.errors[0].message,
     });
   } else {
-    console.error(error);
+    appLogger.error(error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       status: 'error',
       code: StatusCodes.INTERNAL_SERVER_ERROR,

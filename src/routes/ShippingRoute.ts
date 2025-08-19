@@ -24,3 +24,4 @@ shippingRoute.get(
   authMiddleware,
   ShippingController.getSubDistricts,
 );
+shippingRoute.post('/check-cost', authMiddleware, ShippingController.checkCost);

@@ -1,6 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import { v4 as uuid } from 'uuid';
 
+import { db as database } from '../configs/database';
 import type {
   IUpdatePPNRequest,
   IUpdatePPNResponse,
@@ -26,19 +27,36 @@ export class PPNService {
   ): Promise<IUpdatePPNResponse> {
     const validData = Validator.validate(PPNValidation.UPDATE, request);
 
-    let currentPPN = await PPNRepository.findCurrentPPN();
-    if (!currentPPN) {
-      currentPPN = await PPNRepository.createPPN({
-        id: 'PPN-' + uuid(),
-        percentage: validData.percentage,
+    const db = database;
+
+    try {
+      const beginTransaction = await db.$transaction(async tx => {
+        let currentPPN = await PPNRepository.findCurrentPPN(tx);
+        if (!currentPPN) {
+          currentPPN = await PPNRepository.createPPN(
+            {
+              id: 'PPN-' + uuid(),
+              percentage: validData.percentage,
+            },
+            tx,
+          );
+          return { percentage: currentPPN.percentage };
+        }
+
+        const updatedPPN = await PPNRepository.updatePPN(
+          currentPPN.id,
+          {
+            percentage: validData.percentage,
+          },
+          tx,
+        );
+
+        return { percentage: updatedPPN.percentage };
       });
-      return { percentage: currentPPN.percentage };
+
+      return beginTransaction;
+    } catch (error) {
+      throw error;
     }
-
-    const updatedPPN = await PPNRepository.updatePPN(currentPPN.id, {
-      percentage: validData.percentage,
-    });
-
-    return { percentage: updatedPPN.percentage };
   }
 }

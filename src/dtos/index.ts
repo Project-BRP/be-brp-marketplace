@@ -10,3 +10,5 @@ export * from './PPNDto';
 export * from './TransactionItemDto';
 export * from './TransactionDto';
 export * from './ShippingDto';
+export * from './CompanyInfoDto';
+export * from './ConfigDto';

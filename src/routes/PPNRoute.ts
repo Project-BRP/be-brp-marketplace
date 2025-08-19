@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { PPNController } from '../controllers/PPNController';
 import { authMiddleware, roleMiddleware } from '../middlewares';
-import { Role } from '@prisma/client';
+import { Role } from '../constants';
 
 export const ppnRoute: Router = Router();
 

@@ -99,7 +99,10 @@ export class EmailUtils {
       .readdirSync(logoDir)
       .find(file => /\.(png|jpg|jpeg|webp)$/i.test(file));
 
-    if (!logoName) throw new Error('Logo file not found');
+    if (!logoName) {
+      appLogger.error('Logo tidak ditemukan');
+      return '';
+    }
 
     return `${serverDomain}/${uploadPath}/logo/${logoName}`;
   }

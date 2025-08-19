@@ -12,3 +12,4 @@ export * from './PPNRepository';
 export * from './TransactionItemRepository';
 export * from './TransactionRepository';
 export * from './ShippingRepository';
+export * from './CompanyInfoRepository';

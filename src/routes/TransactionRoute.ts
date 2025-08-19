@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { TransactionController } from '../controllers';
 import { authMiddleware, roleMiddleware } from '../middlewares';
-import { Role } from '@prisma/client';
+import { Role } from '../constants';
 
 export const transactionRoute: Router = Router();
 

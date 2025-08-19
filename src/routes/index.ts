@@ -10,3 +10,4 @@ export * from './CartItemRoute';
 export * from './PPNRoute';
 export * from './TransactionRoute';
 export * from './ShippingRoute';
+export * from './CompanyInfoRoute';

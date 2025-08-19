@@ -5,6 +5,7 @@ import {
   IGetCitiesRequest,
   IGetDistrictsRequest,
   IGetSubDistrictsRequest,
+  ICheckCostRequest,
 } from '../dtos';
 import { ShippingService } from '../services';
 import { successResponse } from '../utils';
@@ -90,6 +91,25 @@ export class ShippingController {
         res,
         StatusCodes.OK,
         'Daftar kelurahan berhasil diambil',
+        response,
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async checkCost(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const request = req.body as ICheckCostRequest;
+      const response = await ShippingService.checkCost(request);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Estimasi biaya pengiriman berhasil diambil',
         response,
       );
     } catch (error) {

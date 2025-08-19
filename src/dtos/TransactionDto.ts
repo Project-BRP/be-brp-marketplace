@@ -2,8 +2,10 @@ import { TxDeliveryStatus, TxManualStatus, TxMethod } from '@prisma/client';
 
 export interface ICreateTransactionRequest {
   userId: string;
-  city: string;
-  province: string;
+  district: number;
+  subDistrict: number;
+  city: number;
+  province: number;
   postalCode: string;
   shippingAddress: string;
   method: TxMethod;
@@ -24,6 +26,8 @@ export interface ICreateTransactionResponse {
   PPNPercentage?: number;
   snapToken?: string;
   snapUrl?: string;
+  district: string;
+  subDistrict: string;
   city: string;
   province: string;
   postalCode: string;
@@ -57,6 +61,8 @@ export interface IGetTransactionResponse {
   PPNPercentage?: number;
   snapToken?: string;
   snapUrl?: string;
+  district: string;
+  subDistrict: string;
   city: string;
   province: string;
   postalCode: string;
@@ -143,6 +149,8 @@ export interface IUpdateTransactionResponse {
   PPNPercentage?: number;
   snapToken?: string;
   snapUrl?: string;
+  district: string;
+  subDistrict: string;
   city: string;
   province: string;
   postalCode: string;
@@ -177,6 +185,8 @@ export interface ICancelTransactionResponse {
   PPNPercentage?: number;
   snapToken?: string;
   snapUrl?: string;
+  district: string;
+  subDistrict: string;
   city: string;
   province: string;
   postalCode: string;

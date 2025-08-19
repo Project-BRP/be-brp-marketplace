@@ -14,24 +14,30 @@ export class TransactionValidation {
         invalid_type_error: 'Alamat pengiriman tidak valid',
       })
       .min(1, 'Alamat pengiriman tidak boleh kosong'),
+    district: z
+      .number({
+        required_error: 'District tidak boleh kosong',
+        invalid_type_error: 'District tidak valid',
+      })
+      .min(1, 'District tidak boleh kosong'),
+    subDistrict: z
+      .number({
+        required_error: 'Sub-District tidak boleh kosong',
+        invalid_type_error: 'Sub-District tidak valid',
+      })
+      .min(1, 'Sub-District tidak boleh kosong'),
     province: z
-      .string({
+      .number({
         required_error: 'Provinsi tidak boleh kosong',
         invalid_type_error: 'Provinsi tidak valid',
       })
       .min(1, 'Provinsi tidak boleh kosong'),
     city: z
-      .string({
+      .number({
         required_error: 'Kota tidak boleh kosong',
         invalid_type_error: 'Kota tidak valid',
       })
       .min(1, 'Kota tidak boleh kosong'),
-    postalCode: z
-      .string({
-        required_error: 'Kode pos tidak boleh kosong',
-        invalid_type_error: 'Kode pos tidak valid',
-      })
-      .min(1, 'Kode pos tidak boleh kosong'),
     method: z.enum(['DELIVERY', 'MANUAL'], {
       required_error: 'Metode transaksi tidak boleh kosong',
       invalid_type_error: 'Metode transaksi tidak valid',

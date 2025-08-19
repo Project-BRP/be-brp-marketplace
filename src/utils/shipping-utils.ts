@@ -1,24 +1,24 @@
 import { StatusCodes } from 'http-status-codes';
 import axios from 'axios';
+import qs from 'qs';
 
-import { IProvince, ICity, IDistrict, ISubDistrict } from '../dtos';
+import {
+  IProvince,
+  ICity,
+  IDistrict,
+  ISubDistrict,
+  IRajaOngkirResponse,
+  ICostCheckPayload,
+  IShippingOption,
+} from '../dtos';
 import { ResponseError } from '../error/ResponseError';
 import { currentEnv, Env, RAJAONGKIR_CONSTANTS } from '../constants';
 import { appLogger } from '../configs/logger';
 
-interface RajaOngkirResponse<T> {
-  meta: {
-    message: string;
-    code: number;
-    status: string;
-  };
-  data: T;
-}
-
 export class ShippingUtils {
   static async fetchProvinces(): Promise<IProvince[]> {
     try {
-      const response = await axios.get<RajaOngkirResponse<IProvince[]>>(
+      const response = await axios.get<IRajaOngkirResponse<IProvince[]>>(
         `${RAJAONGKIR_CONSTANTS.API_URL}/destination/province`,
         {
           headers: {
@@ -44,7 +44,7 @@ export class ShippingUtils {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         appLogger.error('RajaOngkir API Error:', error.response?.data);
-        const meta = (error.response?.data as RajaOngkirResponse<null>)?.meta;
+        const meta = (error.response?.data as IRajaOngkirResponse<null>)?.meta;
         throw new ResponseError(
           meta?.code ||
             error.response?.status ||
@@ -60,7 +60,7 @@ export class ShippingUtils {
 
   static async fetchCities(provinceId: number): Promise<ICity[]> {
     try {
-      const response = await axios.get<RajaOngkirResponse<ICity[]>>(
+      const response = await axios.get<IRajaOngkirResponse<ICity[]>>(
         `${RAJAONGKIR_CONSTANTS.API_URL}/destination/city/${provinceId}`,
         {
           headers: {
@@ -86,7 +86,7 @@ export class ShippingUtils {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         appLogger.error('RajaOngkir API Error:', error.response?.data);
-        const meta = (error.response?.data as RajaOngkirResponse<null>)?.meta;
+        const meta = (error.response?.data as IRajaOngkirResponse<null>)?.meta;
         throw new ResponseError(
           meta?.code ||
             error.response?.status ||
@@ -102,7 +102,7 @@ export class ShippingUtils {
 
   static async fetchDistricts(cityId: number): Promise<IDistrict[]> {
     try {
-      const response = await axios.get<RajaOngkirResponse<IDistrict[]>>(
+      const response = await axios.get<IRajaOngkirResponse<IDistrict[]>>(
         `${RAJAONGKIR_CONSTANTS.API_URL}/destination/district/${cityId}`,
         {
           headers: {
@@ -128,7 +128,7 @@ export class ShippingUtils {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         appLogger.error('RajaOngkiri API Error:', error.response?.data);
-        const meta = (error.response?.data as RajaOngkirResponse<null>)?.meta;
+        const meta = (error.response?.data as IRajaOngkirResponse<null>)?.meta;
         throw new ResponseError(
           meta?.code ||
             error.response?.status ||
@@ -144,7 +144,7 @@ export class ShippingUtils {
 
   static async fetchSubDistricts(districtId: number): Promise<ISubDistrict[]> {
     try {
-      const response = await axios.get<RajaOngkirResponse<ISubDistrict[]>>(
+      const response = await axios.get<IRajaOngkirResponse<ISubDistrict[]>>(
         `${RAJAONGKIR_CONSTANTS.API_URL}/destination/sub-district/${districtId}`,
         {
           headers: {
@@ -170,7 +170,7 @@ export class ShippingUtils {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         appLogger.error('RajaOngkiri API Error:', error.response?.data);
-        const meta = (error.response?.data as RajaOngkirResponse<null>)?.meta;
+        const meta = (error.response?.data as IRajaOngkirResponse<null>)?.meta;
         throw new ResponseError(
           meta?.code ||
             error.response?.status ||
@@ -180,6 +180,52 @@ export class ShippingUtils {
       }
 
       appLogger.error('Unexpected error in fetchSubDistricts:', error);
+      throw error;
+    }
+  }
+
+  static async fetchShippingOptions(
+    payload: ICostCheckPayload,
+  ): Promise<IShippingOption[]> {
+    try {
+      const response = await axios.post<IRajaOngkirResponse<IShippingOption[]>>(
+        `${RAJAONGKIR_CONSTANTS.API_URL}/calculate/domestic-cost`,
+        qs.stringify(payload),
+        {
+          headers: {
+            key: RAJAONGKIR_CONSTANTS.API_KEY,
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        },
+      );
+
+      if (currentEnv === Env.DEVELOPMENT || currentEnv === Env.TESTING) {
+        appLogger.info('RajaOngkiri API Response:', response.data);
+      }
+
+      const { meta, data } = response.data;
+
+      if (meta.status !== 'success') {
+        throw new ResponseError(
+          meta.code,
+          meta.message || 'Failed to fetch shipping options',
+        );
+      }
+
+      return data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        appLogger.error('RajaOngkiri API Error:', error.response?.data);
+        const meta = (error.response?.data as IRajaOngkirResponse<null>)?.meta;
+        throw new ResponseError(
+          meta?.code ||
+            error.response?.status ||
+            StatusCodes.INTERNAL_SERVER_ERROR,
+          meta?.message || 'Failed to fetch shipping options',
+        );
+      }
+
+      appLogger.error('Unexpected error in fetchShippingOptions:', error);
       throw error;
     }
   }

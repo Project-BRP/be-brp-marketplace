@@ -45,4 +45,37 @@ export class ShippingValidation {
       })
       .min(1, 'ID Kecamatan tidak boleh kurang dari 1'),
   });
+
+  static readonly CHECK_COST: ZodType = z.object({
+    destinationProvince: z
+      .number({
+        required_error: 'ID Provinsi Tujuan tidak boleh kosong',
+        invalid_type_error: 'ID Provinsi Tujuan tidak valid',
+      })
+      .min(1, 'ID Provinsi Tujuan tidak boleh kurang dari 1'),
+    destinationCity: z
+      .number({
+        required_error: 'ID Kota Tujuan tidak boleh kosong',
+        invalid_type_error: 'ID Kota Tujuan tidak valid',
+      })
+      .min(1, 'ID Kota Tujuan tidak boleh kurang dari 1'),
+    destinationDistrict: z
+      .number({
+        required_error: 'Destination tidak boleh kosong',
+        invalid_type_error: 'Destination tidak valid',
+      })
+      .min(1, 'Destination tidak boleh kosong'),
+    destinationSubDistrict: z
+      .number({
+        required_error: 'ID Sub-District Tujuan tidak boleh kosong',
+        invalid_type_error: 'ID Sub-District Tujuan tidak valid',
+      })
+      .min(1, 'ID Sub-District Tujuan tidak boleh kurang dari 1'),
+    weight_in_kg: z
+      .number({
+        required_error: 'Weight tidak boleh kosong',
+        invalid_type_error: 'Weight tidak valid',
+      })
+      .min(1, 'Weight tidak boleh kurang dari 1'),
+  });
 }

@@ -2,13 +2,16 @@ import { StatusCodes } from 'http-status-codes';
 
 import { IProvince, ICity, IDistrict, ISubDistrict } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
-import { ShippingRepository } from '../repositories';
-import { Validator } from '../utils';
+import { CompanyInfoRepository, ShippingRepository } from '../repositories';
+import { ShippingUtils, Validator } from '../utils';
 import { ShippingValidation } from '../validations';
 import {
   IGetCitiesRequest,
   IGetDistrictsRequest,
   IGetSubDistrictsRequest,
+  IShippingOption,
+  ICheckCostRequest,
+  ICheckCostResponse,
 } from './../dtos/ShippingDto';
 
 export class ShippingService {
@@ -110,5 +113,69 @@ export class ShippingService {
     const subDistricts = await ShippingRepository.getSubDistricts(district.id);
 
     return subDistricts;
+  }
+
+  static async checkCost(
+    request: ICheckCostRequest,
+  ): Promise<ICheckCostResponse> {
+    const validData = Validator.validate(
+      ShippingValidation.CHECK_COST,
+      request,
+    );
+
+    const companyInfo = await CompanyInfoRepository.findFirst();
+
+    let existingOrigin;
+
+    existingOrigin = await ShippingRepository.getSubDistrict(
+      companyInfo.districtId,
+      companyInfo.subDistrictId,
+    );
+
+    if (!existingOrigin) {
+      existingOrigin = await ShippingRepository.getDistrict(
+        companyInfo.cityId,
+        companyInfo.districtId,
+      );
+      if (!existingOrigin) {
+        throw new ResponseError(
+          StatusCodes.INTERNAL_SERVER_ERROR,
+          'Terjadi kesalahan saat memeriksa biaya pengiriman',
+        );
+      }
+    }
+
+    let existingDestination;
+
+    existingDestination = await ShippingRepository.getSubDistrict(
+      validData.destinationDistrict,
+      validData.destinationSubDistrict,
+    );
+
+    if (!existingDestination) {
+      existingDestination = await ShippingRepository.getDistrict(
+        validData.destinationCity,
+        validData.destinationDistrict,
+      );
+      if (!existingDestination) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Destinasi tidak valid',
+        );
+      }
+    }
+
+    const payload = {
+      origin: existingOrigin.id.toString(),
+      destination: existingDestination.id.toString(),
+      weight: validData.weight_in_kg * 1000,
+      courier: 'jne:sicepat:jnt:pos',
+    };
+
+    const shippingOptions = await ShippingUtils.fetchShippingOptions(payload);
+
+    return {
+      shippingOptions,
+    };
   }
 }

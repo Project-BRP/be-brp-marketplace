@@ -39,6 +39,29 @@ enum TxManualStatus {
   CANCELLED
 }
 
+model CompanyInfo {
+  id            String   @id @default("COMPANY_INFO") @map("id")
+  companyName   String   @map("company_name")
+  logoUrl       String?  @map("logo_url")
+  email         String   @map("email")
+  phoneNumber   String   @map("phone_number")
+  province      String   @map("province")
+  provinceId    Int      @map("province_id")
+  city          String   @map("city")
+  cityId        Int      @map("city_id")
+  district      String   @map("district")
+  districtId    Int      @map("district_id")
+  subDistrict   String   @map("sub_district")
+  subDistrictId Int      @map("sub_district_id")
+  postalCode    String   @map("postal_code")
+  fullAddress   String   @map("full_address")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@unique([id])
+  @@map("company_info")
+}
+
 model User {
   id             String        @id @map("id")
   email          String        @unique @map("email")
@@ -172,6 +195,8 @@ model Transaction {
   snapUrl         String?           @map("snap_url")
   city            String            @map("city")
   province        String            @map("province")
+  district        String            @map("district")
+  subDistrict     String            @map("sub_district")
   postalCode      String            @map("postal_code")
   shippingAddress String            @map("shipping_address")
   shippingCost    Int?              @map("shipping_cost")
