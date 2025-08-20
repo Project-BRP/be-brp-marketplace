@@ -20,6 +20,10 @@ import type {
   ICancelTransactionResponse,
   IGetTxStatusListResponse,
   IGetTxMethodListResponse,
+  ICostCheckPayload,
+  IShippingOption,
+  IRequestPaymentRequest,
+  IRequestPaymentResponse,
 } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
 import {
@@ -32,7 +36,7 @@ import {
   ShippingRepository,
   CompanyInfoRepository,
 } from '../repositories';
-import { PaymentUtils } from '../utils/payment-utils';
+import { PaymentUtils, ShippingUtils } from '../utils';
 import { TransactionUtils } from '../utils/transaction-utils';
 import { Validator } from '../utils/validator';
 import { TransactionValidation } from '../validations';
@@ -78,6 +82,11 @@ export class TransactionService {
       0,
     );
 
+    const totalWeightInKg = transactionItems.reduce(
+      (sum, item) => sum + item.weight_in_kg * item.quantity,
+      0,
+    );
+
     const province = await ShippingRepository.getProvince(validData.province);
 
     if (!province) {
@@ -108,6 +117,13 @@ export class TransactionService {
       throw new ResponseError(StatusCodes.NOT_FOUND, 'Kelurahan tidak valid');
     }
 
+    if (validData.postalCode !== subdistrict.zip_code) {
+      throw new ResponseError(
+        StatusCodes.BAD_REQUEST,
+        'Postal code tidak valid',
+      );
+    }
+
     const companyInfo = await CompanyInfoRepository.findFirst();
 
     if (!companyInfo) {
@@ -118,9 +134,40 @@ export class TransactionService {
     }
 
     let shippingCost = 0;
+    let choosedOption: IShippingOption;
 
     if (validData.method === TxMethod.DELIVERY) {
-      shippingCost = 20000;
+      if (!validData.shippingCode || !validData.shippingService) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Shipping code dan shipping service harus diisi',
+        );
+      }
+
+      const shippingPayload: ICostCheckPayload = {
+        origin: companyInfo.subDistrictId.toString(),
+        destination: subdistrict.id.toString(),
+        weight: totalWeightInKg * 1000,
+        courier: 'jne:sicepat:jnt:pos',
+      };
+
+      const shippingOptions =
+        await ShippingUtils.fetchShippingOptions(shippingPayload);
+
+      choosedOption = shippingOptions.find(
+        option =>
+          option.code === validData.shippingCode &&
+          option.service === validData.shippingService,
+      );
+
+      if (!choosedOption) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Opsi pengiriman tidak valid',
+        );
+      }
+
+      shippingCost = choosedOption.cost;
     }
 
     const transactionId = `TX-${uuid()}`;
@@ -136,38 +183,31 @@ export class TransactionService {
       );
     }
 
-    const userFirstName = user.name.split(' ')[0];
-    const userLastName = user.name.split(' ').slice(1).join(' ') || undefined;
-    const customerDetails = {
-      first_name: userFirstName,
-      last_name: userLastName,
-      email: user.email,
-      phone: user.phoneNumber,
-      address: validData.shippingAddress,
-      shipping_address: {
-        first_name: userFirstName,
-        last_name: userLastName,
-        address: validData.shippingAddress,
-        city: city.name,
-        phone: user.phoneNumber,
-        postal_code: subdistrict.zip_code,
-      },
-    };
-
-    const payment = await PaymentUtils.sendToPaymentGateway(
-      transactionId,
-      PPN,
-      grossAmount,
-      transactionItems,
-      customerDetails,
-      shippingCost,
-    );
-
     const isDelivery = validData.method === TxMethod.DELIVERY;
 
     const db = database;
 
     try {
+      const productVariants = await ProductVariantRepository.findAll(db);
+
+      for (const item of cart.items) {
+        const productVariant = productVariants.find(
+          variant => variant.id === item.variantId,
+        );
+        if (!productVariant) {
+          throw new ResponseError(
+            StatusCodes.NOT_FOUND,
+            `Variant product ${item.variant.product.name} ${item.variant.packaging.name} ${item.variant.weight_in_kg}kg sudah tidak tersedia`,
+          );
+        }
+        if (productVariant.stock < item.quantity) {
+          throw new ResponseError(
+            StatusCodes.BAD_REQUEST,
+            `Stok variant produk ${item.variant.product.name} ${item.variant.packaging.name} ${item.variant.weight_in_kg}kg tidak cukup`,
+          );
+        }
+      }
+
       const newTransaction = await db.$transaction(async tx => {
         const createdTransaction = await TransactionRepository.create(
           {
@@ -179,6 +219,7 @@ export class TransactionService {
             cleanPrice: totalAmount,
             priceWithPPN: PPN + totalAmount,
             totalPrice: grossAmount,
+            totalWeightInKg: totalWeightInKg,
             PPNPercentage: PPNPercentage.percentage,
             city: city.name,
             province: province.name,
@@ -188,10 +229,14 @@ export class TransactionService {
             method: validData.method,
             deliveryStatus: isDelivery ? TxDeliveryStatus.UNPAID : null,
             manualStatus: isDelivery ? null : TxManualStatus.UNPAID,
+            shippingAgent: isDelivery ? choosedOption.name : null,
+            shippingCode: isDelivery ? choosedOption.code : null,
+            shippingService: isDelivery ? choosedOption.service : null,
+            shippingEstimate: isDelivery ? choosedOption.etd : null,
             shippingCost: isDelivery ? shippingCost : null,
             shippingAddress: validData.shippingAddress,
-            snapUrl: payment.redirect_url,
-            snapToken: payment.token,
+            snapUrl: null,
+            snapToken: null,
           },
           tx,
         );
@@ -218,6 +263,99 @@ export class TransactionService {
     }
   }
 
+  static async requestPayment(
+    request: IRequestPaymentRequest,
+  ): Promise<IRequestPaymentResponse> {
+    const validData = Validator.validate(
+      TransactionValidation.REQUEST_PAYMENT,
+      request,
+    );
+
+    const transaction = await TransactionRepository.findById(
+      validData.transactionId,
+    );
+
+    if (!transaction) {
+      throw new ResponseError(
+        StatusCodes.NOT_FOUND,
+        'Transaksi tidak ditemukan',
+      );
+    }
+
+    if (transaction.userId !== validData.userId) {
+      throw new ResponseError(
+        StatusCodes.FORBIDDEN,
+        'Anda tidak memiliki akses untuk melakukan pembayaran ini',
+      );
+    }
+
+    if (transaction.snapToken && transaction.snapUrl) {
+      return { snapUrl: transaction.snapUrl, snapToken: transaction.snapToken };
+    }
+
+    const user = await UserRepository.findById(transaction.userId);
+
+    if (!user) {
+      throw new ResponseError(
+        StatusCodes.NOT_FOUND,
+        'Pengguna tidak ditemukan',
+      );
+    }
+
+    const transactionItems = transaction.transactionItems.map(item => ({
+      variantId: item.variant.id,
+      weight_in_kg: item.variant.weight_in_kg,
+      packaging: item.variant.packaging?.name,
+      productId: item.variant.product.id,
+      quantity: item.quantity,
+      priceRupiah: item.priceRupiah,
+      productName: item.variant.product.name,
+    }));
+
+    const PPN = transaction.priceWithPPN - transaction.cleanPrice;
+    const grossAmount = transaction.totalPrice;
+
+    const userFirstName = user.name.split(' ')[0];
+    const userLastName = user.name.split(' ').slice(1).join(' ') || undefined;
+    const customerDetails = {
+      first_name: userFirstName,
+      last_name: userLastName,
+      email: user.email,
+      phone: user.phoneNumber,
+      address: transaction.shippingAddress,
+      shipping_address: {
+        first_name: userFirstName,
+        last_name: userLastName,
+        address: transaction.shippingAddress,
+        city: transaction.city,
+        phone: user.phoneNumber,
+        postal_code: transaction.postalCode,
+      },
+    };
+
+    const payment = await PaymentUtils.sendToPaymentGateway(
+      transaction.id,
+      PPN,
+      grossAmount,
+      transactionItems,
+      customerDetails,
+      transaction.shippingCost || 0,
+    );
+
+    const updatedTransaction = await TransactionRepository.update(
+      transaction.id,
+      {
+        snapUrl: payment.redirect_url,
+        snapToken: payment.token,
+      },
+    );
+
+    return {
+      snapUrl: updatedTransaction.snapUrl,
+      snapToken: updatedTransaction.snapToken,
+    };
+  }
+
   static async transactionNotif(
     request: ITransactionNotifRequest,
   ): Promise<void> {
@@ -239,6 +377,7 @@ export class TransactionService {
         cleanPrice: transaction.cleanPrice,
         priceWithPPN: transaction.priceWithPPN,
         totalPrice: transaction.totalPrice,
+        totalWeightInKg: transaction.totalWeightInKg,
         PPNPercentage: transaction.PPNPercentage,
         snapToken: transaction.snapToken,
         snapUrl: transaction.snapUrl,
@@ -249,6 +388,10 @@ export class TransactionService {
         postalCode: transaction.postalCode,
         shippingAddress: transaction.shippingAddress,
         shippingCost: transaction.shippingCost,
+        shippingAgent: transaction.shippingAgent,
+        shippingCode: transaction.shippingCode,
+        shippingService: transaction.shippingService,
+        shippingEstimate: transaction.shippingEstimate,
         paymentMethod: transaction.paymentMethod,
         createdAt: transaction.createdAt,
         updatedAt: transaction.updatedAt,
@@ -320,6 +463,7 @@ export class TransactionService {
       cleanPrice: transaction.cleanPrice,
       priceWithPPN: transaction.priceWithPPN,
       totalPrice: transaction.totalPrice,
+      totalWeightInKg: transaction.totalWeightInKg,
       PPNPercentage: transaction.PPNPercentage,
       snapToken: transaction.snapToken,
       snapUrl: transaction.snapUrl,
@@ -330,6 +474,10 @@ export class TransactionService {
       postalCode: transaction.postalCode,
       shippingAddress: transaction.shippingAddress,
       shippingCost: transaction.shippingCost,
+      shippingAgent: transaction.shippingAgent,
+      shippingCode: transaction.shippingCode,
+      shippingService: transaction.shippingService,
+      shippingEstimate: transaction.shippingEstimate,
       paymentMethod: transaction.paymentMethod,
       isRefundFailed: transaction.isRefundFailed,
       cancelReason: transaction.cancelReason,
@@ -424,6 +572,7 @@ export class TransactionService {
           cleanPrice: transaction.cleanPrice,
           priceWithPPN: transaction.priceWithPPN,
           totalPrice: transaction.totalPrice,
+          totalWeightInKg: transaction.totalWeightInKg,
           PPNPercentage: transaction.PPNPercentage,
           snapToken: transaction.snapToken,
           snapUrl: transaction.snapUrl,
@@ -434,6 +583,10 @@ export class TransactionService {
           postalCode: transaction.postalCode,
           shippingAddress: transaction.shippingAddress,
           shippingCost: transaction.shippingCost,
+          shippingAgent: transaction.shippingAgent,
+          shippingCode: transaction.shippingCode,
+          shippingService: transaction.shippingService,
+          shippingEstimate: transaction.shippingEstimate,
           paymentMethod: transaction.paymentMethod,
           isRefundFailed: transaction.isRefundFailed,
           cancelReason: transaction.cancelReason,
@@ -509,6 +662,7 @@ export class TransactionService {
         cleanPrice: transaction.cleanPrice,
         priceWithPPN: transaction.priceWithPPN,
         totalPrice: transaction.totalPrice,
+        totalWeightInKg: transaction.totalWeightInKg,
         PPNPercentage: transaction.PPNPercentage,
         snapToken: transaction.snapToken,
         snapUrl: transaction.snapUrl,
@@ -519,6 +673,10 @@ export class TransactionService {
         postalCode: transaction.postalCode,
         shippingAddress: transaction.shippingAddress,
         shippingCost: transaction.shippingCost,
+        shippingAgent: transaction.shippingAgent,
+        shippingCode: transaction.shippingCode,
+        shippingService: transaction.shippingService,
+        shippingEstimate: transaction.shippingEstimate,
         paymentMethod: transaction.paymentMethod,
         isRefundFailed: transaction.isRefundFailed,
         cancelReason: transaction.cancelReason,
@@ -598,6 +756,7 @@ export class TransactionService {
           cleanPrice: transaction.cleanPrice,
           priceWithPPN: transaction.priceWithPPN,
           totalPrice: transaction.totalPrice,
+          totalWeightInKg: transaction.totalWeightInKg,
           PPNPercentage: transaction.PPNPercentage,
           snapToken: transaction.snapToken,
           snapUrl: transaction.snapUrl,
@@ -608,6 +767,10 @@ export class TransactionService {
           postalCode: transaction.postalCode,
           shippingAddress: transaction.shippingAddress,
           shippingCost: transaction.shippingCost,
+          shippingAgent: transaction.shippingAgent,
+          shippingCode: transaction.shippingCode,
+          shippingService: transaction.shippingService,
+          shippingEstimate: transaction.shippingEstimate,
           paymentMethod: transaction.paymentMethod,
           isRefundFailed: transaction.isRefundFailed,
           cancelReason: transaction.cancelReason,
@@ -685,6 +848,7 @@ export class TransactionService {
         cleanPrice: transaction.cleanPrice,
         priceWithPPN: transaction.priceWithPPN,
         totalPrice: transaction.totalPrice,
+        totalWeightInKg: transaction.totalWeightInKg,
         PPNPercentage: transaction.PPNPercentage,
         snapToken: transaction.snapToken,
         snapUrl: transaction.snapUrl,
@@ -695,6 +859,10 @@ export class TransactionService {
         postalCode: transaction.postalCode,
         shippingAddress: transaction.shippingAddress,
         shippingCost: transaction.shippingCost,
+        shippingAgent: transaction.shippingAgent,
+        shippingCode: transaction.shippingCode,
+        shippingService: transaction.shippingService,
+        shippingEstimate: transaction.shippingEstimate,
         paymentMethod: transaction.paymentMethod,
         isRefundFailed: transaction.isRefundFailed,
         cancelReason: transaction.cancelReason,

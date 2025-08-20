@@ -29,7 +29,10 @@ export class ProductVariantRepository {
     });
   }
 
-  static async findAll(productId: string, tx: Prisma.TransactionClient = db) {
+  static async findByProduct(
+    productId: string,
+    tx: Prisma.TransactionClient = db,
+  ) {
     return tx.productVariant.findMany({
       where: {
         productId: productId,
@@ -40,7 +43,15 @@ export class ProductVariantRepository {
     });
   }
 
-  static async findAllWithPagination(
+  static async findAll(tx: Prisma.TransactionClient = db) {
+    return tx.productVariant.findMany({
+      where: { isDeleted: false },
+      orderBy: { createdAt: 'desc' },
+      include: { packaging: true },
+    });
+  }
+
+  static async findByProductWithPagination(
     skip: number,
     take: number,
     productId: string,

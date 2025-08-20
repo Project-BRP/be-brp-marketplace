@@ -309,7 +309,8 @@ export class ProductVariantService {
     const productId = validData.productId;
 
     if (!take || !validData.page) {
-      const productVariants = await ProductVariantRepository.findAll(productId);
+      const productVariants =
+        await ProductVariantRepository.findByProduct(productId);
 
       return {
         totalPage: 1,
@@ -349,7 +350,7 @@ export class ProductVariantService {
     }
 
     const productVariants =
-      await ProductVariantRepository.findAllWithPagination(
+      await ProductVariantRepository.findByProductWithPagination(
         skip,
         take,
         productId,

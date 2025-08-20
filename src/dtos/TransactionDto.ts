@@ -6,6 +6,8 @@ export interface ICreateTransactionRequest {
   subDistrict: number;
   city: number;
   province: number;
+  shippingCode?: string;
+  shippingService?: string;
   postalCode: string;
   shippingAddress: string;
   method: TxMethod;
@@ -23,6 +25,7 @@ export interface ICreateTransactionResponse {
   cleanPrice: number;
   priceWithPPN: number;
   totalPrice: number;
+  totalWeightInKg: number;
   PPNPercentage?: number;
   snapToken?: string;
   snapUrl?: string;
@@ -32,12 +35,26 @@ export interface ICreateTransactionResponse {
   province: string;
   postalCode: string;
   shippingAddress: string;
+  shippingAgent?: string;
+  shippingCode?: string;
+  shippingService?: string;
+  shippingEstimate?: string;
   shippingCost?: number;
   paymentMethod?: string;
   isRefundFailed?: boolean;
   cancelReason?: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface IRequestPaymentRequest {
+  transactionId: string;
+  userId: string;
+}
+
+export interface IRequestPaymentResponse {
+  snapToken: string;
+  snapUrl: string;
 }
 
 export interface IGetTransactionRequest {
@@ -58,6 +75,7 @@ export interface IGetTransactionResponse {
   cleanPrice: number;
   priceWithPPN: number;
   totalPrice: number;
+  totalWeightInKg: number;
   PPNPercentage?: number;
   snapToken?: string;
   snapUrl?: string;
@@ -67,6 +85,10 @@ export interface IGetTransactionResponse {
   province: string;
   postalCode: string;
   shippingAddress: string;
+  shippingAgent?: string;
+  shippingCode?: string;
+  shippingService?: string;
+  shippingEstimate?: string;
   shippingCost?: number;
   paymentMethod?: string;
   transactionItems: {
@@ -146,6 +168,7 @@ export interface IUpdateTransactionResponse {
   cleanPrice: number;
   priceWithPPN: number;
   totalPrice: number;
+  totalWeightInKg: number;
   PPNPercentage?: number;
   snapToken?: string;
   snapUrl?: string;
@@ -155,6 +178,10 @@ export interface IUpdateTransactionResponse {
   province: string;
   postalCode: string;
   shippingAddress: string;
+  shippingAgent?: string;
+  shippingCode?: string;
+  shippingService?: string;
+  shippingEstimate?: string;
   shippingCost?: number;
   paymentMethod?: string;
   isRefundFailed?: boolean;
@@ -182,6 +209,7 @@ export interface ICancelTransactionResponse {
   cleanPrice: number;
   priceWithPPN: number;
   totalPrice: number;
+  totalWeightInKg: number;
   PPNPercentage?: number;
   snapToken?: string;
   snapUrl?: string;
@@ -191,6 +219,10 @@ export interface ICancelTransactionResponse {
   province: string;
   postalCode: string;
   shippingAddress: string;
+  shippingAgent?: string;
+  shippingCode?: string;
+  shippingService?: string;
+  shippingEstimate?: string;
   shippingCost?: number;
   paymentMethod?: string;
   isRefundFailed?: boolean;

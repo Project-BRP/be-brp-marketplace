@@ -38,9 +38,38 @@ export class TransactionValidation {
         invalid_type_error: 'Kota tidak valid',
       })
       .min(1, 'Kota tidak boleh kosong'),
+    shippingCode: z
+      .string({
+        invalid_type_error: 'Shipping code tidak valid',
+      })
+      .min(1, 'Shipping code tidak boleh kosong')
+      .optional(),
+    shippingService: z
+      .string({
+        invalid_type_error: 'Shipping service tidak valid',
+      })
+      .min(1, 'Shipping service tidak boleh kosong')
+      .optional(),
+    postalCode: z
+      .string({
+        required_error: 'Postal code tidak boleh kosong',
+        invalid_type_error: 'Postal code tidak valid',
+      })
+      .min(1, 'Postal code tidak boleh kosong'),
     method: z.enum(['DELIVERY', 'MANUAL'], {
       required_error: 'Metode transaksi tidak boleh kosong',
       invalid_type_error: 'Metode transaksi tidak valid',
+    }),
+  });
+
+  static readonly REQUEST_PAYMENT: ZodType = z.object({
+    transactionId: z.string({
+      required_error: 'Transaction ID tidak boleh kosong',
+      invalid_type_error: 'Transaction ID tidak valid',
+    }),
+    userId: z.string({
+      required_error: 'User ID tidak boleh kosong',
+      invalid_type_error: 'User ID tidak valid',
     }),
   });
 

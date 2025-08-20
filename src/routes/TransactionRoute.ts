@@ -33,6 +33,11 @@ transactionRoute.get(
 );
 transactionRoute.post('/notification', TransactionController.transactionNotif);
 transactionRoute.get('/:id', authMiddleware, TransactionController.getById);
+transactionRoute.post(
+  '/:id/request-payment',
+  authMiddleware,
+  TransactionController.requestPayment,
+);
 transactionRoute.patch(
   '/:id',
   authMiddleware,

@@ -5,6 +5,7 @@ import {
   IAuthDTO,
   ICreateTransactionRequest,
   ITransactionNotifRequest,
+  IRequestPaymentRequest,
   IGetTransactionRequest,
   IGetAllTransactionsRequest,
   IGetTransactionByUserRequest,
@@ -30,6 +31,8 @@ export class TransactionController {
         subDistrict: req.body.subDistrict,
         postalCode: req.body.postalCode,
         shippingAddress: req.body.shippingAddress,
+        shippingCode: req.body.shippingCode,
+        shippingService: req.body.shippingService,
         method: req.body.method as TxMethod,
       };
       const response = await TransactionService.createTransaction(request);
@@ -38,6 +41,29 @@ export class TransactionController {
         res,
         StatusCodes.CREATED,
         'Transaksi berhasil dibuat',
+        response,
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async requestPayment(
+    req: IAuthDTO,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const request = {
+        transactionId: req.params.id,
+        userId: req.user.userId,
+      } as IRequestPaymentRequest;
+
+      const response = await TransactionService.requestPayment(request);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Permintaan pembayaran berhasil',
         response,
       );
     } catch (error) {
