@@ -29,6 +29,7 @@ import {
   ResetTokenRepository,
   VerifyEmailRepository,
   CartRepository,
+  TransactionRepository,
 } from '../repositories';
 import { JwtToken, PasswordUtils, Validator } from '../utils';
 import { CLIENT_URL_CURRENT } from '../utils/client-url-utils';
@@ -201,6 +202,7 @@ export class AuthService {
           role: user.role,
           phoneNumber: user.phoneNumber,
           photoProfile: user.profilePicture,
+          totalTransaction: user._count?.transaction || 0,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         })),
@@ -238,6 +240,7 @@ export class AuthService {
         role: user.role,
         phoneNumber: user.phoneNumber,
         photoProfile: user.profilePicture,
+        totalTransaction: user._count?.transaction || 0,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       })),

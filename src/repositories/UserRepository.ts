@@ -46,6 +46,14 @@ export class UserRepository {
       orderBy: {
         createdAt: 'desc',
       },
+
+      include: {
+        _count: {
+          select: {
+            transaction: true,
+          },
+        },
+      },
     });
   }
 
@@ -66,6 +74,13 @@ export class UserRepository {
       orderBy: {
         createdAt: 'desc',
       },
+      include: {
+        _count: {
+          select: {
+            transaction: true,
+          },
+        },
+      },
     });
   }
 
@@ -85,17 +100,6 @@ export class UserRepository {
       },
     });
   }
-
-  // static async findByUsername(
-  //   username: string,
-  //   tx: Prisma.TransactionClient = db,
-  // ) {
-  //   return tx.user.findUnique({
-  //     where: {
-  //       username: username,
-  //     },
-  //   });
-  // }
 
   static async findByEmail(email: string, tx: Prisma.TransactionClient = db) {
     return tx.user.findUnique({

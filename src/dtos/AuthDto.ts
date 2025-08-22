@@ -35,6 +35,7 @@ export interface IGetUserResponse {
   role: string;
   phoneNumber: string;
   photoProfile?: string;
+  totalTransaction?: number;
   createdAt: Date;
   updatedAt: Date;
 }
