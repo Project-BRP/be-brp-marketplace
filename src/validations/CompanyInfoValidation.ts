@@ -50,6 +50,12 @@ export class CompanyInfoValidation {
         invalid_type_error: 'Alamat lengkap tidak valid',
       })
       .min(1, 'Alamat lengkap tidak boleh kosong'),
+    npwp: z
+      .string({
+        required_error: 'NPWP tidak boleh kosong',
+        invalid_type_error: 'NPWP tidak valid',
+      })
+      .min(1, 'NPWP tidak boleh kosong'),
   });
 
   static readonly UPDATE_COMPANY_INFO: ZodType = z
@@ -101,6 +107,12 @@ export class CompanyInfoValidation {
           invalid_type_error: 'Alamat lengkap tidak valid',
         })
         .min(1, 'Alamat lengkap tidak boleh kosong')
+        .optional(),
+      npwp: z
+        .string({
+          invalid_type_error: 'NPWP tidak valid',
+        })
+        .min(1, 'NPWP tidak boleh kosong')
         .optional(),
     })
     .refine(

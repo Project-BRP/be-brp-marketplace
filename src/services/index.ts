@@ -12,3 +12,4 @@ export * from './PPNService';
 export * from './TransactionService';
 export * from './ShippingService';
 export * from './CompanyInfoService';
+export * from './ReportService';

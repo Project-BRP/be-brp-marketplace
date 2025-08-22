@@ -7,6 +7,7 @@ export interface ICreateCompanyInfoRequest {
   district: number;
   subDistrict: number;
   fullAddress: string;
+  npwp: string;
 }
 
 export interface ICreateCompanyInfoResponse {
@@ -20,6 +21,7 @@ export interface ICreateCompanyInfoResponse {
   subDistrict: string;
   fullAddress: string;
   postalCode: string;
+  npwp: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -36,6 +38,7 @@ export interface IGetCompanyInfoResponse {
   fullAddress: string;
   postalCode: string;
   logoUrl?: string;
+  npwp: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -49,6 +52,7 @@ export interface IUpdateCompanyInfoRequest {
   district?: number;
   subDistrict?: number;
   fullAddress?: string;
+  npwp?: string;
 }
 
 export interface IUpdateCompanyInfoResponse {
@@ -63,6 +67,7 @@ export interface IUpdateCompanyInfoResponse {
   fullAddress: string;
   postalCode: string;
   logoUrl?: string;
+  npwp: string;
   createdAt: Date;
   updatedAt: Date;
 }

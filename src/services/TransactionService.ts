@@ -24,6 +24,7 @@ import type {
   IShippingOption,
   IRequestPaymentRequest,
   IRequestPaymentResponse,
+  IAddManualShippingCostRequest,
 } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
 import {
@@ -392,6 +393,7 @@ export class TransactionService {
         shippingCode: transaction.shippingCode,
         shippingService: transaction.shippingService,
         shippingEstimate: transaction.shippingEstimate,
+        manualShippingCost: transaction.manualShippingCost,
         paymentMethod: transaction.paymentMethod,
         createdAt: transaction.createdAt,
         updatedAt: transaction.updatedAt,
@@ -478,6 +480,7 @@ export class TransactionService {
       shippingCode: transaction.shippingCode,
       shippingService: transaction.shippingService,
       shippingEstimate: transaction.shippingEstimate,
+      manualShippingCost: transaction.manualShippingCost,
       paymentMethod: transaction.paymentMethod,
       isRefundFailed: transaction.isRefundFailed,
       cancelReason: transaction.cancelReason,
@@ -587,6 +590,7 @@ export class TransactionService {
           shippingCode: transaction.shippingCode,
           shippingService: transaction.shippingService,
           shippingEstimate: transaction.shippingEstimate,
+          manualShippingCost: transaction.manualShippingCost,
           paymentMethod: transaction.paymentMethod,
           isRefundFailed: transaction.isRefundFailed,
           cancelReason: transaction.cancelReason,
@@ -677,6 +681,7 @@ export class TransactionService {
         shippingCode: transaction.shippingCode,
         shippingService: transaction.shippingService,
         shippingEstimate: transaction.shippingEstimate,
+        manualShippingCost: transaction.manualShippingCost,
         paymentMethod: transaction.paymentMethod,
         isRefundFailed: transaction.isRefundFailed,
         cancelReason: transaction.cancelReason,
@@ -771,6 +776,7 @@ export class TransactionService {
           shippingCode: transaction.shippingCode,
           shippingService: transaction.shippingService,
           shippingEstimate: transaction.shippingEstimate,
+          manualShippingCost: transaction.manualShippingCost,
           paymentMethod: transaction.paymentMethod,
           isRefundFailed: transaction.isRefundFailed,
           cancelReason: transaction.cancelReason,
@@ -863,6 +869,7 @@ export class TransactionService {
         shippingCode: transaction.shippingCode,
         shippingService: transaction.shippingService,
         shippingEstimate: transaction.shippingEstimate,
+        manualShippingCost: transaction.manualShippingCost,
         paymentMethod: transaction.paymentMethod,
         isRefundFailed: transaction.isRefundFailed,
         cancelReason: transaction.cancelReason,
@@ -1198,6 +1205,52 @@ export class TransactionService {
       StatusCodes.BAD_REQUEST,
       'Metode transaksi tidak dikenali',
     );
+  }
+
+  static async addManualShippingCost(
+    request: IAddManualShippingCostRequest,
+  ): Promise<IGetTransactionResponse> {
+    const validData = Validator.validate(
+      TransactionValidation.ADD_MANUAL_SHIPPING_COST,
+      request,
+    );
+
+    const transaction = await TransactionRepository.findById(
+      validData.transactionId,
+    );
+    if (!transaction) {
+      throw new ResponseError(
+        StatusCodes.NOT_FOUND,
+        'Transaksi tidak ditemukan',
+      );
+    }
+
+    if (transaction.method !== TxMethod.MANUAL) {
+      throw new ResponseError(
+        StatusCodes.BAD_REQUEST,
+        'Hanya metode manual yang dapat menggunakan biaya pengiriman manual',
+      );
+    }
+
+    if (
+      transaction.manualStatus === TxManualStatus.UNPAID ||
+      transaction.manualStatus === TxManualStatus.CANCELLED
+    ) {
+      throw new ResponseError(
+        StatusCodes.BAD_REQUEST,
+        'Biaya pengiriman manual tidak dapat ditambahkan pada transaksi yang belum dibayar atau dibatalkan',
+      );
+    }
+
+    const updated = await TransactionRepository.update(
+      validData.transactionId,
+      {
+        manualShippingCost: validData.manualShippingCost,
+      },
+    );
+
+    IoService.emitTransaction();
+    return updated;
   }
 
   static async cancelTransaction(

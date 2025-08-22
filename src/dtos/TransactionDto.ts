@@ -40,6 +40,7 @@ export interface ICreateTransactionResponse {
   shippingService?: string;
   shippingEstimate?: string;
   shippingCost?: number;
+  manualShippingCost?: number;
   paymentMethod?: string;
   isRefundFailed?: boolean;
   cancelReason?: string;
@@ -90,6 +91,7 @@ export interface IGetTransactionResponse {
   shippingService?: string;
   shippingEstimate?: string;
   shippingCost?: number;
+  manualShippingCost?: number;
   paymentMethod?: string;
   transactionItems: {
     id: string;
@@ -183,6 +185,7 @@ export interface IUpdateTransactionResponse {
   shippingService?: string;
   shippingEstimate?: string;
   shippingCost?: number;
+  manualShippingCost?: number;
   paymentMethod?: string;
   isRefundFailed?: boolean;
   cancelReason?: string;
@@ -224,6 +227,7 @@ export interface ICancelTransactionResponse {
   shippingService?: string;
   shippingEstimate?: string;
   shippingCost?: number;
+  manualShippingCost?: number;
   paymentMethod?: string;
   isRefundFailed?: boolean;
   cancelReason?: string;
@@ -238,6 +242,11 @@ export interface IGetTxStatusListResponse {
 
 export interface IGetTxMethodListResponse {
   txMethodList: TxMethod[];
+}
+
+export interface IAddManualShippingCostRequest {
+  transactionId: string;
+  manualShippingCost: number;
 }
 
 export interface ITransactionNotifRequest {

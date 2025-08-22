@@ -10,6 +10,7 @@ import {
   IGetAllTransactionsRequest,
   IGetTransactionByUserRequest,
   IUpdateTransactionRequest,
+  IAddManualShippingCostRequest,
   ICancelTransactionRequest,
 } from '../dtos';
 import { TransactionService } from '../services';
@@ -207,6 +208,30 @@ export class TransactionController {
       next(error);
     }
   }
+
+  static async addManualShippingCost(
+    req: IAuthDTO,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const request: IAddManualShippingCostRequest = {
+        transactionId: req.params.id,
+        manualShippingCost: req.body.manualShippingCost,
+      };
+
+      const response = await TransactionService.addManualShippingCost(request);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Biaya pengiriman manual berhasil ditambahkan',
+        response,
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async cancelTransaction(
     req: IAuthDTO,
     res: Response,

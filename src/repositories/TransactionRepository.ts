@@ -307,4 +307,39 @@ export class TransactionRepository {
       where: { ...whereCondition },
     });
   }
+
+  static async aggregateRevenueByDateRange(
+    startDate: Date,
+    endDate: Date,
+    tx: Prisma.TransactionClient = db,
+  ) {
+    const completedStatusFilter: Prisma.TransactionWhereInput = {
+      OR: [
+        { deliveryStatus: TxDeliveryStatus.DELIVERED },
+        { manualStatus: TxManualStatus.COMPLETE },
+      ],
+    };
+
+    const result = await tx.transaction.aggregate({
+      where: {
+        ...completedStatusFilter,
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      _sum: {
+        cleanPrice: true,
+        shippingCost: true,
+        manualShippingCost: true,
+      },
+    });
+
+    const totalRevenue =
+      (result._sum.cleanPrice || 0) +
+      (result._sum.shippingCost || 0) +
+      (result._sum.manualShippingCost || 0);
+
+    return totalRevenue;
+  }
 }

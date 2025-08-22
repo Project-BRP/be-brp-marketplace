@@ -45,6 +45,12 @@ transactionRoute.patch(
   TransactionController.updateTransactionStatus,
 );
 transactionRoute.post(
+  '/:id/add-manual-shipping-cost',
+  authMiddleware,
+  roleMiddleware([Role.ADMIN]),
+  TransactionController.addManualShippingCost,
+);
+transactionRoute.post(
   '/:id/cancel',
   authMiddleware,
   TransactionController.cancelTransaction,

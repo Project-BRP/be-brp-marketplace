@@ -2,9 +2,10 @@ import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import path from 'path';
 import { DateTime } from 'luxon';
-import { IGetTransactionResponse } from '../dtos';
+import { IGetCompanyInfoResponse, IGetTransactionResponse } from '../dtos';
 import { TxMethod } from '@prisma/client';
 import { appLogger } from '../configs/logger';
+import { CompanyInfoRepository } from '../repositories';
 
 const THEME_COLOR = '#28a745';
 const SECONDARY_COLOR = '#333333';
@@ -17,13 +18,14 @@ export class PDFUtils {
     transaction: IGetTransactionResponse,
   ): Promise<string> {
     try {
+      const companyInfo = await CompanyInfoRepository.findFirst();
       const doc = new PDFDocument({
         margin: 50,
         size: 'A4',
         bufferPages: true,
         info: {
           Title: `Invoice ${transaction.id}`,
-          Author: 'PT. BUMI REKAYASA PERSADA',
+          Author: companyInfo?.companyName || '-',
         },
       });
 
@@ -67,15 +69,18 @@ export class PDFUtils {
         .fillColor(THEME_COLOR)
         .fontSize(18)
         .font('Helvetica-Bold')
-        .text('PT. BUMI REKAYASA PERSADA', { align: 'right' })
+        .text(companyInfo?.companyName || '-', { align: 'right' })
         .fontSize(9)
         .font('Helvetica')
         .fillColor(DARK_GRAY)
-        .text('Jl. Contoh No. 123, Jakarta Selatan', { align: 'right' })
-        .text('Telp: (021) 12345678 | Email: info@bumirekayasa.com', {
-          align: 'right',
-        })
-        .text('NPWP: 12.345.678.9-012.345', { align: 'right' })
+        .text(companyInfo?.fullAddress || '-', { align: 'right' })
+        .text(
+          `Telp: ${companyInfo?.phoneNumber || '-'} | Email: ${companyInfo?.email || '-'}`,
+          {
+            align: 'right',
+          },
+        )
+        .text(`NPWP: ${companyInfo?.npwp || '-'}`, { align: 'right' })
         .moveDown(1.5);
 
       doc

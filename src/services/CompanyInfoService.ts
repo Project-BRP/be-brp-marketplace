@@ -78,6 +78,7 @@ export class CompanyInfoService {
       subDistrictId: subDistrict.id,
       fullAddress: validData.fullAddress,
       postalCode: subDistrict.zip_code,
+      npwp: validData.npwp,
     };
 
     const createdCompanyInfo = await CompanyInfoRepository.create(createData);

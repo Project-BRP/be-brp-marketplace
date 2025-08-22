@@ -4,6 +4,7 @@ import { userSeeder } from './UserSeeder';
 import { productSeeder } from './ProductSeeder';
 import { packagingSeeder } from './packagingSeeder';
 import { productVariantSeeder } from './ProductVariantSeeder';
+import { transactionSeeder } from './TransactionSeeder';
 
 const seeders: { [key: string]: () => Promise<void> } = {
   users: userSeeder,
@@ -11,6 +12,7 @@ const seeders: { [key: string]: () => Promise<void> } = {
   packagings: packagingSeeder,
   products: productSeeder,
   productVariants: productVariantSeeder,
+  transactions: transactionSeeder,
 };
 
 async function main() {
@@ -34,6 +36,7 @@ async function main() {
       'packagings',
       'products',
       'productVariants',
+      'transactions',
     ];
     for (const name of orderedSeeders) {
       console.log(`Running ${name} seeder...`);

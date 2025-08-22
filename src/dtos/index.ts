@@ -12,3 +12,4 @@ export * from './TransactionDto';
 export * from './ShippingDto';
 export * from './CompanyInfoDto';
 export * from './ConfigDto';
+export * from './ReportDto';

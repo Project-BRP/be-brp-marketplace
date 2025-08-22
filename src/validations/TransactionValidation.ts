@@ -201,6 +201,21 @@ export class TransactionValidation {
     manualStatus: z.string().optional(),
   });
 
+  static readonly ADD_MANUAL_SHIPPING_COST: ZodType = z.object({
+    transactionId: z
+      .string({
+        required_error: 'Transaction ID tidak boleh kosong',
+        invalid_type_error: 'Transaction ID tidak valid',
+      })
+      .min(1, 'Transaction ID tidak boleh kosong'),
+    manualShippingCost: z
+      .number({
+        required_error: 'Manual shipping cost tidak boleh kosong',
+        invalid_type_error: 'Manual shipping cost tidak valid',
+      })
+      .min(0, 'Manual shipping cost tidak boleh kurang dari 0'),
+  });
+
   static readonly CANCEL: ZodType = z.object({
     id: z
       .string({
