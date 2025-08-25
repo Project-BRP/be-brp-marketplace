@@ -26,6 +26,12 @@ transactionRoute.get(
   TransactionController.getTxMethodList,
 );
 transactionRoute.get(
+  '/date-range',
+  authMiddleware,
+  roleMiddleware([Role.ADMIN]),
+  TransactionController.getTransactionDateRanges,
+);
+transactionRoute.get(
   '/',
   authMiddleware,
   roleMiddleware([Role.ADMIN]),

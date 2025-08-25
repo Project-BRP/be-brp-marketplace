@@ -292,4 +292,22 @@ export class TransactionController {
       next(error);
     }
   }
+
+  static async getTransactionDateRanges(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const response = await TransactionService.getTransactionDateRanges();
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Daftar rentang tanggal transaksi berhasil diambil',
+        response,
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
 }

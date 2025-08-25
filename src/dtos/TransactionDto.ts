@@ -257,3 +257,13 @@ export interface ITransactionNotifRequest {
   grossAmount: string;
   paymentType: string;
 }
+
+export interface IGetAllTransactionDateRangeResponse {
+  firstDate: Date | null;
+  lastDate: Date | null;
+  yearMonthsMap: {
+    [year: number]: {
+      months: number[];
+    };
+  };
+}

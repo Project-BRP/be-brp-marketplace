@@ -122,21 +122,21 @@ export class UserRepository {
     });
   }
 
-// Di dalam UserRepository.ts atau di mana pun fungsi ini berada
+  // Di dalam UserRepository.ts atau di mana pun fungsi ini berada
 
-static async countActiveUsers(
-  startDate: Date,
-  endDate: Date,
-  tx: Prisma.TransactionClient = db,
-): Promise<number> {
-  // 1. Pastikan konsistensi timezone
-  await tx.$executeRawUnsafe(`SET TIME ZONE 'Asia/Jakarta'`);
+  static async countActiveUsers(
+    startDate: Date,
+    endDate: Date,
+    tx: Prisma.TransactionClient = db,
+  ): Promise<number> {
+    // 1. Pastikan konsistensi timezone
+    await tx.$executeRawUnsafe(`SET TIME ZONE 'Asia/Jakarta'`);
 
-  const delivered = TxDeliveryStatus.DELIVERED.toString();
-  const complete = TxManualStatus.COMPLETE.toString();
+    const delivered = TxDeliveryStatus.DELIVERED.toString();
+    const complete = TxManualStatus.COMPLETE.toString();
 
-  // 2. Hitung user_id unik dari transaksi yang memenuhi kriteria
-  const result: { active_users: number }[] = await tx.$queryRaw`
+    // 2. Hitung user_id unik dari transaksi yang memenuhi kriteria
+    const result: { active_users: number }[] = await tx.$queryRaw`
     SELECT
       COUNT(DISTINCT "user_id")::integer AS active_users
     FROM
@@ -147,10 +147,10 @@ static async countActiveUsers(
       AND "created_at" <= ${endDate};
   `;
 
-  // 3. Proses hasilnya
-  const activeUsers = result[0]?.active_users;
-  return activeUsers || 0;
-}
+    // 3. Proses hasilnya
+    const activeUsers = result[0]?.active_users;
+    return activeUsers || 0;
+  }
 
   static async delete(id: string, tx: Prisma.TransactionClient = db) {
     return tx.user.delete({

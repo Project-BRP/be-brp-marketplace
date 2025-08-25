@@ -25,6 +25,7 @@ import type {
   IRequestPaymentRequest,
   IRequestPaymentResponse,
   IAddManualShippingCostRequest,
+  IGetAllTransactionDateRangeResponse,
 } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
 import {
@@ -1218,6 +1219,7 @@ export class TransactionService {
     const transaction = await TransactionRepository.findById(
       validData.transactionId,
     );
+
     if (!transaction) {
       throw new ResponseError(
         StatusCodes.NOT_FOUND,
@@ -1389,5 +1391,30 @@ export class TransactionService {
   static async getTxMethodList(): Promise<IGetTxMethodListResponse> {
     const txMethodList = Object.values(TxMethod);
     return { txMethodList };
+  }
+
+  static async getTransactionDateRanges(): Promise<IGetAllTransactionDateRangeResponse> {
+    const [firstTransaction, lastTransaction, monthlyData] = await Promise.all([
+      TransactionRepository.findFirstTransactionDate(),
+      TransactionRepository.findLastTransactionDate(),
+      TransactionRepository.getTransactionMonthsByYear(),
+    ]);
+
+    const yearMonthsMap: {
+      [year: number]: { months: number[] };
+    } = {};
+
+    monthlyData.forEach(({ year, month }) => {
+      if (!yearMonthsMap[year]) {
+        yearMonthsMap[year] = { months: [] };
+      }
+      yearMonthsMap[year].months.push(month);
+    });
+
+    return {
+      firstDate: firstTransaction,
+      lastDate: lastTransaction,
+      yearMonthsMap,
+    };
   }
 }

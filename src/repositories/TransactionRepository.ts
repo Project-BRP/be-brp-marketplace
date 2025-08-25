@@ -470,15 +470,51 @@ export class TransactionRepository {
   static async findFirstTransactionDate(
     tx: Prisma.TransactionClient = db,
   ): Promise<Date | null> {
-    const firstTransaction = await tx.transaction.findFirst({
-      orderBy: {
-        createdAt: 'asc',
-      },
-      select: {
-        createdAt: true,
-      },
-    });
+    await tx.$executeRawUnsafe(`SET TIME ZONE 'Asia/Jakarta'`);
 
-    return firstTransaction?.createdAt || null;
+    const firstTransaction: { createdAt: Date | null }[] = await tx.$queryRaw`
+    SELECT
+      MIN("created_at") AS "createdAt"
+    FROM
+      transactions;
+  `;
+
+    return firstTransaction[0]?.createdAt || null;
+  }
+
+  // ... (tambahkan method baru ini di dalam class TransactionRepository)
+
+  static async findLastTransactionDate(
+    tx: Prisma.TransactionClient = db,
+  ): Promise<Date | null> {
+    await tx.$executeRawUnsafe(`SET TIME ZONE 'Asia/Jakarta'`);
+
+    const lastTransaction: { createdAt: Date | null }[] = await tx.$queryRaw`
+    SELECT
+      MAX("created_at") AS "createdAt"
+    FROM
+      transactions;
+  `;
+
+    return lastTransaction[0]?.createdAt || null;
+  }
+
+  static async getTransactionMonthsByYear(
+    tx: Prisma.TransactionClient = db,
+  ): Promise<{ year: number; month: number }[]> {
+    await tx.$executeRawUnsafe(`SET TIME ZONE 'Asia/Jakarta'`);
+
+    const result: { year: number; month: number }[] = await tx.$queryRaw`
+    SELECT
+      EXTRACT(YEAR FROM "created_at")::integer AS year,
+      EXTRACT(MONTH FROM "created_at")::integer AS month
+    FROM
+      transactions
+    GROUP BY
+      year, month
+    ORDER BY
+      year ASC, month ASC;
+  `;
+    return result;
   }
 }
