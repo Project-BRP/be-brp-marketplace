@@ -136,6 +136,24 @@ export class TransactionController {
         status: req.query.status as TxDeliveryStatus | TxManualStatus,
         page: req.query.page ? parseInt(req.query.page as string, 10) : 1,
         limit: req.query.limit ? parseInt(req.query.limit as string, 10) : 10,
+        startYear: req.query.startYear
+          ? parseInt(req.query.startYear as string, 10)
+          : undefined,
+        startMonth: req.query.startMonth
+          ? parseInt(req.query.startMonth as string, 10)
+          : undefined,
+        startDay: req.query.startDay
+          ? parseInt(req.query.startDay as string, 10)
+          : undefined,
+        endYear: req.query.endYear
+          ? parseInt(req.query.endYear as string, 10)
+          : undefined,
+        endMonth: req.query.endMonth
+          ? parseInt(req.query.endMonth as string, 10)
+          : undefined,
+        endDay: req.query.endDay
+          ? parseInt(req.query.endDay as string, 10)
+          : undefined,
       };
 
       const response = await TransactionService.getAll(request);

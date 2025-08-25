@@ -130,7 +130,6 @@ export class UserRepository {
     tx: Prisma.TransactionClient = db,
   ): Promise<number> {
     // 1. Pastikan konsistensi timezone
-    await tx.$executeRawUnsafe(`SET TIME ZONE 'Asia/Jakarta'`);
 
     const delivered = TxDeliveryStatus.DELIVERED.toString();
     const complete = TxManualStatus.COMPLETE.toString();

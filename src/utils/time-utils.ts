@@ -34,4 +34,22 @@ export class TimeUtils {
       .endOf('month')
       .toJSDate();
   }
+
+  static getStartOfDay(year: number, month: number, day: number): Date {
+    return DateTime.fromObject(
+      { year, month, day },
+      { zone: 'Asia/Jakarta' },
+    )
+      .startOf('day')
+      .toJSDate();
+  }
+
+  static getEndOfDay(year: number, month: number, day: number): Date {
+    return DateTime.fromObject(
+      { year, month, day },
+      { zone: 'Asia/Jakarta' },
+    )
+      .endOf('day')
+      .toJSDate();
+  }
 }

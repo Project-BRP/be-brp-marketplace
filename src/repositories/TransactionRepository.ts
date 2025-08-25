@@ -61,6 +61,8 @@ export class TransactionRepository {
     method?: TxMethod,
     search?: string,
     status?: TxDeliveryStatus | TxManualStatus,
+    startDate?: Date,
+    endDate?: Date,
     tx: Prisma.TransactionClient = db,
   ) {
     const whereCondition: Prisma.TransactionWhereInput = {};
@@ -79,6 +81,12 @@ export class TransactionRepository {
         { id: { contains: search, mode: 'insensitive' } },
         { userName: { contains: search, mode: 'insensitive' } },
       ];
+    }
+
+    if (startDate || endDate) {
+      whereCondition.createdAt = {};
+      if (startDate) whereCondition.createdAt.gte = startDate;
+      if (endDate) whereCondition.createdAt.lte = endDate;
     }
 
     return tx.transaction.findMany({
@@ -98,7 +106,7 @@ export class TransactionRepository {
         },
       },
       orderBy: {
-        updatedAt: 'desc',
+        createdAt: 'desc',
       },
     });
   }
@@ -109,6 +117,8 @@ export class TransactionRepository {
     method?: TxMethod,
     search?: string,
     status?: TxDeliveryStatus | TxManualStatus,
+    startDate?: Date,
+    endDate?: Date,
     tx: Prisma.TransactionClient = db,
   ) {
     const whereCondition: Prisma.TransactionWhereInput = {};
@@ -127,6 +137,12 @@ export class TransactionRepository {
         { id: { contains: search, mode: 'insensitive' } },
         { userName: { contains: search, mode: 'insensitive' } },
       ];
+    }
+
+    if (startDate || endDate) {
+      whereCondition.createdAt = {};
+      if (startDate) whereCondition.createdAt.gte = startDate;
+      if (endDate) whereCondition.createdAt.lte = endDate;
     }
 
     return tx.transaction.findMany({
@@ -148,7 +164,7 @@ export class TransactionRepository {
         },
       },
       orderBy: {
-        updatedAt: 'desc',
+        createdAt: 'desc',
       },
     });
   }
@@ -157,6 +173,8 @@ export class TransactionRepository {
     method?: TxMethod,
     search?: string,
     status?: TxDeliveryStatus | TxManualStatus,
+    startDate?: Date,
+    endDate?: Date,
     tx: Prisma.TransactionClient = db,
   ) {
     const whereCondition: Prisma.TransactionWhereInput = {};
@@ -168,6 +186,12 @@ export class TransactionRepository {
       } else if (method === TxMethod.MANUAL) {
         whereCondition.manualStatus = status as TxManualStatus;
       }
+    }
+
+    if (startDate || endDate) {
+      whereCondition.createdAt = {};
+      if (startDate) whereCondition.createdAt.gte = startDate;
+      if (endDate) whereCondition.createdAt.lte = endDate;
     }
 
     if (search) {
@@ -224,7 +248,7 @@ export class TransactionRepository {
         },
       },
       orderBy: {
-        updatedAt: 'desc',
+        createdAt: 'desc',
       },
     });
   }
@@ -273,7 +297,7 @@ export class TransactionRepository {
         },
       },
       orderBy: {
-        updatedAt: 'desc',
+        createdAt: 'desc',
       },
     });
   }
@@ -317,7 +341,6 @@ export class TransactionRepository {
   ) {
     // Anda bisa menghapus SET TIME ZONE di sini jika sudah ada di query raw,
     // tapi lebih aman jika dibiarkan untuk konsistensi.
-    await tx.$executeRawUnsafe(`SET TIME ZONE 'Asia/Jakarta'`);
 
     const delivered = TxDeliveryStatus.DELIVERED.toString();
     const complete = TxManualStatus.COMPLETE.toString();
@@ -343,8 +366,6 @@ export class TransactionRepository {
     endDate: Date,
     tx: Prisma.TransactionClient = db,
   ): Promise<number> {
-    await tx.$executeRawUnsafe(`SET TIME ZONE 'Asia/Jakarta'`);
-
     const delivered = TxDeliveryStatus.DELIVERED.toString();
     const complete = TxManualStatus.COMPLETE.toString();
 
@@ -368,7 +389,6 @@ export class TransactionRepository {
     tx: Prisma.TransactionClient = db,
   ): Promise<number> {
     // 1. Pastikan konsistensi timezone
-    await tx.$executeRawUnsafe(`SET TIME ZONE 'Asia/Jakarta'`);
 
     const delivered = TxDeliveryStatus.DELIVERED.toString();
     const complete = TxManualStatus.COMPLETE.toString();
@@ -397,8 +417,6 @@ export class TransactionRepository {
     endDate: Date,
     tx: Prisma.TransactionClient = db,
   ) {
-    await tx.$executeRawUnsafe(`SET TIME ZONE 'Asia/Jakarta'`);
-
     const delivered = TxDeliveryStatus.DELIVERED.toString();
     const complete = TxManualStatus.COMPLETE.toString();
 
@@ -431,8 +449,6 @@ export class TransactionRepository {
     endDate: Date,
     tx: Prisma.TransactionClient = db,
   ) {
-    await tx.$executeRawUnsafe(`SET TIME ZONE 'Asia/Jakarta'`);
-
     const delivered = TxDeliveryStatus.DELIVERED.toString();
     const complete = TxManualStatus.COMPLETE.toString();
 
@@ -470,8 +486,6 @@ export class TransactionRepository {
   static async findFirstTransactionDate(
     tx: Prisma.TransactionClient = db,
   ): Promise<Date | null> {
-    await tx.$executeRawUnsafe(`SET TIME ZONE 'Asia/Jakarta'`);
-
     const firstTransaction: { createdAt: Date | null }[] = await tx.$queryRaw`
     SELECT
       MIN("created_at") AS "createdAt"
@@ -487,8 +501,6 @@ export class TransactionRepository {
   static async findLastTransactionDate(
     tx: Prisma.TransactionClient = db,
   ): Promise<Date | null> {
-    await tx.$executeRawUnsafe(`SET TIME ZONE 'Asia/Jakarta'`);
-
     const lastTransaction: { createdAt: Date | null }[] = await tx.$queryRaw`
     SELECT
       MAX("created_at") AS "createdAt"
@@ -502,8 +514,6 @@ export class TransactionRepository {
   static async getTransactionMonthsByYear(
     tx: Prisma.TransactionClient = db,
   ): Promise<{ year: number; month: number }[]> {
-    await tx.$executeRawUnsafe(`SET TIME ZONE 'Asia/Jakarta'`);
-
     const result: { year: number; month: number }[] = await tx.$queryRaw`
     SELECT
       EXTRACT(YEAR FROM "created_at")::integer AS year,

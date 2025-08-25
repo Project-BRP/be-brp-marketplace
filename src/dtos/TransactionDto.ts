@@ -126,6 +126,12 @@ export interface IGetAllTransactionsRequest {
   limit?: number;
   method?: TxMethod;
   search?: string;
+  startYear?: number;
+  startMonth?: number;
+  startDay?: number;
+  endYear?: number;
+  endMonth?: number;
+  endDay?: number;
   status?: TxDeliveryStatus | TxManualStatus;
 }
 
