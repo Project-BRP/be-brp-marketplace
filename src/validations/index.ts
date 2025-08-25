@@ -10,3 +10,4 @@ export * from './TransactionValidation';
 export * from './ShippingValidation';
 export * from './CompanyInfoValidation';
 export * from './ConfigValidation';
+export * from './ReportValidation';

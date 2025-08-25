@@ -11,57 +11,35 @@ import { v4 as uuid } from 'uuid';
 
 const prisma = new PrismaClient();
 
-// Helper function to get a random element from an array
-const getRandomElement = <T>(arr: T[]): T => {
-  return arr[Math.floor(Math.random() * arr.length)];
-};
-
-// Helper function to get a random number in a range
-const getRandomNumber = (min: number, max: number): number => {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
-// ✅ BARU: Helper function untuk membuat tanggal acak pada bulan dan tahun tertentu
+// Helper functions
+const getRandomElement = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
+const getRandomNumber = (min: number, max: number): number => Math.floor(Math.random() * (max - min + 1)) + min;
 const getRandomDateInMonth = (year: number, month: number): Date => {
-  const day = getRandomNumber(1, 28); // Ambil tanggal 1-28 agar aman untuk semua bulan
+  const day = getRandomNumber(1, 28);
   const hour = getRandomNumber(0, 23);
   const minute = getRandomNumber(0, 59);
-  const second = getRandomNumber(0, 59);
-  // Menggunakan WIB (UTC+7)
-  return new Date(Date.UTC(year, month, day, hour - 7, minute, second));
+  return new Date(Date.UTC(year, month, day, hour - 7, minute));
 };
 
-// Interface untuk item dalam transaksi
-interface ITransactionItemSeed {
-  id: string;
-  transactionId: string;
-  variantId: string;
-  quantity: number;
-  priceRupiah: number;
-}
-
-// Interface untuk objek transaksi yang akan dibuat
 interface ICreatedTransactionSeed {
   transactionData: Prisma.TransactionCreateInput;
-  items: ITransactionItemSeed[];
+  items: Prisma.TransactionItemCreateManyInput[];
 }
 
 export const transactionSeeder = async () => {
-  console.log('Starting transaction seeder...');
+  console.log('🚀 Starting advanced, purposeful transaction seeder...');
 
-  // 1. Ambil data yang dibutuhkan dari database
+  // 1. Ambil data master
   const users = await prisma.user.findMany();
   const productVariants = await prisma.productVariant.findMany();
   const ppn = await prisma.currentPPN.findFirst();
 
-  if (users.length === 0) {
-    console.error('❌ No users found. Please seed users first.');
+  if (users.length < 5) {
+    console.error('❌ Need at least 5 users for this seeder. Please seed users first.');
     return;
   }
-  if (productVariants.length === 0) {
-    console.error(
-      '❌ No product variants found. Please seed product variants first.',
-    );
+  if (productVariants.length < 10) {
+    console.error('❌ Need at least 10 product variants. Please seed them first.');
     return;
   }
   if (!ppn) {
@@ -69,52 +47,66 @@ export const transactionSeeder = async () => {
     return;
   }
 
-  const numberOfTransactions = 50;
-  const createdTransactions: ICreatedTransactionSeed[] = [];
+  // 2. Tentukan Persona & Kategori Produk
+  const frequentBuyer = users[0];
+  const seasonalBuyer = users[1];
+  const newUser = users[2];
+  const nicheProductBuyer = users[3];
   
-  // Dapatkan bulan dan tahun saat ini
+  const popularProducts = productVariants.slice(0, 4);
+  const nicheProduct = productVariants[4];
+  const regularProducts = productVariants.slice(5);
+
+  const numberOfTransactions = 300; // ✅ Ditingkatkan menjadi 300
+  const createdTransactions: ICreatedTransactionSeed[] = [];
   const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth(); // 0-11 (Januari-Desember)
-  const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-  const yearForLastMonth = currentMonth === 0 ? currentYear - 1 : currentYear;
 
-
-  // 2. Buat transaksi sebanyak numberOfTransactions
+  // 3. Loop untuk membuat 300 transaksi
   for (let i = 0; i < numberOfTransactions; i++) {
-    const randomUser = getRandomElement(users);
-    const transactionId = `TX-${uuid()}`;
+    // ✅ BARU: Tentukan tanggal transaksi: sebar acak dalam 12 bulan terakhir
+    const monthOffset = getRandomNumber(0, 11);
+    const transactionDate = new Date(now);
+    transactionDate.setMonth(now.getMonth() - monthOffset);
+    // Pastikan tanggal tidak melebihi 'now' jika offsetnya 0
+    if (monthOffset === 0) {
+        transactionDate.setDate(getRandomNumber(1, now.getDate()));
+    }
+    const randomDateInThatMonth = getRandomDateInMonth(transactionDate.getFullYear(), transactionDate.getMonth());
 
-    // ✅ BARU: Tentukan tanggal transaksi secara acak (50% bulan ini, 50% bulan lalu)
-    const isCurrentMonth = Math.random() < 0.5;
-    const transactionDate = isCurrentMonth
-      ? getRandomDateInMonth(currentYear, currentMonth)
-      : getRandomDateInMonth(yearForLastMonth, lastMonth);
 
-    // 3. Simulasikan isi keranjang belanja
-    const cartItemsCount = getRandomNumber(1, 5);
+    // Tentukan pengguna berdasarkan persona
+    let currentUser = getRandomElement(users);
+    const userRoll = Math.random();
+    if (userRoll < 0.35) currentUser = frequentBuyer;
+    else if (userRoll < 0.55 && monthOffset < 3) currentUser = seasonalBuyer;
+    else if (userRoll < 0.60 && monthOffset === 0) currentUser = newUser;
+    else if (userRoll < 0.65) currentUser = nicheProductBuyer;
+
+    // Tentukan produk yang akan dibeli
+    const cartItemsCount = getRandomNumber(1, 4);
     const selectedVariants: { variantId: string; quantity: number }[] = [];
-    const availableVariants = [...productVariants];
-
-    for (let j = 0; j < cartItemsCount; j++) {
-      if (availableVariants.length === 0) break;
-      const variantIndex = Math.floor(Math.random() * availableVariants.length);
-      const variant = availableVariants[variantIndex];
-      if (variant.stock > 0) {
-        selectedVariants.push({
-          variantId: variant.id,
-          quantity: getRandomNumber(1, Math.min(3, variant.stock)),
-        });
-        availableVariants.splice(variantIndex, 1);
-      }
+    
+    if (currentUser.id === nicheProductBuyer.id && Math.random() < 0.8) {
+        if(nicheProduct.stock > 0) selectedVariants.push({ variantId: nicheProduct.id, quantity: 1 });
     }
 
+    while (selectedVariants.length < cartItemsCount) {
+        const productPool = Math.random() < 0.6 ? popularProducts : regularProducts;
+        const variant = getRandomElement(productPool);
+        if (variant.stock > 0 && !selectedVariants.some(v => v.variantId === variant.id)) {
+            selectedVariants.push({
+                variantId: variant.id,
+                quantity: getRandomNumber(1, 2),
+            });
+        }
+    }
+    
     if (selectedVariants.length === 0) continue;
 
-    // 4. Hitung total harga dan berat
+    // 4. Hitung total
     let cleanPrice = 0;
     let totalWeightInKg = 0;
-    const transactionItemsData: ITransactionItemSeed[] = [];
+    const transactionItemsData: any[] = [];
 
     for (const item of selectedVariants) {
       const variantDetails = productVariants.find(v => v.id === item.variantId)!;
@@ -123,50 +115,41 @@ export const transactionSeeder = async () => {
       totalWeightInKg += variantDetails.weight_in_kg * item.quantity;
       transactionItemsData.push({
         id: `TI-${uuid()}`,
-        transactionId: transactionId,
         variantId: item.variantId,
         quantity: item.quantity,
         priceRupiah: itemPrice,
       });
     }
-    
-    // 5. Tentukan metode dan status transaksi secara acak
+
+    // 5. Tentukan status dengan variasi
     const method = getRandomElement([TxMethod.DELIVERY, TxMethod.MANUAL]);
     let deliveryStatus: TxDeliveryStatus | null = null;
     let manualStatus: TxManualStatus | null = null;
     let shippingCost = 0;
-
-    const isCompleted = Math.random() < 0.9;
+    const statusRoll = Math.random();
 
     if (method === TxMethod.DELIVERY) {
       shippingCost = getRandomNumber(10000, 50000);
-      deliveryStatus = isCompleted
-        ? TxDeliveryStatus.DELIVERED
-        : getRandomElement([
-            TxDeliveryStatus.UNPAID,
-            TxDeliveryStatus.PAID,
-            TxDeliveryStatus.SHIPPED,
-          ]);
+      if (statusRoll < 0.9) deliveryStatus = TxDeliveryStatus.DELIVERED;
+      else if (statusRoll < 0.95) deliveryStatus = TxDeliveryStatus.SHIPPED;
+      else if (statusRoll < 0.98) deliveryStatus = TxDeliveryStatus.PAID;
+      else deliveryStatus = TxDeliveryStatus.CANCELLED;
     } else {
-      manualStatus = isCompleted
-        ? TxManualStatus.COMPLETE
-        : getRandomElement([
-            TxManualStatus.UNPAID,
-            TxManualStatus.PAID,
-            TxManualStatus.PROCESSING,
-          ]);
+      if (statusRoll < 0.9) manualStatus = TxManualStatus.COMPLETE;
+      else if (statusRoll < 0.95) manualStatus = TxManualStatus.PROCESSING;
+      else if (statusRoll < 0.98) manualStatus = TxManualStatus.PAID;
+      else manualStatus = TxManualStatus.CANCELLED;
     }
 
     const priceWithPPN = cleanPrice * (1 + ppn.percentage / 100);
     const totalPrice = priceWithPPN + shippingCost;
-
-    // 6. Siapkan data untuk dimasukkan ke database
+    
     const transactionData: Prisma.TransactionCreateInput = {
-      id: transactionId,
-      user: { connect: { id: randomUser.id } },
-      userName: randomUser.name,
-      userEmail: randomUser.email,
-      userPhoneNumber: randomUser.phoneNumber,
+      id: `TX-${uuid()}`,
+      user: { connect: { id: currentUser.id } },
+      userName: currentUser.name,
+      userEmail: currentUser.email,
+      userPhoneNumber: currentUser.phoneNumber,
       method,
       deliveryStatus,
       manualStatus,
@@ -180,46 +163,25 @@ export const transactionSeeder = async () => {
       district: 'Gubeng',
       subDistrict: 'Kertajaya',
       postalCode: '60282',
-      shippingAddress: 'Jl. Contoh Alamat No. 123',
-      shippingAgent: method === TxMethod.DELIVERY ? 'JNE' : null,
-      shippingCode: method === TxMethod.DELIVERY ? 'jne' : null,
-      shippingService: method === TxMethod.DELIVERY ? 'REG' : null,
-      shippingEstimate: method === TxMethod.DELIVERY ? '2-3 hari' : null,
+      shippingAddress: `Jl. Uji Coba Seeder No. ${i + 1}`,
       shippingCost,
       paymentMethod: 'bank_transfer',
-      createdAt: transactionDate, // ✅ BARU: Gunakan tanggal yang sudah dibuat
+      createdAt: randomDateInThatMonth,
     };
-
-    createdTransactions.push({
-      transactionData,
-      items: transactionItemsData,
-    });
+    
+    createdTransactions.push({ transactionData, items: transactionItemsData });
   }
 
-  // 7. Masukkan semua data transaksi ke database
+  // 6. Masukkan data ke database
   for (const tx of createdTransactions) {
     try {
       await prisma.transaction.create({
-        data: {
-          ...tx.transactionData,
-          transactionItems: {
-            createMany: {
-              data: tx.items.map(
-                ({ transactionId, ...rest }) => rest,
-              ),
-            },
-          },
-        },
+        data: { ...tx.transactionData, transactionItems: { createMany: { data: tx.items } } },
       });
     } catch (error) {
-      console.error(
-        `❌ Failed to create transaction ${tx.transactionData.id}:`,
-        error,
-      );
+      console.error(`❌ Failed to create transaction ${tx.transactionData.id}:`, error);
     }
   }
 
-  console.log(
-    `✅ Transactions seeded successfully! (${createdTransactions.length} created)`,
-  );
+  console.log(`✅ Advanced transactions seeded successfully! (${createdTransactions.length} created)`);
 };

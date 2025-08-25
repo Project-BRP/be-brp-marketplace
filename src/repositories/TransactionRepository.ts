@@ -308,38 +308,177 @@ export class TransactionRepository {
     });
   }
 
+  // Di dalam TransactionRepository.ts
+
   static async aggregateRevenueByDateRange(
     startDate: Date,
     endDate: Date,
     tx: Prisma.TransactionClient = db,
   ) {
-    const completedStatusFilter: Prisma.TransactionWhereInput = {
-      OR: [
-        { deliveryStatus: TxDeliveryStatus.DELIVERED },
-        { manualStatus: TxManualStatus.COMPLETE },
-      ],
-    };
+    // Anda bisa menghapus SET TIME ZONE di sini jika sudah ada di query raw,
+    // tapi lebih aman jika dibiarkan untuk konsistensi.
+    await tx.$executeRawUnsafe(`SET TIME ZONE 'Asia/Jakarta'`);
 
-    const result = await tx.transaction.aggregate({
-      where: {
-        ...completedStatusFilter,
-        createdAt: {
-          gte: startDate,
-          lte: endDate,
-        },
+    const delivered = TxDeliveryStatus.DELIVERED.toString();
+    const complete = TxManualStatus.COMPLETE.toString();
+
+    // Ganti total implementasi dengan query raw yang sudah terbukti benar.
+    const result: { total_revenue: bigint | null }[] = await tx.$queryRaw`
+    SELECT
+      SUM("clean_price" + COALESCE("shipping_cost", 0) + COALESCE("manual_extra_cost", 0))::bigint AS total_revenue
+    FROM
+      transactions
+    WHERE
+      ("delivery_status"::text = ${delivered} OR "manual_status"::text = ${complete})
+      AND "created_at" >= ${startDate}
+      AND "created_at" <= ${endDate};
+  `;
+
+    const totalRevenue = result[0]?.total_revenue;
+    return Number(totalRevenue || 0);
+  }
+
+  static async countCompletedTransactions(
+    startDate: Date,
+    endDate: Date,
+    tx: Prisma.TransactionClient = db,
+  ): Promise<number> {
+    await tx.$executeRawUnsafe(`SET TIME ZONE 'Asia/Jakarta'`);
+
+    const delivered = TxDeliveryStatus.DELIVERED.toString();
+    const complete = TxManualStatus.COMPLETE.toString();
+
+    const result: { total_completed: bigint | null }[] = await tx.$queryRaw`
+      SELECT
+        COUNT(*)::bigint AS total_completed
+      FROM
+        transactions
+      WHERE
+        ("delivery_status"::text = ${delivered} OR "manual_status"::text = ${complete})
+        AND "created_at" >= ${startDate}
+        AND "created_at" <= ${endDate};
+    `;
+
+    return Number(result[0]?.total_completed || 0);
+  }
+
+  static async countTotalProductsSold(
+    startDate: Date,
+    endDate: Date,
+    tx: Prisma.TransactionClient = db,
+  ): Promise<number> {
+    // 1. Pastikan konsistensi timezone
+    await tx.$executeRawUnsafe(`SET TIME ZONE 'Asia/Jakarta'`);
+
+    const delivered = TxDeliveryStatus.DELIVERED.toString();
+    const complete = TxManualStatus.COMPLETE.toString();
+
+    // 2. Gunakan raw query untuk menggabungkan tabel dan menyaring data
+    const result: { total_sold: bigint | null }[] = await tx.$queryRaw`
+    SELECT
+      SUM(ti.quantity)::bigint AS total_sold
+    FROM
+      transaction_items AS ti
+    JOIN
+      transactions AS t ON ti."transaction_id" = t.id
+    WHERE
+      (t."delivery_status"::text = ${delivered} OR t."manual_status"::text = ${complete})
+      AND t."created_at" >= ${startDate}
+      AND t."created_at" <= ${endDate};
+  `;
+
+    // 3. Proses hasilnya
+    const totalSold = result[0]?.total_sold;
+    return Number(totalSold || 0);
+  }
+
+  static async getMonthlyRevenue(
+    startDate: Date,
+    endDate: Date,
+    tx: Prisma.TransactionClient = db,
+  ) {
+    await tx.$executeRawUnsafe(`SET TIME ZONE 'Asia/Jakarta'`);
+
+    const delivered = TxDeliveryStatus.DELIVERED.toString();
+    const complete = TxManualStatus.COMPLETE.toString();
+
+    const result: { year: number; month: number; total_revenue: bigint }[] =
+      await tx.$queryRaw`
+    SELECT
+      EXTRACT(YEAR FROM "created_at")::integer AS year,
+      EXTRACT(MONTH FROM "created_at")::integer AS month,
+      SUM("clean_price" + COALESCE("shipping_cost", 0) + COALESCE("manual_extra_cost", 0))::bigint AS total_revenue
+    FROM
+      transactions
+    WHERE
+      ("delivery_status"::text = ${delivered} OR "manual_status"::text = ${complete})
+      AND "created_at" >= ${startDate}
+      AND "created_at" <= ${endDate}
+    GROUP BY
+      year, month
+    ORDER BY
+      year ASC, month ASC;
+  `;
+
+    return result.map(row => ({
+      ...row,
+      total_revenue: Number(row.total_revenue),
+    }));
+  }
+
+  static async getMostSoldProducts(
+    startDate: Date,
+    endDate: Date,
+    tx: Prisma.TransactionClient = db,
+  ) {
+    await tx.$executeRawUnsafe(`SET TIME ZONE 'Asia/Jakarta'`);
+
+    const delivered = TxDeliveryStatus.DELIVERED.toString();
+    const complete = TxManualStatus.COMPLETE.toString();
+
+    const result: { id: string; name: string; total_sold: bigint }[] =
+      await tx.$queryRaw`
+    SELECT
+      p.id,
+      p.name,
+      SUM(ti.quantity)::bigint AS total_sold
+    FROM
+      transaction_items AS ti
+    JOIN
+      transactions AS t ON ti."transaction_id" = t.id
+    JOIN
+      product_variants AS pv ON ti."variant_id" = pv.id
+    JOIN
+      products AS p ON pv."product_id" = p.id
+    WHERE
+      (t."delivery_status"::text = ${delivered} OR t."manual_status"::text = ${complete})
+      AND t."created_at" >= ${startDate}
+      AND t."created_at" <= ${endDate}
+    GROUP BY
+      p.id, p.name
+    ORDER BY
+      total_sold DESC
+    LIMIT 10;
+  `;
+
+    return result.map(row => ({
+      ...row,
+      total_sold: Number(row.total_sold),
+    }));
+  }
+
+  static async findFirstTransactionDate(
+    tx: Prisma.TransactionClient = db,
+  ): Promise<Date | null> {
+    const firstTransaction = await tx.transaction.findFirst({
+      orderBy: {
+        createdAt: 'asc',
       },
-      _sum: {
-        cleanPrice: true,
-        shippingCost: true,
-        manualShippingCost: true,
+      select: {
+        createdAt: true,
       },
     });
 
-    const totalRevenue =
-      (result._sum.cleanPrice || 0) +
-      (result._sum.shippingCost || 0) +
-      (result._sum.manualShippingCost || 0);
-
-    return totalRevenue;
+    return firstTransaction?.createdAt || null;
   }
 }
