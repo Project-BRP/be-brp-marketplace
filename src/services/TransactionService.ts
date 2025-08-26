@@ -513,72 +513,148 @@ export class TransactionService {
   }
 
   static async getAll(
-  request: IGetAllTransactionsRequest,
-): Promise<IGetAllTransactionsResponse> {
-  const validData = Validator.validate(
-    TransactionValidation.GET_ALL,
-    request,
-  );
-
-  const page = validData.page;
-  const take = validData.limit;
-  const skip = (validData.page - 1) * take;
-  const search = validData.search;
-  const method = validData.method;
-  const status = validData.status;
-
-  // Konversi date range
-  let startDate: Date | undefined;
-  let endDate: Date | undefined;
-
-  if (validData.startYear && validData.startMonth && validData.startDay) {
-    startDate = TimeUtils.getStartOfDay(
-      validData.startYear,
-      validData.startMonth,
-      validData.startDay,
+    request: IGetAllTransactionsRequest,
+  ): Promise<IGetAllTransactionsResponse> {
+    const validData = Validator.validate(
+      TransactionValidation.GET_ALL,
+      request,
     );
-  } else if (validData.startYear && validData.startMonth) {
-    startDate = TimeUtils.getStartOfMonth(validData.startYear, validData.startMonth);
-  }
 
-  if (validData.endYear && validData.endMonth && validData.endDay) {
-    endDate = TimeUtils.getEndOfDay(
-      validData.endYear,
-      validData.endMonth,
-      validData.endDay,
-    );
-  } else if (validData.endYear && validData.endMonth) {
-    endDate = TimeUtils.getEndOfMonth(validData.endYear, validData.endMonth);
-  }
+    const page = validData.page;
+    const take = validData.limit;
+    const skip = (validData.page - 1) * take;
+    const search = validData.search;
+    const method = validData.method;
+    const status = validData.status;
 
-  if (method && !Object.values(TxMethod).includes(method)) {
-    throw new ResponseError(StatusCodes.BAD_REQUEST, 'Metode transaksi tidak valid');
-  }
+    // Konversi date range
+    let startDate: Date | undefined;
+    let endDate: Date | undefined;
 
-  if (status) {
-    if (!method) {
-      throw new ResponseError(
-        StatusCodes.BAD_REQUEST,
-        'Jika Ingin memfilter status, metode transaksi harus ditentukan',
+    if (validData.startYear && validData.startMonth && validData.startDay) {
+      startDate = TimeUtils.getStartOfDay(
+        validData.startYear,
+        validData.startMonth,
+        validData.startDay,
+      );
+    } else if (validData.startYear && validData.startMonth) {
+      startDate = TimeUtils.getStartOfMonth(
+        validData.startYear,
+        validData.startMonth,
       );
     }
-    if (
-      method === TxMethod.MANUAL &&
-      !Object.values(TxManualStatus).includes(status as TxManualStatus)
-    ) {
-      throw new ResponseError(StatusCodes.BAD_REQUEST, 'Status tidak valid');
-    }
-    if (
-      method === TxMethod.DELIVERY &&
-      !Object.values(TxDeliveryStatus).includes(status as TxDeliveryStatus)
-    ) {
-      throw new ResponseError(StatusCodes.BAD_REQUEST, 'Status tidak valid');
-    }
-  }
 
-  // Non-paginated mode
-  if (!take || !page) {
-    const transactions = await TransactionRepository.findAll(
+    if (validData.endYear && validData.endMonth && validData.endDay) {
+      endDate = TimeUtils.getEndOfDay(
+        validData.endYear,
+        validData.endMonth,
+        validData.endDay,
+      );
+    } else if (validData.endYear && validData.endMonth) {
+      endDate = TimeUtils.getEndOfMonth(validData.endYear, validData.endMonth);
+    }
+
+    if (method && !Object.values(TxMethod).includes(method)) {
+      throw new ResponseError(
+        StatusCodes.BAD_REQUEST,
+        'Metode transaksi tidak valid',
+      );
+    }
+
+    if (status) {
+      if (!method) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Jika Ingin memfilter status, metode transaksi harus ditentukan',
+        );
+      }
+      if (
+        method === TxMethod.MANUAL &&
+        !Object.values(TxManualStatus).includes(status as TxManualStatus)
+      ) {
+        throw new ResponseError(StatusCodes.BAD_REQUEST, 'Status tidak valid');
+      }
+      if (
+        method === TxMethod.DELIVERY &&
+        !Object.values(TxDeliveryStatus).includes(status as TxDeliveryStatus)
+      ) {
+        throw new ResponseError(StatusCodes.BAD_REQUEST, 'Status tidak valid');
+      }
+    }
+
+    // Non-paginated mode
+    if (!take || !page) {
+      const transactions = await TransactionRepository.findAll(
+        method,
+        search,
+        status,
+        startDate,
+        endDate,
+      );
+
+      return {
+        totalPage: 1,
+        currentPage: 1,
+        transactions: transactions.map(transaction => ({
+          id: transaction.id,
+          userId: transaction.userId,
+          userName: transaction.userName,
+          userEmail: transaction.userEmail,
+          userPhoneNumber: transaction.userPhoneNumber,
+          method: transaction.method,
+          deliveryStatus: transaction.deliveryStatus,
+          manualStatus: transaction.manualStatus,
+          cleanPrice: transaction.cleanPrice,
+          priceWithPPN: transaction.priceWithPPN,
+          totalPrice: transaction.totalPrice,
+          totalWeightInKg: transaction.totalWeightInKg,
+          PPNPercentage: transaction.PPNPercentage,
+          snapToken: transaction.snapToken,
+          snapUrl: transaction.snapUrl,
+          city: transaction.city,
+          province: transaction.province,
+          district: transaction.district,
+          subDistrict: transaction.subDistrict,
+          postalCode: transaction.postalCode,
+          shippingAddress: transaction.shippingAddress,
+          shippingCost: transaction.shippingCost,
+          shippingAgent: transaction.shippingAgent,
+          shippingCode: transaction.shippingCode,
+          shippingService: transaction.shippingService,
+          shippingEstimate: transaction.shippingEstimate,
+          manualShippingCost: transaction.manualShippingCost,
+          paymentMethod: transaction.paymentMethod,
+          isRefundFailed: transaction.isRefundFailed,
+          cancelReason: transaction.cancelReason,
+          createdAt: transaction.createdAt,
+          updatedAt: transaction.updatedAt,
+          transactionItems: transaction.transactionItems.map(item => ({
+            id: item.id,
+            quantity: item.quantity,
+            priceRupiah: item.priceRupiah,
+            isStockIssue: item.isStockIssue,
+            variant: {
+              id: item.variant.id,
+              weight_in_kg: item.variant.weight_in_kg,
+              imageUrl: item.variant.imageUrl || null,
+              priceRupiah: item.variant.priceRupiah,
+              product: {
+                id: item.variant.product.id,
+                name: item.variant.product.name,
+                imageUrl: item.variant.product.imageUrl || null,
+              },
+              packaging: item.variant.packaging && {
+                id: item.variant.packaging.id,
+                name: item.variant.packaging.name,
+              },
+              stock: item.variant.stock,
+            },
+          })),
+        })),
+      };
+    }
+
+    const totalTransactions = await TransactionRepository.count(
       method,
       search,
       status,
@@ -586,162 +662,92 @@ export class TransactionService {
       endDate,
     );
 
+    if (totalTransactions === 0) {
+      return {
+        totalPage: 1,
+        currentPage: 1,
+        transactions: [],
+      };
+    }
+
+    if (skip >= totalTransactions) {
+      throw new ResponseError(StatusCodes.BAD_REQUEST, 'Halaman tidak valid');
+    }
+
+    const transactions = await TransactionRepository.findAllWithPagination(
+      skip,
+      take,
+      method,
+      search,
+      status,
+      startDate,
+      endDate,
+    );
+
+    const totalPage = Math.ceil(totalTransactions / take);
+    const currentPage = Math.ceil(skip / take) + 1;
+
     return {
-      totalPage: 1,
-      currentPage: 1,
+      totalPage,
+      currentPage,
       transactions: transactions.map(transaction => ({
-      id: transaction.id,
-      userId: transaction.userId,
-      userName: transaction.userName,
-      userEmail: transaction.userEmail,
-      userPhoneNumber: transaction.userPhoneNumber,
-      method: transaction.method,
-      deliveryStatus: transaction.deliveryStatus,
-      manualStatus: transaction.manualStatus,
-      cleanPrice: transaction.cleanPrice,
-      priceWithPPN: transaction.priceWithPPN,
-      totalPrice: transaction.totalPrice,
-      totalWeightInKg: transaction.totalWeightInKg,
-      PPNPercentage: transaction.PPNPercentage,
-      snapToken: transaction.snapToken,
-      snapUrl: transaction.snapUrl,
-      city: transaction.city,
-      province: transaction.province,
-      district: transaction.district,
-      subDistrict: transaction.subDistrict,
-      postalCode: transaction.postalCode,
-      shippingAddress: transaction.shippingAddress,
-      shippingCost: transaction.shippingCost,
-      shippingAgent: transaction.shippingAgent,
-      shippingCode: transaction.shippingCode,
-      shippingService: transaction.shippingService,
-      shippingEstimate: transaction.shippingEstimate,
-      manualShippingCost: transaction.manualShippingCost,
-      paymentMethod: transaction.paymentMethod,
-      isRefundFailed: transaction.isRefundFailed,
-      cancelReason: transaction.cancelReason,
-      createdAt: transaction.createdAt,
-      updatedAt: transaction.updatedAt,
-      transactionItems: transaction.transactionItems.map(item => ({
-        id: item.id,
-        quantity: item.quantity,
-        priceRupiah: item.priceRupiah,
-        isStockIssue: item.isStockIssue,
-        variant: {
-        id: item.variant.id,
-        weight_in_kg: item.variant.weight_in_kg,
-        imageUrl: item.variant.imageUrl || null,
-        priceRupiah: item.variant.priceRupiah,
-        product: {
-          id: item.variant.product.id,
-          name: item.variant.product.name,
-          imageUrl: item.variant.product.imageUrl || null,
-        },
-        packaging: item.variant.packaging && {
-          id: item.variant.packaging.id,
-          name: item.variant.packaging.name,
-        },
-        stock: item.variant.stock,
-        },
-      })),
+        id: transaction.id,
+        userId: transaction.userId,
+        userName: transaction.userName,
+        userEmail: transaction.userEmail,
+        userPhoneNumber: transaction.userPhoneNumber,
+        method: transaction.method,
+        deliveryStatus: transaction.deliveryStatus,
+        manualStatus: transaction.manualStatus,
+        cleanPrice: transaction.cleanPrice,
+        priceWithPPN: transaction.priceWithPPN,
+        totalPrice: transaction.totalPrice,
+        totalWeightInKg: transaction.totalWeightInKg,
+        PPNPercentage: transaction.PPNPercentage,
+        snapToken: transaction.snapToken,
+        snapUrl: transaction.snapUrl,
+        city: transaction.city,
+        province: transaction.province,
+        district: transaction.district,
+        subDistrict: transaction.subDistrict,
+        postalCode: transaction.postalCode,
+        shippingAddress: transaction.shippingAddress,
+        shippingCost: transaction.shippingCost,
+        shippingAgent: transaction.shippingAgent,
+        shippingCode: transaction.shippingCode,
+        shippingService: transaction.shippingService,
+        shippingEstimate: transaction.shippingEstimate,
+        manualShippingCost: transaction.manualShippingCost,
+        paymentMethod: transaction.paymentMethod,
+        isRefundFailed: transaction.isRefundFailed,
+        cancelReason: transaction.cancelReason,
+        createdAt: transaction.createdAt,
+        updatedAt: transaction.updatedAt,
+        transactionItems: transaction.transactionItems.map(item => ({
+          id: item.id,
+          quantity: item.quantity,
+          priceRupiah: item.priceRupiah,
+          isStockIssue: item.isStockIssue,
+          variant: {
+            id: item.variant.id,
+            weight_in_kg: item.variant.weight_in_kg,
+            imageUrl: item.variant.imageUrl || null,
+            priceRupiah: item.variant.priceRupiah,
+            product: {
+              id: item.variant.product.id,
+              name: item.variant.product.name,
+              imageUrl: item.variant.product.imageUrl || null,
+            },
+            packaging: item.variant.packaging && {
+              id: item.variant.packaging.id,
+              name: item.variant.packaging.name,
+            },
+            stock: item.variant.stock,
+          },
+        })),
       })),
     };
   }
-
-  const totalTransactions = await TransactionRepository.count(
-    method,
-    search,
-    status,
-    startDate,
-    endDate,
-  );
-
-  if (totalTransactions === 0) {
-    return {
-      totalPage: 1,
-      currentPage: 1,
-      transactions: [],
-    };
-  }
-
-  if (skip >= totalTransactions) {
-    throw new ResponseError(StatusCodes.BAD_REQUEST, 'Halaman tidak valid');
-  }
-
-  const transactions = await TransactionRepository.findAllWithPagination(
-    skip,
-    take,
-    method,
-    search,
-    status,
-    startDate,
-    endDate,
-  );
-
-  const totalPage = Math.ceil(totalTransactions / take);
-  const currentPage = Math.ceil(skip / take) + 1;
-
-  return {
-    totalPage,
-    currentPage,
-    transactions: transactions.map(transaction => ({
-      id: transaction.id,
-      userId: transaction.userId,
-      userName: transaction.userName,
-      userEmail: transaction.userEmail,
-      userPhoneNumber: transaction.userPhoneNumber,
-      method: transaction.method,
-      deliveryStatus: transaction.deliveryStatus,
-      manualStatus: transaction.manualStatus,
-      cleanPrice: transaction.cleanPrice,
-      priceWithPPN: transaction.priceWithPPN,
-      totalPrice: transaction.totalPrice,
-      totalWeightInKg: transaction.totalWeightInKg,
-      PPNPercentage: transaction.PPNPercentage,
-      snapToken: transaction.snapToken,
-      snapUrl: transaction.snapUrl,
-      city: transaction.city,
-      province: transaction.province,
-      district: transaction.district,
-      subDistrict: transaction.subDistrict,
-      postalCode: transaction.postalCode,
-      shippingAddress: transaction.shippingAddress,
-      shippingCost: transaction.shippingCost,
-      shippingAgent: transaction.shippingAgent,
-      shippingCode: transaction.shippingCode,
-      shippingService: transaction.shippingService,
-      shippingEstimate: transaction.shippingEstimate,
-      manualShippingCost: transaction.manualShippingCost,
-      paymentMethod: transaction.paymentMethod,
-      isRefundFailed: transaction.isRefundFailed,
-      cancelReason: transaction.cancelReason,
-      createdAt: transaction.createdAt,
-      updatedAt: transaction.updatedAt,
-      transactionItems: transaction.transactionItems.map(item => ({
-        id: item.id,
-        quantity: item.quantity,
-        priceRupiah: item.priceRupiah,
-        isStockIssue: item.isStockIssue,
-        variant: {
-          id: item.variant.id,
-          weight_in_kg: item.variant.weight_in_kg,
-          imageUrl: item.variant.imageUrl || null,
-          priceRupiah: item.variant.priceRupiah,
-          product: {
-            id: item.variant.product.id,
-            name: item.variant.product.name,
-            imageUrl: item.variant.product.imageUrl || null,
-          },
-          packaging: item.variant.packaging && {
-            id: item.variant.packaging.id,
-            name: item.variant.packaging.name,
-          },
-          stock: item.variant.stock,
-        },
-      })),
-    })),
-  };
-}
 
   static async getAllByUserId(
     request: IGetTransactionByUserRequest,

@@ -2,6 +2,8 @@ import { TxDeliveryStatus, TxManualStatus, type Prisma } from '@prisma/client';
 
 import { db } from '../configs/database';
 
+import { TimeUtils } from '../utils';
+
 // parameter tx diisi jika ingin menggunakan transaction
 
 export class UserRepository {
@@ -19,6 +21,24 @@ export class UserRepository {
       where: {
         id: id,
       },
+      include: {
+        _count: {
+          select: {
+            transaction: true,
+          },
+        },
+        transaction: {
+          where: {
+            createdAt: {
+              gte: new Date(
+                TimeUtils.now().getTime() - 30 * 24 * 60 * 60 * 1000,
+              ),
+            },
+          },
+          select: { id: true },
+          take: 1,
+        },
+      },
     });
   }
 
@@ -30,10 +50,20 @@ export class UserRepository {
   ) {
     const searchCondition = search
       ? {
-          name: {
-            contains: search,
-            mode: 'insensitive' as Prisma.QueryMode,
-          },
+          OR: [
+            {
+              name: {
+                contains: search,
+                mode: 'insensitive' as Prisma.QueryMode,
+              },
+            },
+            {
+              email: {
+                contains: search,
+                mode: 'insensitive' as Prisma.QueryMode,
+              },
+            },
+          ],
         }
       : {};
 
@@ -41,17 +71,21 @@ export class UserRepository {
       where: {
         ...searchCondition,
       },
-      skip: skip,
-      take: take,
-      orderBy: {
-        createdAt: 'desc',
-      },
-
+      skip,
+      take,
+      orderBy: { createdAt: 'desc' },
       include: {
-        _count: {
-          select: {
-            transaction: true,
+        _count: { select: { transaction: true } },
+        transaction: {
+          where: {
+            createdAt: {
+              gte: new Date(
+                TimeUtils.now().getTime() - 30 * 24 * 60 * 60 * 1000,
+              ),
+            },
           },
+          select: { id: true },
+          take: 1,
         },
       },
     });
@@ -60,10 +94,18 @@ export class UserRepository {
   static async findAll(search?: string, tx: Prisma.TransactionClient = db) {
     const searchCondition = search
       ? {
-          name: {
-            contains: search,
-            mode: 'insensitive' as Prisma.QueryMode,
-          },
+          OR: [
+            {
+              name: {
+                contains: search,
+                mode: 'insensitive' as Prisma.QueryMode,
+              },
+              email: {
+                contains: search,
+                mode: 'insensitive' as Prisma.QueryMode,
+              },
+            },
+          ],
         }
       : {};
 
@@ -79,6 +121,17 @@ export class UserRepository {
           select: {
             transaction: true,
           },
+        },
+        transaction: {
+          where: {
+            createdAt: {
+              gte: new Date(
+                TimeUtils.now().getTime() - 30 * 24 * 60 * 60 * 1000,
+              ),
+            },
+          },
+          select: { id: true },
+          take: 1,
         },
       },
     });

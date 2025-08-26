@@ -36,6 +36,7 @@ export interface IGetUserResponse {
   phoneNumber: string;
   photoProfile?: string;
   totalTransaction?: number;
+  isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
