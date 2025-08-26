@@ -13,7 +13,7 @@ import type {
   IDeleteProductTypeRequest,
 } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
-import { ProductTypeRepository } from '../repositories';
+import { ProductRepository, ProductTypeRepository } from '../repositories';
 import { Validator } from '../utils';
 import { ProductTypeValidation } from '../validations';
 
@@ -169,6 +169,14 @@ export class ProductTypeService {
       throw new ResponseError(
         StatusCodes.NOT_FOUND,
         'Tipe Produk tidak ditemukan',
+      );
+    }
+
+    const associatedProducts = await ProductRepository.findByType(validData.id);
+    if (associatedProducts.length > 0) {
+      throw new ResponseError(
+        StatusCodes.CONFLICT,
+        'Tipe Produk tidak dapat dihapus karena masih digunakan',
       );
     }
 

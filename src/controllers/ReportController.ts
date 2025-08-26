@@ -123,4 +123,58 @@ export class ReportController {
       next(error);
     }
   }
+
+  static async getTodayTotalTransactions(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const response = await ReportService.getTodayTotalTransactions();
+      return successResponse(
+        res,
+        StatusCodes.OK,
+        'Data total transaksi hari ini berhasil diperoleh',
+        response,
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getCurrentMonthRevenue(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const response = await ReportService.getCurrentMonthRevenue();
+      return successResponse(
+        res,
+        StatusCodes.OK,
+        'Data pendapatan bulan ini berhasil diperoleh',
+        response,
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getTotalProducts(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const response = await ReportService.getTotalProducts();
+      return successResponse(
+        res,
+        StatusCodes.OK,
+        'Total produk berhasil diperoleh',
+        response,
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
 }

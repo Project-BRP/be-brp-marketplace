@@ -24,6 +24,11 @@ export interface IGetTotalTransactionsResponse {
   gainPercentage: number;
 }
 
+export interface IGetTodayTotalTransactionsResponse {
+  totalTransactions: number;
+  gainPercentage: number;
+}
+
 export interface IGetTotalProductsSoldResponse {
   totalProductsSold: number;
   gainPercentage: number;
@@ -49,4 +54,13 @@ export interface IGetMostSoldProductsDistributionResponse {
     name: string;
     totalSold: number;
   }[];
+}
+
+export interface IGetTotalProductsResponse {
+  totalProducts: number;
+}
+
+export interface IGetCurrentMonthRevenueResponse {
+  totalRevenue: number;
+  gainPercentage: number;
 }

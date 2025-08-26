@@ -46,3 +46,24 @@ reportRoute.get(
   roleMiddleware([Role.ADMIN]),
   ReportController.getMostSoldProductsDistribution,
 );
+
+reportRoute.get(
+  '/current-month-revenue',
+  authMiddleware,
+  roleMiddleware([Role.ADMIN]),
+  ReportController.getCurrentMonthRevenue,
+);
+
+reportRoute.get(
+  '/today-total-transactions',
+  authMiddleware,
+  roleMiddleware([Role.ADMIN]),
+  ReportController.getTodayTotalTransactions,
+);
+
+reportRoute.get(
+  '/total-products',
+  authMiddleware,
+  roleMiddleware([Role.ADMIN]),
+  ReportController.getTotalProducts,
+);

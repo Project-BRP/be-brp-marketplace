@@ -91,6 +91,18 @@ export class ProductRepository {
     });
   }
 
+  static async findByType(
+    productTypeId: string,
+    tx: Prisma.TransactionClient = db,
+  ) {
+    return tx.product.findMany({
+      where: {
+        productTypeId: productTypeId,
+        isDeleted: false,
+      },
+    });
+  }
+
   static async findAll(
     search?: string,
     productTypeId?: string,

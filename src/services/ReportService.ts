@@ -4,6 +4,9 @@ import type {
   IGetRevenueResponse,
   IGetTotalTransactionsRequest,
   IGetTotalTransactionsResponse,
+  IGetTodayTotalTransactionsResponse,
+  IGetCurrentMonthRevenueResponse,
+  IGetTotalProductsResponse,
   IGetTotalProductsSoldRequest,
   IGetTotalProductsSoldResponse,
   IGetTotalActiveUsersRequest,
@@ -13,7 +16,11 @@ import type {
   IGetMostSoldProductsDistributionRequest,
   IGetMostSoldProductsDistributionResponse,
 } from '../dtos';
-import { TransactionRepository, UserRepository } from '../repositories';
+import {
+  TransactionRepository,
+  UserRepository,
+  ProductRepository,
+} from '../repositories';
 import { TimeUtils, Validator } from '../utils';
 
 export class ReportService {
@@ -103,6 +110,56 @@ export class ReportService {
     };
   }
 
+  static async getCurrentMonthRevenue(): Promise<IGetCurrentMonthRevenueResponse> {
+    const now = TimeUtils.now();
+
+    const currentMonthStartDate = TimeUtils.getStartOfMonth(
+      now.getFullYear(),
+      now.getMonth() + 1,
+    );
+    const currentMonthEndDate = TimeUtils.getEndOfMonth(
+      now.getFullYear(),
+      now.getMonth() + 1,
+    );
+
+    const totalRevenue =
+      await TransactionRepository.aggregateRevenueByDateRange(
+        currentMonthStartDate,
+        currentMonthEndDate,
+      );
+
+    let gainPercentage = 0;
+
+    const previousMonth = new Date(now);
+    previousMonth.setMonth(previousMonth.getMonth() - 1);
+    const prevMonthStartDate = TimeUtils.getStartOfMonth(
+      previousMonth.getFullYear(),
+      previousMonth.getMonth() + 1,
+    );
+    const prevMonthEndDate = TimeUtils.getEndOfMonth(
+      previousMonth.getFullYear(),
+      previousMonth.getMonth() + 1,
+    );
+
+    const previousMonthRevenue =
+      await TransactionRepository.aggregateRevenueByDateRange(
+        prevMonthStartDate,
+        prevMonthEndDate,
+      );
+
+    gainPercentage =
+      previousMonthRevenue > 0
+        ? ((totalRevenue - previousMonthRevenue) / previousMonthRevenue) * 100
+        : totalRevenue > 0
+          ? 100
+          : 0;
+
+    return {
+      totalRevenue,
+      gainPercentage: parseFloat(gainPercentage.toFixed(2)),
+    };
+  }
+
   static async getTotalTransactions(
     request: IGetTotalTransactionsRequest,
   ): Promise<IGetTotalTransactionsResponse> {
@@ -184,6 +241,62 @@ export class ReportService {
             ? 100
             : 0;
     }
+
+    return {
+      totalTransactions,
+      gainPercentage: parseFloat(gainPercentage.toFixed(2)),
+    };
+  }
+
+  static async getTodayTotalTransactions(): Promise<IGetTodayTotalTransactionsResponse> {
+    const now = TimeUtils.now();
+
+    const todayStartDate = TimeUtils.getStartOfDay(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      now.getDate(),
+    );
+    const todayEndDate = TimeUtils.getEndOfDay(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      now.getDate(),
+    );
+
+    const totalTransactions =
+      await TransactionRepository.countCompletedTransactions(
+        todayStartDate,
+        todayEndDate,
+      );
+
+    let gainPercentage = 0;
+
+    const previousDay = new Date(now);
+    previousDay.setDate(previousDay.getDate() - 1);
+    const prevDayStartDate = TimeUtils.getStartOfDay(
+      previousDay.getFullYear(),
+      previousDay.getMonth() + 1,
+      previousDay.getDate(),
+    );
+    const prevDayEndDate = TimeUtils.getEndOfDay(
+      previousDay.getFullYear(),
+      previousDay.getMonth() + 1,
+      previousDay.getDate(),
+    );
+
+    const previousDayTransactions =
+      await TransactionRepository.countCompletedTransactions(
+        prevDayStartDate,
+        prevDayEndDate,
+      );
+
+    gainPercentage =
+      previousDayTransactions > 0
+        ? ((totalTransactions - previousDayTransactions) /
+            previousDayTransactions) *
+          100
+        : totalTransactions > 0
+          ? 100
+          : 0;
 
     return {
       totalTransactions,
@@ -483,5 +596,10 @@ export class ReportService {
         totalSold: p.total_sold,
       })),
     };
+  }
+
+  static async getTotalProducts(): Promise<IGetTotalProductsResponse> {
+    const totalProducts = await ProductRepository.count();
+    return { totalProducts };
   }
 }
