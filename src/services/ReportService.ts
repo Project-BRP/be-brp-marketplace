@@ -52,57 +52,48 @@ export class ReportService {
 
     let gainPercentage = 0;
 
-    const isSameMonthFilter =
-      validData.startYear &&
-      validData.startYear === validData.endYear &&
-      validData.startMonth === validData.endMonth;
+    const currentMonthStartDate =
+      validData.endYear && validData.endMonth
+        ? TimeUtils.getStartOfMonth(validData.endYear, validData.endMonth)
+        : TimeUtils.getStartOfMonth(now.getFullYear(), now.getMonth() + 1);
+    const currentMonthEndDate =
+      validData.endYear && validData.endMonth
+        ? TimeUtils.getEndOfMonth(validData.endYear, validData.endMonth)
+        : TimeUtils.getEndOfMonth(now.getFullYear(), now.getMonth() + 1);
 
-    if (isSameMonthFilter) {
-      gainPercentage = 0;
-    } else {
-      const currentMonthStartDate =
-        validData.endYear && validData.endMonth
-          ? TimeUtils.getStartOfMonth(validData.endYear, validData.endMonth)
-          : TimeUtils.getStartOfMonth(now.getFullYear(), now.getMonth() + 1);
-      const currentMonthEndDate =
-        validData.endYear && validData.endMonth
-          ? TimeUtils.getEndOfMonth(validData.endYear, validData.endMonth)
-          : TimeUtils.getEndOfMonth(now.getFullYear(), now.getMonth() + 1);
+    const prevMonth =
+      validData.endYear && validData.endMonth
+        ? new Date(validData.endYear, validData.endMonth - 1)
+        : new Date(now.getFullYear(), now.getMonth());
+    prevMonth.setMonth(prevMonth.getMonth() - 1);
+    const prevMonthStartDate = TimeUtils.getStartOfMonth(
+      prevMonth.getFullYear(),
+      prevMonth.getMonth() + 1,
+    );
+    const prevMonthEndDate = TimeUtils.getEndOfMonth(
+      prevMonth.getFullYear(),
+      prevMonth.getMonth() + 1,
+    );
 
-      const prevMonth =
-        validData.endYear && validData.endMonth
-          ? new Date(validData.endYear, validData.endMonth - 1)
-          : new Date(now.getFullYear(), now.getMonth());
-      prevMonth.setMonth(prevMonth.getMonth() - 1);
-      const prevMonthStartDate = TimeUtils.getStartOfMonth(
-        prevMonth.getFullYear(),
-        prevMonth.getMonth() + 1,
+    const currentMonthRevenue =
+      await TransactionRepository.aggregateRevenueByDateRange(
+        currentMonthStartDate,
+        currentMonthEndDate,
       );
-      const prevMonthEndDate = TimeUtils.getEndOfMonth(
-        prevMonth.getFullYear(),
-        prevMonth.getMonth() + 1,
+    const previousMonthRevenue =
+      await TransactionRepository.aggregateRevenueByDateRange(
+        prevMonthStartDate,
+        prevMonthEndDate,
       );
 
-      const currentMonthRevenue =
-        await TransactionRepository.aggregateRevenueByDateRange(
-          currentMonthStartDate,
-          currentMonthEndDate,
-        );
-      const previousMonthRevenue =
-        await TransactionRepository.aggregateRevenueByDateRange(
-          prevMonthStartDate,
-          prevMonthEndDate,
-        );
-
-      gainPercentage =
-        previousMonthRevenue > 0
-          ? ((currentMonthRevenue - previousMonthRevenue) /
-              previousMonthRevenue) *
-            100
-          : currentMonthRevenue > 0
-            ? 100
-            : 0;
-    }
+    gainPercentage =
+      previousMonthRevenue > 0
+        ? ((currentMonthRevenue - previousMonthRevenue) /
+            previousMonthRevenue) *
+          100
+        : currentMonthRevenue > 0
+          ? 100
+          : 0;
 
     return {
       totalRevenue,
@@ -190,14 +181,6 @@ export class ReportService {
 
     let gainPercentage = 0;
 
-    const isSameMonthFilter =
-      validData.startYear &&
-      validData.startYear === validData.endYear &&
-      validData.startMonth === validData.endMonth;
-
-    if (isSameMonthFilter) {
-      gainPercentage = 0;
-    } else {
       const currentMonthStartDate =
         validData.endYear && validData.endMonth
           ? TimeUtils.getStartOfMonth(validData.endYear, validData.endMonth)
@@ -240,7 +223,7 @@ export class ReportService {
           : currentMonthTransactions > 0
             ? 100
             : 0;
-    }
+
 
     return {
       totalTransactions,
@@ -262,11 +245,13 @@ export class ReportService {
       now.getDate(),
     );
 
-    const totalTransactions =
-      await TransactionRepository.countCompletedTransactions(
-        todayStartDate,
-        todayEndDate,
-      );
+    const totalTransactions = await TransactionRepository.count(
+      undefined,
+      undefined,
+      undefined,
+      todayStartDate,
+      todayEndDate,
+    );
 
     let gainPercentage = 0;
 
@@ -283,11 +268,13 @@ export class ReportService {
       previousDay.getDate(),
     );
 
-    const previousDayTransactions =
-      await TransactionRepository.countCompletedTransactions(
-        prevDayStartDate,
-        prevDayEndDate,
-      );
+    const previousDayTransactions = await TransactionRepository.count(
+      undefined,
+      undefined,
+      undefined,
+      prevDayStartDate,
+      prevDayEndDate,
+    );
 
     gainPercentage =
       previousDayTransactions > 0
@@ -335,14 +322,6 @@ export class ReportService {
 
     let gainPercentage = 0;
 
-    const isSameMonthFilter =
-      validData.startYear &&
-      validData.startYear === validData.endYear &&
-      validData.startMonth === validData.endMonth;
-
-    if (isSameMonthFilter) {
-      gainPercentage = 0;
-    } else {
       const currentMonthStartDate =
         validData.endYear && validData.endMonth
           ? TimeUtils.getStartOfMonth(validData.endYear, validData.endMonth)
@@ -385,7 +364,7 @@ export class ReportService {
           : currentMonthProductsSold > 0
             ? 100
             : 0;
-    }
+  
 
     return {
       totalProductsSold,
@@ -423,14 +402,6 @@ export class ReportService {
 
     let gainPercentage = 0;
 
-    const isSameMonthFilter =
-      validData.startYear &&
-      validData.startYear === validData.endYear &&
-      validData.startMonth === validData.endMonth;
-
-    if (isSameMonthFilter) {
-      gainPercentage = 0;
-    } else {
       const currentMonthStartDate =
         validData.endYear && validData.endMonth
           ? TimeUtils.getStartOfMonth(validData.endYear, validData.endMonth)
@@ -471,11 +442,13 @@ export class ReportService {
           : currentMonthActiveUsers > 0
             ? 100
             : 0;
-    }
+
+      const gain = currentMonthActiveUsers - previousMonthActiveUsers;
 
     return {
       totalActiveUsers,
       gainPercentage: parseFloat(gainPercentage.toFixed(2)),
+      gain,
     };
   }
 

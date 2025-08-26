@@ -37,6 +37,7 @@ export interface IGetTotalProductsSoldResponse {
 export interface IGetTotalActiveUsersResponse {
   totalActiveUsers: number;
   gainPercentage: number;
+  gain: number;
 }
 
 export interface IGetMonthlyRevenueResponse {

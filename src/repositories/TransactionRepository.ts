@@ -5,7 +5,7 @@ import {
   TxMethod,
 } from '@prisma/client';
 import { db } from '../configs/database';
-import { TimeUtils } from 'utils';
+import { TimeUtils } from '../utils';
 
 export class TransactionRepository {
   static async create(
@@ -454,8 +454,14 @@ export class TransactionRepository {
     const complete = TxManualStatus.COMPLETE.toString();
 
     const now = TimeUtils.now();
-    const currentMonthStart = TimeUtils.getStartOfMonth(now.getFullYear(), now.getMonth() + 1);
-    const currentMonthEnd = TimeUtils.getEndOfMonth(now.getFullYear(), now.getMonth() + 1);
+    const currentMonthStart = TimeUtils.getStartOfMonth(
+      now.getFullYear(),
+      now.getMonth() + 1,
+    );
+    const currentMonthEnd = TimeUtils.getEndOfMonth(
+      now.getFullYear(),
+      now.getMonth() + 1,
+    );
 
     const result: {
       id: string;
