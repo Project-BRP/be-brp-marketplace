@@ -53,6 +53,7 @@ export interface IGetMostSoldProductsDistributionResponse {
     id: string;
     name: string;
     totalSold: number;
+    currentMonthSold: number;
   }[];
 }
 

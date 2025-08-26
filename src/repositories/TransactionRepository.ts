@@ -5,6 +5,7 @@ import {
   TxMethod,
 } from '@prisma/client';
 import { db } from '../configs/database';
+import { TimeUtils } from 'utils';
 
 export class TransactionRepository {
   static async create(
@@ -452,34 +453,50 @@ export class TransactionRepository {
     const delivered = TxDeliveryStatus.DELIVERED.toString();
     const complete = TxManualStatus.COMPLETE.toString();
 
-    const result: { id: string; name: string; total_sold: bigint }[] =
-      await tx.$queryRaw`
-    SELECT
-      p.id,
-      p.name,
-      SUM(ti.quantity)::bigint AS total_sold
-    FROM
-      transaction_items AS ti
-    JOIN
-      transactions AS t ON ti."transaction_id" = t.id
-    JOIN
-      product_variants AS pv ON ti."variant_id" = pv.id
-    JOIN
-      products AS p ON pv."product_id" = p.id
-    WHERE
-      (t."delivery_status"::text = ${delivered} OR t."manual_status"::text = ${complete})
-      AND t."created_at" >= ${startDate}
-      AND t."created_at" <= ${endDate}
-    GROUP BY
-      p.id, p.name
-    ORDER BY
-      total_sold DESC
-    LIMIT 10;
-  `;
+    const now = TimeUtils.now();
+    const currentMonthStart = TimeUtils.getStartOfMonth(now.getFullYear(), now.getMonth() + 1);
+    const currentMonthEnd = TimeUtils.getEndOfMonth(now.getFullYear(), now.getMonth() + 1);
+
+    const result: {
+      id: string;
+      name: string;
+      total_sold: bigint;
+      current_month_sold: bigint;
+    }[] = await tx.$queryRaw`
+      SELECT
+        p.id,
+        p.name,
+        SUM(ti.quantity)::bigint AS total_sold,
+        SUM(
+          CASE
+            WHEN t."created_at" >= ${currentMonthStart} AND t."created_at" <= ${currentMonthEnd}
+            THEN ti.quantity
+            ELSE 0
+          END
+        )::bigint AS current_month_sold
+      FROM
+        transaction_items AS ti
+      JOIN
+        transactions AS t ON ti."transaction_id" = t.id
+      JOIN
+        product_variants AS pv ON ti."variant_id" = pv.id
+      JOIN
+        products AS p ON pv."product_id" = p.id
+      WHERE
+        (t."delivery_status"::text = ${delivered} OR t."manual_status"::text = ${complete})
+        AND t."created_at" >= ${startDate}
+        AND t."created_at" <= ${endDate}
+      GROUP BY
+        p.id, p.name
+      ORDER BY
+        total_sold DESC
+      LIMIT 10;
+    `;
 
     return result.map(row => ({
       ...row,
       total_sold: Number(row.total_sold),
+      current_month_sold: Number(row.current_month_sold),
     }));
   }
 

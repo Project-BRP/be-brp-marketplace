@@ -594,6 +594,7 @@ export class ReportService {
         id: p.id,
         name: p.name,
         totalSold: p.total_sold,
+        currentMonthSold: p.current_month_sold,
       })),
     };
   }
