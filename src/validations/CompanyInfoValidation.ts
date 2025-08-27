@@ -124,7 +124,8 @@ export class CompanyInfoValidation {
         !!data.city ||
         !!data.district ||
         !!data.subDistrict ||
-        !!data.fullAddress,
+        !!data.fullAddress ||
+        !!data.npwp,
       {
         message: 'Minimal satu data harus diisi',
         path: [],
