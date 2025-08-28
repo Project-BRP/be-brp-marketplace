@@ -93,7 +93,7 @@ export class UserRepository {
                 TimeUtils.now().getTime() - 30 * 24 * 60 * 60 * 1000,
               ),
             },
-            AND: [
+            OR: [
               { deliveryStatus: { notIn: [cancelled, unpaid] } },
               { manualStatus: { notIn: [cancelled, unpaid] } },
             ],
@@ -146,7 +146,7 @@ export class UserRepository {
                 TimeUtils.now().getTime() - 30 * 24 * 60 * 60 * 1000,
               ),
             },
-            AND: [
+            OR: [
               { deliveryStatus: { notIn: [cancelled, unpaid] } },
               { manualStatus: { notIn: [cancelled, unpaid] } },
             ],
@@ -212,10 +212,11 @@ export class UserRepository {
     FROM
       transactions
     WHERE
-      "delivery_status"::text NOT IN (${cancelled}, ${unpaid})
-      AND "manual_status"::text NOT IN (${cancelled}, ${unpaid})
-      AND "created_at" >= ${startDate}
-      AND "created_at" <= ${endDate};
+      (
+        "delivery_status"::text NOT IN (${cancelled}, ${unpaid})
+        OR "manual_status"::text NOT IN (${cancelled}, ${unpaid})
+      )
+      AND "created_at" BETWEEN ${startDate} AND ${endDate};
   `;
 
     return result[0]?.active_users || 0;

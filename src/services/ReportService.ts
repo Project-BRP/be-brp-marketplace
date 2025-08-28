@@ -380,18 +380,19 @@ export class ReportService {
 
     const now = TimeUtils.now();
 
-    const firstTransactionDate =
-      await TransactionRepository.findFirstTransactionDate();
-    const cumulativeStartDate =
-      validData.startYear && validData.startMonth
-        ? TimeUtils.getStartOfMonth(validData.startYear, validData.startMonth)
-        : firstTransactionDate ||
-          TimeUtils.getStartOfMonth(now.getFullYear(), now.getMonth() + 1);
-
     const cumulativeEndDate =
       validData.endYear && validData.endMonth
-        ? TimeUtils.getEndOfMonth(validData.endYear, validData.endMonth)
-        : now;
+      ? TimeUtils.getEndOfMonth(validData.endYear, validData.endMonth)
+      : now;
+
+    let cumulativeStartDate: Date;
+    if (validData.startYear && validData.startMonth) {
+      cumulativeStartDate = TimeUtils.getStartOfMonth(validData.startYear, validData.startMonth);
+    } else {
+      const defaultStart = new Date(cumulativeEndDate);
+      defaultStart.setMonth(defaultStart.getMonth() - 1);
+      cumulativeStartDate = TimeUtils.getStartOfMonth(defaultStart.getFullYear(), defaultStart.getMonth() + 1);
+    }
 
     const totalActiveUsers = await UserRepository.countActiveUsers(
       cumulativeStartDate,
