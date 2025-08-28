@@ -17,6 +17,9 @@ export class UserRepository {
   }
 
   static async findById(id: string, tx: Prisma.TransactionClient = db) {
+    const cancelled = TxDeliveryStatus.CANCELLED;
+    const unpaid = TxManualStatus.UNPAID;
+
     return tx.user.findUnique({
       where: {
         id: id,
@@ -34,6 +37,10 @@ export class UserRepository {
                 TimeUtils.now().getTime() - 30 * 24 * 60 * 60 * 1000,
               ),
             },
+            AND: [
+              { deliveryStatus: { notIn: [cancelled, unpaid] } },
+              { manualStatus: { notIn: [cancelled, unpaid] } },
+            ],
           },
           select: { id: true },
           take: 1,
@@ -67,6 +74,9 @@ export class UserRepository {
         }
       : {};
 
+    const cancelled = TxDeliveryStatus.CANCELLED;
+    const unpaid = TxManualStatus.UNPAID;
+
     return tx.user.findMany({
       where: {
         ...searchCondition,
@@ -83,6 +93,10 @@ export class UserRepository {
                 TimeUtils.now().getTime() - 30 * 24 * 60 * 60 * 1000,
               ),
             },
+            AND: [
+              { deliveryStatus: { notIn: [cancelled, unpaid] } },
+              { manualStatus: { notIn: [cancelled, unpaid] } },
+            ],
           },
           select: { id: true },
           take: 1,
@@ -109,6 +123,9 @@ export class UserRepository {
         }
       : {};
 
+    const cancelled = TxDeliveryStatus.CANCELLED;
+    const unpaid = TxManualStatus.UNPAID;
+
     return tx.user.findMany({
       where: {
         ...searchCondition,
@@ -129,6 +146,10 @@ export class UserRepository {
                 TimeUtils.now().getTime() - 30 * 24 * 60 * 60 * 1000,
               ),
             },
+            AND: [
+              { deliveryStatus: { notIn: [cancelled, unpaid] } },
+              { manualStatus: { notIn: [cancelled, unpaid] } },
+            ],
           },
           select: { id: true },
           take: 1,
@@ -182,26 +203,22 @@ export class UserRepository {
     endDate: Date,
     tx: Prisma.TransactionClient = db,
   ): Promise<number> {
-    // 1. Pastikan konsistensi timezone
+    const cancelled = TxDeliveryStatus.CANCELLED.toString();
+    const unpaid = TxManualStatus.UNPAID.toString();
 
-    const delivered = TxDeliveryStatus.DELIVERED.toString();
-    const complete = TxManualStatus.COMPLETE.toString();
-
-    // 2. Hitung user_id unik dari transaksi yang memenuhi kriteria
     const result: { active_users: number }[] = await tx.$queryRaw`
     SELECT
       COUNT(DISTINCT "user_id")::integer AS active_users
     FROM
       transactions
     WHERE
-      ("delivery_status"::text = ${delivered} OR "manual_status"::text = ${complete})
+      "delivery_status"::text NOT IN (${cancelled}, ${unpaid})
+      AND "manual_status"::text NOT IN (${cancelled}, ${unpaid})
       AND "created_at" >= ${startDate}
       AND "created_at" <= ${endDate};
   `;
 
-    // 3. Proses hasilnya
-    const activeUsers = result[0]?.active_users;
-    return activeUsers || 0;
+    return result[0]?.active_users || 0;
   }
 
   static async delete(id: string, tx: Prisma.TransactionClient = db) {
