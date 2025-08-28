@@ -321,10 +321,11 @@ export class ReportService {
 
     let gainPercentage = 0;
 
-    const currentMonthStartDate =
+    let currentMonthStartDate =
       validData.endYear && validData.endMonth
         ? TimeUtils.getStartOfMonth(validData.endYear, validData.endMonth)
         : TimeUtils.getStartOfMonth(now.getFullYear(), now.getMonth() + 1);
+    currentMonthStartDate.setDate(currentMonthStartDate.getDate() - 30);
     const currentMonthEndDate =
       validData.endYear && validData.endMonth
         ? TimeUtils.getEndOfMonth(validData.endYear, validData.endMonth)
@@ -335,10 +336,11 @@ export class ReportService {
         ? new Date(validData.endYear, validData.endMonth - 1)
         : new Date(now.getFullYear(), now.getMonth());
     prevMonth.setMonth(prevMonth.getMonth() - 1);
-    const prevMonthStartDate = TimeUtils.getStartOfMonth(
+    let prevMonthStartDate = TimeUtils.getStartOfMonth(
       prevMonth.getFullYear(),
       prevMonth.getMonth() + 1,
     );
+    prevMonthStartDate.setDate(prevMonthStartDate.getDate() - 30);
     const prevMonthEndDate = TimeUtils.getEndOfMonth(
       prevMonth.getFullYear(),
       prevMonth.getMonth() + 1,
@@ -382,16 +384,22 @@ export class ReportService {
 
     const cumulativeEndDate =
       validData.endYear && validData.endMonth
-      ? TimeUtils.getEndOfMonth(validData.endYear, validData.endMonth)
-      : now;
+        ? TimeUtils.getEndOfMonth(validData.endYear, validData.endMonth)
+        : now;
 
+    // Tentukan cumulativeStartDate
     let cumulativeStartDate: Date;
     if (validData.startYear && validData.startMonth) {
-      cumulativeStartDate = TimeUtils.getStartOfMonth(validData.startYear, validData.startMonth);
+      const inputStart = TimeUtils.getStartOfMonth(
+        validData.startYear,
+        validData.startMonth,
+      );
+      cumulativeStartDate = new Date(inputStart);
+      cumulativeStartDate.setDate(cumulativeStartDate.getDate() - 30);
     } else {
-      const defaultStart = new Date(cumulativeEndDate);
-      defaultStart.setMonth(defaultStart.getMonth() - 1);
-      cumulativeStartDate = TimeUtils.getStartOfMonth(defaultStart.getFullYear(), defaultStart.getMonth() + 1);
+      const defaultStart = new Date(now);
+      defaultStart.setDate(defaultStart.getDate() - 30);
+      cumulativeStartDate = defaultStart;
     }
 
     const totalActiveUsers = await UserRepository.countActiveUsers(
@@ -399,26 +407,33 @@ export class ReportService {
       cumulativeEndDate,
     );
 
+    // === Perhitungan Gain Percentage ===
     let gainPercentage = 0;
 
-    const currentMonthStartDate =
+    // Current Month (mundur 30 hari)
+    const currentMonthStartRaw =
       validData.endYear && validData.endMonth
         ? TimeUtils.getStartOfMonth(validData.endYear, validData.endMonth)
         : TimeUtils.getStartOfMonth(now.getFullYear(), now.getMonth() + 1);
+    currentMonthStartRaw.setDate(currentMonthStartRaw.getDate() - 30);
+    const currentMonthStartDate = currentMonthStartRaw;
+
     const currentMonthEndDate =
       validData.endYear && validData.endMonth
         ? TimeUtils.getEndOfMonth(validData.endYear, validData.endMonth)
         : TimeUtils.getEndOfMonth(now.getFullYear(), now.getMonth() + 1);
 
+    // Previous Month (mundur 30 hari)
     const prevMonth =
       validData.endYear && validData.endMonth
         ? new Date(validData.endYear, validData.endMonth - 1)
         : new Date(now.getFullYear(), now.getMonth());
     prevMonth.setMonth(prevMonth.getMonth() - 1);
-    const prevMonthStartDate = TimeUtils.getStartOfMonth(
-      prevMonth.getFullYear(),
-      prevMonth.getMonth() + 1,
-    );
+
+    let prevMonthStartDate: Date;
+    prevMonthStartDate = new Date(prevMonth);
+    prevMonthStartDate.setDate(prevMonthStartDate.getDate() - 30);
+
     const prevMonthEndDate = TimeUtils.getEndOfMonth(
       prevMonth.getFullYear(),
       prevMonth.getMonth() + 1,
@@ -428,6 +443,7 @@ export class ReportService {
       currentMonthStartDate,
       currentMonthEndDate,
     );
+
     const previousMonthActiveUsers = await UserRepository.countActiveUsers(
       prevMonthStartDate,
       prevMonthEndDate,

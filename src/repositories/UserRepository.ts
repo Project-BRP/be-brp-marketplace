@@ -196,8 +196,6 @@ export class UserRepository {
     });
   }
 
-  // Di dalam UserRepository.ts atau di mana pun fungsi ini berada
-
   static async countActiveUsers(
     startDate: Date,
     endDate: Date,
