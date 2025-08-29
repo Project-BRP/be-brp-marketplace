@@ -248,10 +248,7 @@ export class TransactionRepository {
           {
             method: TxMethod.DELIVERY,
             deliveryStatus: {
-              notIn: [
-                TxDeliveryStatus.UNPAID,
-                TxDeliveryStatus.CANCELLED,
-              ],
+              notIn: [TxDeliveryStatus.UNPAID, TxDeliveryStatus.CANCELLED],
             },
           },
           {

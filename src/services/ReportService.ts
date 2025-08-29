@@ -244,13 +244,14 @@ export class ReportService {
       now.getDate(),
     );
 
-    const totalTransactions = await TransactionRepository.count(
-      undefined,
-      undefined,
-      undefined,
-      todayStartDate,
-      todayEndDate,
-    );
+    const totalTransactions =
+      await TransactionRepository.countNotUnpaidAndNotCancelled(
+        undefined,
+        undefined,
+        undefined,
+        todayStartDate,
+        todayEndDate,
+      );
 
     let gainPercentage = 0;
 
@@ -267,13 +268,14 @@ export class ReportService {
       previousDay.getDate(),
     );
 
-    const previousDayTransactions = await TransactionRepository.count(
-      undefined,
-      undefined,
-      undefined,
-      prevDayStartDate,
-      prevDayEndDate,
-    );
+    const previousDayTransactions =
+      await TransactionRepository.countNotUnpaidAndNotCancelled(
+        undefined,
+        undefined,
+        undefined,
+        prevDayStartDate,
+        prevDayEndDate,
+      );
 
     gainPercentage =
       previousDayTransactions > 0
