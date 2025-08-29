@@ -481,6 +481,7 @@ export class TransactionService {
       shippingCode: transaction.shippingCode,
       shippingService: transaction.shippingService,
       shippingEstimate: transaction.shippingEstimate,
+      shippingReceipt: transaction.shippingReceipt,
       manualShippingCost: transaction.manualShippingCost,
       paymentMethod: transaction.paymentMethod,
       isRefundFailed: transaction.isRefundFailed,
@@ -622,6 +623,7 @@ export class TransactionService {
           shippingCode: transaction.shippingCode,
           shippingService: transaction.shippingService,
           shippingEstimate: transaction.shippingEstimate,
+          shippingReceipt: transaction.shippingReceipt,
           manualShippingCost: transaction.manualShippingCost,
           paymentMethod: transaction.paymentMethod,
           isRefundFailed: transaction.isRefundFailed,
@@ -717,6 +719,7 @@ export class TransactionService {
         shippingCode: transaction.shippingCode,
         shippingService: transaction.shippingService,
         shippingEstimate: transaction.shippingEstimate,
+        shippingReceipt: transaction.shippingReceipt,
         manualShippingCost: transaction.manualShippingCost,
         paymentMethod: transaction.paymentMethod,
         isRefundFailed: transaction.isRefundFailed,
@@ -812,6 +815,7 @@ export class TransactionService {
           shippingCode: transaction.shippingCode,
           shippingService: transaction.shippingService,
           shippingEstimate: transaction.shippingEstimate,
+          shippingReceipt: transaction.shippingReceipt,
           manualShippingCost: transaction.manualShippingCost,
           paymentMethod: transaction.paymentMethod,
           isRefundFailed: transaction.isRefundFailed,
@@ -905,6 +909,7 @@ export class TransactionService {
         shippingCode: transaction.shippingCode,
         shippingService: transaction.shippingService,
         shippingEstimate: transaction.shippingEstimate,
+        shippingReceipt: transaction.shippingReceipt,
         manualShippingCost: transaction.manualShippingCost,
         paymentMethod: transaction.paymentMethod,
         isRefundFailed: transaction.isRefundFailed,
@@ -1039,6 +1044,23 @@ export class TransactionService {
         }
       }
 
+      let updateData: { deliveryStatus: TxDeliveryStatus; shippingReceipt?: string } = {
+        deliveryStatus: next,
+      };
+
+      if (next === TxDeliveryStatus.SHIPPED) {
+        if(!validData.shippingReceipt) {
+          throw new ResponseError(
+            StatusCodes.BAD_REQUEST,
+            'Nomor resi pengiriman harus diisi',
+          );
+        }
+        updateData = {
+          ...updateData,
+          shippingReceipt: validData.shippingReceipt,
+        };
+      }
+
       if (next === TxDeliveryStatus.PAID) {
         const midtransStatus = await PaymentUtils.checkTransactionStatus(
           validData.id,
@@ -1056,9 +1078,7 @@ export class TransactionService {
           const updated = await db.$transaction(async tx => {
             const updatedTransaction = await TransactionRepository.update(
               validData.id,
-              {
-                deliveryStatus: next,
-              },
+              updateData,
               tx,
             );
 
@@ -1092,9 +1112,7 @@ export class TransactionService {
         }
       }
 
-      const updated = await TransactionRepository.update(validData.id, {
-        deliveryStatus: next,
-      });
+      const updated = await TransactionRepository.update(validData.id, updateData);
 
       IoService.emitTransaction();
       return updated;

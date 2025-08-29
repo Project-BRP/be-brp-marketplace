@@ -286,6 +286,12 @@ export class TransactionValidation {
       .min(1, 'ID transaksi tidak boleh kosong'),
     deliveryStatus: z.string().optional(),
     manualStatus: z.string().optional(),
+    shippingReceipt: z
+      .string({
+        invalid_type_error: 'Shipping receipt tidak valid',
+      })
+      .min(1, 'Shipping receipt tidak boleh kosong')
+      .optional()
   });
 
   static readonly ADD_MANUAL_SHIPPING_COST: ZodType = z.object({

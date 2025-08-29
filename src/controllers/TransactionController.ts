@@ -213,6 +213,10 @@ export class TransactionController {
           req.body.manualStatus !== undefined
             ? (req.body.manualStatus as TxManualStatus)
             : undefined,
+        shippingReceipt:
+          req.body.shippingReceipt !== undefined
+            ? req.body.shippingReceipt
+            : undefined,
       };
 
       const response = await TransactionService.updateTransaction(request);
