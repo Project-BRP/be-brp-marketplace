@@ -209,6 +209,62 @@ export class TransactionRepository {
     });
   }
 
+  static async countNotUnpaidAndNotCancelled(
+    method?: TxMethod,
+    search?: string,
+    status?: TxDeliveryStatus | TxManualStatus,
+    startDate?: Date,
+    endDate?: Date,
+    tx: Prisma.TransactionClient = db,
+  ) {
+    const whereCondition: Prisma.TransactionWhereInput = {};
+
+    if (method) {
+      whereCondition.method = method;
+      if (method === TxMethod.DELIVERY) {
+        whereCondition.deliveryStatus = status as TxDeliveryStatus;
+      } else if (method === TxMethod.MANUAL) {
+        whereCondition.manualStatus = status as TxManualStatus;
+      }
+    }
+
+    if (startDate || endDate) {
+      whereCondition.createdAt = {};
+      if (startDate) whereCondition.createdAt.gte = startDate;
+      if (endDate) whereCondition.createdAt.lte = endDate;
+    }
+
+    if (search) {
+      whereCondition.OR = [
+        { id: { contains: search, mode: 'insensitive' } },
+        { userName: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    return tx.transaction.count({
+      where: {
+        ...whereCondition,
+        OR: [
+          {
+            method: TxMethod.DELIVERY,
+            deliveryStatus: {
+              notIn: [
+                TxDeliveryStatus.UNPAID,
+                TxDeliveryStatus.CANCELLED,
+              ],
+            },
+          },
+          {
+            method: TxMethod.MANUAL,
+            manualStatus: {
+              notIn: [TxManualStatus.UNPAID, TxManualStatus.CANCELLED],
+            },
+          },
+        ],
+      },
+    });
+  }
+
   static async findByUserId(
     userId: string,
     method?: TxMethod,
