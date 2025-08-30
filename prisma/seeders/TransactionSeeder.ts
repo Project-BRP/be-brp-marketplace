@@ -173,6 +173,28 @@ export const transactionSeeder = async () => {
   }
 
   // 6. Masukkan data ke database
+  // Pastikan 5 transaksi terakhir memiliki item stock issue dan status PAID
+  createdTransactions.sort((a, b) => {
+    const aDate = a.transactionData.createdAt as Date;
+    const bDate = b.transactionData.createdAt as Date;
+    return aDate.getTime() - bDate.getTime();
+  });
+
+  const lastFive = createdTransactions.slice(-5);
+  for (const tx of lastFive) {
+    // Set status ke PAID sesuai method
+    if (tx.transactionData.method === TxMethod.DELIVERY) {
+      tx.transactionData.deliveryStatus = TxDeliveryStatus.PAID;
+    } else if (tx.transactionData.method === TxMethod.MANUAL) {
+      tx.transactionData.manualStatus = TxManualStatus.PAID;
+    }
+
+    // Tandai minimal satu item sebagai stock issue
+    if (tx.items && tx.items.length > 0) {
+      tx.items[0] = { ...tx.items[0], isStockIssue: true } as any;
+    }
+  }
+
   for (const tx of createdTransactions) {
     try {
       await prisma.transaction.create({
