@@ -49,7 +49,7 @@ import { TransactionValidation } from '../validations';
 import { CartService } from './CartService';
 import { IoService } from './IoService';
 import { Role } from '@prisma/client';
-import { EmailUtils } from 'utils/email-utils';
+import { EmailUtils } from '../utils';
 
 export class TransactionService {
   static async createTransaction(

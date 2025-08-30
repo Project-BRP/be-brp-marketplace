@@ -7,3 +7,4 @@ export * from './sharp-utils';
 export * from './payment-utils';
 export * from './shipping-utils';
 export * from './time-utils';
+export * from './email-utils';

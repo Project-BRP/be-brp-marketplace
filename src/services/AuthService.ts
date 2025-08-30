@@ -35,7 +35,7 @@ import { JwtToken, PasswordUtils, Validator } from '../utils';
 import { CLIENT_URL_CURRENT } from '../utils/client-url-utils';
 import { AuthValidation } from '../validations';
 import { db } from '../configs/database';
-import { EmailUtils } from '../utils/email-utils';
+import { EmailUtils } from '../utils';
 
 export class AuthService {
   static async register(request: IRegisterRequest) {
