@@ -1571,13 +1571,6 @@ export class TransactionService {
       );
     }
 
-    if (validData.stock !== item.quantity) {
-      throw new ResponseError(
-        StatusCodes.BAD_REQUEST,
-        'Input stok harus sama dengan jumlah item yang di-resolve',
-      );
-    }
-
     const db = database;
     let updatedItem;
     await db.$transaction(async tx => {
