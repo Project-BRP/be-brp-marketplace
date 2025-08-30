@@ -16,46 +16,54 @@ export class EmailUtils {
     payload: IEmailVerificationPayload,
     token: string,
   ): Promise<void> {
-    const verificationLink = `${CLIENT_URL_CURRENT}/sign-up/${token}`;
+    try {
+      const verificationLink = `${CLIENT_URL_CURRENT}/sign-up/${token}`;
 
-    const templatePath = path.join(__dirname, 'email-verification.html');
-    let emailHtml = fs.readFileSync(templatePath, 'utf-8');
-    emailHtml = emailHtml.replace('{{verification_link}}', verificationLink);
+      const templatePath = path.join(__dirname, 'email-verification.html');
+      let emailHtml = fs.readFileSync(templatePath, 'utf-8');
+      emailHtml = emailHtml.replace('{{verification_link}}', verificationLink);
 
-    const logoUrl = EmailUtils.getLogoUrl();
-    emailHtml = emailHtml.replace('{{logo_url}}', logoUrl);
+      const logoUrl = EmailUtils.getLogoUrl();
+      emailHtml = emailHtml.replace('{{logo_url}}', logoUrl);
 
-    const emailData: IEmailDto = {
-      from: SMPTP_CONSTANTS.SMTP_EMAIL,
-      to: payload.email,
-      subject: 'Verifikasi Email',
-      html: emailHtml,
-    };
+      const emailData: IEmailDto = {
+        from: SMPTP_CONSTANTS.SMTP_EMAIL,
+        to: payload.email,
+        subject: 'Verifikasi Email',
+        html: emailHtml,
+      };
 
-    await SendToKafka.sendEmailMessage(emailData);
+      await SendToKafka.sendEmailMessage(emailData);
+    } catch (error) {
+      appLogger.error('Error sending verification email:', error);
+    }
   }
 
   static async sendResetPasswordEmail(
     email: string,
     token: string,
   ): Promise<void> {
-    const resetLink = `${CLIENT_URL_CURRENT}/forget-password/${token}`;
+    try {
+      const resetLink = `${CLIENT_URL_CURRENT}/forget-password/${token}`;
 
-    const templatePath = path.join(__dirname, 'reset-password-template.html');
-    let emailHtml = fs.readFileSync(templatePath, 'utf-8');
-    emailHtml = emailHtml.replace('{{reset_link}}', resetLink);
+      const templatePath = path.join(__dirname, 'reset-password-template.html');
+      let emailHtml = fs.readFileSync(templatePath, 'utf-8');
+      emailHtml = emailHtml.replace('{{reset_link}}', resetLink);
 
-    const logoUrl = EmailUtils.getLogoUrl();
-    emailHtml = emailHtml.replace('{{logo_url}}', logoUrl);
+      const logoUrl = EmailUtils.getLogoUrl();
+      emailHtml = emailHtml.replace('{{logo_url}}', logoUrl);
 
-    const emailData: IEmailDto = {
-      from: SMPTP_CONSTANTS.SMTP_EMAIL,
-      to: email,
-      subject: 'Reset Password',
-      html: emailHtml,
-    };
+      const emailData: IEmailDto = {
+        from: SMPTP_CONSTANTS.SMTP_EMAIL,
+        to: email,
+        subject: 'Reset Password',
+        html: emailHtml,
+      };
 
-    await SendToKafka.sendEmailMessage(emailData);
+      await SendToKafka.sendEmailMessage(emailData);
+    } catch (error) {
+      appLogger.error('Error sending reset password email:', error);
+    }
   }
 
   static async sendInvoiceEmail(transaction: IGetTransactionResponse) {
@@ -93,82 +101,90 @@ export class EmailUtils {
   static async sendShippingNotificationEmail(
     transaction: IGetTransactionResponse,
   ): Promise<void> {
-    const templatePath = path.join(
-      __dirname,
-      'shipping-notification-template.html',
-    );
-    let emailHtml = fs.readFileSync(templatePath, 'utf-8');
+    try {
+      const templatePath = path.join(
+        __dirname,
+        'shipping-notification-template.html',
+      );
+      let emailHtml = fs.readFileSync(templatePath, 'utf-8');
 
-    const logoUrl = EmailUtils.getLogoUrl();
-    emailHtml = emailHtml.replace('{{logo_url}}', logoUrl);
-    emailHtml = emailHtml.replace('{{transaction_id}}', transaction.id);
-    emailHtml = emailHtml.replace(
-      '{{tracking_number}}',
-      transaction.shippingReceipt || '-',
-    );
+      const logoUrl = EmailUtils.getLogoUrl();
+      emailHtml = emailHtml.replace('{{logo_url}}', logoUrl);
+      emailHtml = emailHtml.replace('{{transaction_id}}', transaction.id);
+      emailHtml = emailHtml.replace(
+        '{{tracking_number}}',
+        transaction.shippingReceipt || '-',
+      );
 
-    const emailData: IEmailDto = {
-      from: SMPTP_CONSTANTS.SMTP_EMAIL,
-      to: transaction.userEmail,
-      subject: 'Pesanan Anda Sedang Dikirim',
-      html: emailHtml,
-    };
+      const emailData: IEmailDto = {
+        from: SMPTP_CONSTANTS.SMTP_EMAIL,
+        to: transaction.userEmail,
+        subject: 'Pesanan Anda Sedang Dikirim',
+        html: emailHtml,
+      };
 
-    await SendToKafka.sendEmailMessage(emailData);
+      await SendToKafka.sendEmailMessage(emailData);
+    } catch (error) {
+      appLogger.error('Error sending shipping notification email:', error);
+    }
   }
 
   static async sendCancellationEmail(
     transaction: IGetTransactionResponse,
     options?: { cancelledByAdmin?: boolean },
   ): Promise<void> {
-    const templatePath = path.join(
-      __dirname,
-      'transaction-cancel-template.html',
-    );
-    let emailHtml = fs.readFileSync(templatePath, 'utf-8');
+    try {
+      const templatePath = path.join(
+        __dirname,
+        'transaction-cancel-template.html',
+      );
+      let emailHtml = fs.readFileSync(templatePath, 'utf-8');
 
-    const logoUrl = EmailUtils.getLogoUrl();
-    emailHtml = emailHtml.replace('{{logo_url}}', logoUrl);
-    emailHtml = emailHtml.replace('{{transaction_id}}', transaction.id);
-    emailHtml = emailHtml.replace(
-      '{{cancel_reason}}',
-      transaction.cancelReason || '-',
-    );
+      const logoUrl = EmailUtils.getLogoUrl();
+      emailHtml = emailHtml.replace('{{logo_url}}', logoUrl);
+      emailHtml = emailHtml.replace('{{transaction_id}}', transaction.id);
+      emailHtml = emailHtml.replace(
+        '{{cancel_reason}}',
+        transaction.cancelReason || '-',
+      );
 
-    const stockIssues = (transaction.transactionItems || []).filter(
-      item => item.isStockIssue === true,
-    );
+      const stockIssues = (transaction.transactionItems || []).filter(
+        item => item.isStockIssue === true,
+      );
 
-    let stockIssueSection = '';
-    if (options?.cancelledByAdmin && stockIssues.length > 0) {
-      const itemsHtml = stockIssues
-        .map(item => {
-          const name = item.variant?.product?.name || 'Produk';
-          const packaging = item.variant?.packaging?.name
-            ? ` - ${item.variant.packaging.name}`
-            : '';
-          return `<li>${name}${packaging} — Qty: ${item.quantity}</li>`;
-        })
-        .join('');
+      let stockIssueSection = '';
+      if (options?.cancelledByAdmin && stockIssues.length > 0) {
+        const itemsHtml = stockIssues
+          .map(item => {
+            const name = item.variant?.product?.name || 'Produk';
+            const packaging = item.variant?.packaging?.name
+              ? ` - ${item.variant.packaging.name}`
+              : '';
+            return `<li>${name}${packaging} — Qty: ${item.quantity}</li>`;
+          })
+          .join('');
 
-      stockIssueSection = `
-        <div class="stock-issue">
-          <h3>Catatan Stok Bermasalah</h3>
-          <p>Ditemukan item dengan kendala stok saat pembatalan:</p>
-          <ul>${itemsHtml}</ul>
-        </div>`;
+        stockIssueSection = `
+          <div class="stock-issue">
+            <h3>Catatan Stok Bermasalah</h3>
+            <p>Ditemukan item dengan kendala stok saat pembatalan:</p>
+            <ul>${itemsHtml}</ul>
+          </div>`;
+      }
+
+      emailHtml = emailHtml.replace('{{stock_issue_section}}', stockIssueSection);
+
+      const emailData: IEmailDto = {
+        from: SMPTP_CONSTANTS.SMTP_EMAIL,
+        to: transaction.userEmail,
+        subject: 'Transaksi Dibatalkan',
+        html: emailHtml,
+      };
+
+      await SendToKafka.sendEmailMessage(emailData);
+    } catch (error) {
+      appLogger.error('Error sending cancellation email:', error);
     }
-
-    emailHtml = emailHtml.replace('{{stock_issue_section}}', stockIssueSection);
-
-    const emailData: IEmailDto = {
-      from: SMPTP_CONSTANTS.SMTP_EMAIL,
-      to: transaction.userEmail,
-      subject: 'Transaksi Dibatalkan',
-      html: emailHtml,
-    };
-
-    await SendToKafka.sendEmailMessage(emailData);
   }
 
   private static getLogoUrl(): string {
