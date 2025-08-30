@@ -20,6 +20,8 @@ COPY ./src/utils/invoice-email-template.html ./dist/utils/invoice-email-template
 
 COPY ./src/utils/shipping-notification-template.html ./dist/utils/shipping-notification-template.html
 
+COPY ./src/utils/transaction-cancel-template.html ./dist/utils/transaction-cancel-template.html
+
 EXPOSE 3001
 
 CMD ["npm", "run", "start:dev"]
