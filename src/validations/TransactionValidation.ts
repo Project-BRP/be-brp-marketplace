@@ -294,6 +294,21 @@ export class TransactionValidation {
       .optional()
   });
 
+  static readonly UPDATE_SHIPPING_RECEIPT: ZodType = z.object({
+    transactionId: z
+      .string({
+        required_error: 'Transaction ID tidak boleh kosong',
+        invalid_type_error: 'Transaction ID tidak valid',
+      })
+      .min(1, 'Transaction ID tidak boleh kosong'),
+    shippingReceipt: z
+      .string({
+        required_error: 'Shipping receipt tidak boleh kosong',
+        invalid_type_error: 'Shipping receipt tidak valid',
+      })
+      .min(1, 'Shipping receipt tidak boleh kosong'),
+  });
+
   static readonly ADD_MANUAL_SHIPPING_COST: ZodType = z.object({
     transactionId: z
       .string({

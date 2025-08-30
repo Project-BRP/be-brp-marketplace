@@ -259,6 +259,13 @@ export interface IAddManualShippingCostRequest {
   manualShippingCost: number;
 }
 
+export interface IUpdateShippingReceiptRequest {
+  transactionId: string;
+  shippingReceipt: string;
+}
+
+export interface IUpdateShippingReceiptResponse extends IUpdateTransactionResponse {}
+
 export interface ITransactionNotifRequest {
   transactionId: string;
   transactionStatus: string;

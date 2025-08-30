@@ -56,6 +56,12 @@ transactionRoute.post(
   roleMiddleware([Role.ADMIN]),
   TransactionController.addManualShippingCost,
 );
+transactionRoute.patch(
+  '/:id/shipping-receipt',
+  authMiddleware,
+  roleMiddleware([Role.ADMIN]),
+  TransactionController.updateShippingReceipt,
+);
 transactionRoute.post(
   '/:id/cancel',
   authMiddleware,

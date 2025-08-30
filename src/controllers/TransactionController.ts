@@ -12,6 +12,7 @@ import {
   IUpdateTransactionRequest,
   IAddManualShippingCostRequest,
   ICancelTransactionRequest,
+  IUpdateShippingReceiptRequest
 } from '../dtos';
 import { TransactionService } from '../services';
 import { successResponse } from '../utils';
@@ -224,6 +225,29 @@ export class TransactionController {
         res,
         StatusCodes.OK,
         'Status transaksi berhasil diperbarui',
+        response,
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async updateShippingReceipt(
+    req: IAuthDTO,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const request: IUpdateShippingReceiptRequest = {
+        transactionId: req.params.id,
+        shippingReceipt: req.body.shippingReceipt,
+      };
+
+      const response = await TransactionService.updateShippingReceipt(request);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Nomor resi pengiriman berhasil diperbarui',
         response,
       );
     } catch (error) {

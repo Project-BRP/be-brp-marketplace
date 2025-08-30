@@ -26,6 +26,8 @@ import type {
   IRequestPaymentResponse,
   IAddManualShippingCostRequest,
   IGetAllTransactionDateRangeResponse,
+  IUpdateShippingReceiptRequest,
+  IUpdateShippingReceiptResponse,
 } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
 import {
@@ -1259,6 +1261,47 @@ export class TransactionService {
       StatusCodes.BAD_REQUEST,
       'Metode transaksi tidak dikenali',
     );
+  }
+
+  static async updateShippingReceipt(
+    request: IUpdateShippingReceiptRequest,
+  ): Promise<IUpdateShippingReceiptResponse> {
+    const validData = Validator.validate(
+      TransactionValidation.UPDATE_SHIPPING_RECEIPT,
+      request,
+    );
+
+    const transaction = await TransactionRepository.findById(
+      validData.transactionId,
+    );
+
+    if (!transaction) {
+      throw new ResponseError(
+        StatusCodes.NOT_FOUND,
+        'Transaksi tidak ditemukan',
+      );
+    }
+
+    if (transaction.method !== TxMethod.DELIVERY) {
+      throw new ResponseError(
+        StatusCodes.BAD_REQUEST,
+        'Metode pengiriman tidak valid',
+      );
+    }
+
+    if (transaction.deliveryStatus !== TxDeliveryStatus.SHIPPED) {
+      throw new ResponseError(
+        StatusCodes.BAD_REQUEST,
+        'Pengubahan pada nomor resi pengiriman hanya dapat dilakukan pada status pengiriman "SHIPPED"',
+      );
+    }
+
+    const updated = await TransactionRepository.update(validData.transactionId, {
+      shippingReceipt: validData.shippingReceipt,
+    });
+
+    IoService.emitTransaction();
+    return updated;
   }
 
   static async addManualShippingCost(
