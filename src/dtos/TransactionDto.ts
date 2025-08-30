@@ -264,7 +264,8 @@ export interface IUpdateShippingReceiptRequest {
   shippingReceipt: string;
 }
 
-export interface IUpdateShippingReceiptResponse extends IUpdateTransactionResponse {}
+export interface IUpdateShippingReceiptResponse
+  extends IUpdateTransactionResponse {}
 
 export interface ITransactionNotifRequest {
   transactionId: string;
@@ -284,3 +285,5 @@ export interface IGetAllTransactionDateRangeResponse {
     };
   };
 }
+
+

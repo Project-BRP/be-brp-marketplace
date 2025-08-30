@@ -12,7 +12,8 @@ import {
   IUpdateTransactionRequest,
   IAddManualShippingCostRequest,
   ICancelTransactionRequest,
-  IUpdateShippingReceiptRequest
+  IUpdateShippingReceiptRequest,
+  IResolveStockIssueRequest,
 } from '../dtos';
 import { TransactionService } from '../services';
 import { successResponse } from '../utils';
@@ -296,6 +297,29 @@ export class TransactionController {
         res,
         StatusCodes.OK,
         'Transaksi berhasil dibatalkan',
+        response,
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async resolveStockIssue(
+    req: IAuthDTO,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const request: IResolveStockIssueRequest = {
+        transactionItemId: req.params.transactionItemId,
+        stock: req.body.stock,
+      };
+
+      const response = await TransactionService.resolveStockIssueItem(request);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Percobaan resolve stock issue selesai',
         response,
       );
     } catch (error) {

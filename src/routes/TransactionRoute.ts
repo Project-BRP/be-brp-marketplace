@@ -67,3 +67,10 @@ transactionRoute.post(
   authMiddleware,
   TransactionController.cancelTransaction,
 );
+
+transactionRoute.patch(
+  '/items/:transactionItemId/resolve-stock-issue',
+  authMiddleware,
+  roleMiddleware([Role.ADMIN]),
+  TransactionController.resolveStockIssue,
+);

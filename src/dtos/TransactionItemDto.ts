@@ -33,7 +33,8 @@ export interface IRemoveTransactionItemRequest {
 }
 
 export interface IResolveStockIssueRequest {
-  id: string;
+  transactionItemId: string;
+  stock: number;
 }
 
 export interface IResolveStockIssueResponse {

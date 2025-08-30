@@ -28,6 +28,8 @@ import type {
   IGetAllTransactionDateRangeResponse,
   IUpdateShippingReceiptRequest,
   IUpdateShippingReceiptResponse,
+  IResolveStockIssueRequest,
+  IResolveStockIssueResponse
 } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
 import {
@@ -47,6 +49,7 @@ import { TransactionValidation } from '../validations';
 import { CartService } from './CartService';
 import { IoService } from './IoService';
 import { Role } from '@prisma/client';
+import { EmailUtils } from 'utils/email-utils';
 
 export class TransactionService {
   static async createTransaction(
@@ -1046,12 +1049,15 @@ export class TransactionService {
         }
       }
 
-      let updateData: { deliveryStatus: TxDeliveryStatus; shippingReceipt?: string } = {
+      let updateData: {
+        deliveryStatus: TxDeliveryStatus;
+        shippingReceipt?: string;
+      } = {
         deliveryStatus: next,
       };
 
       if (next === TxDeliveryStatus.SHIPPED) {
-        if(!validData.shippingReceipt) {
+        if (!validData.shippingReceipt) {
           throw new ResponseError(
             StatusCodes.BAD_REQUEST,
             'Nomor resi pengiriman harus diisi',
@@ -1104,6 +1110,10 @@ export class TransactionService {
               }
             }
 
+            if (next === (TxDeliveryStatus.SHIPPED as TxDeliveryStatus)) {
+              EmailUtils.sendShippingNotificationEmail(updatedTransaction);
+            }
+
             return updatedTransaction;
           });
 
@@ -1114,7 +1124,10 @@ export class TransactionService {
         }
       }
 
-      const updated = await TransactionRepository.update(validData.id, updateData);
+      const updated = await TransactionRepository.update(
+        validData.id,
+        updateData,
+      );
 
       IoService.emitTransaction();
       return updated;
@@ -1296,9 +1309,12 @@ export class TransactionService {
       );
     }
 
-    const updated = await TransactionRepository.update(validData.transactionId, {
-      shippingReceipt: validData.shippingReceipt,
-    });
+    const updated = await TransactionRepository.update(
+      validData.transactionId,
+      {
+        shippingReceipt: validData.shippingReceipt,
+      },
+    );
 
     IoService.emitTransaction();
     return updated;
@@ -1350,12 +1366,12 @@ export class TransactionService {
     const db = database;
     const updated = await db.$transaction(async tx => {
       return await TransactionRepository.update(
-      validData.transactionId,
-      {
-        manualShippingCost: validData.manualShippingCost,
-        totalPrice: totalPrice,
-      },
-      tx,
+        validData.transactionId,
+        {
+          manualShippingCost: validData.manualShippingCost,
+          totalPrice: totalPrice,
+        },
+        tx,
       );
     });
 
@@ -1477,6 +1493,10 @@ export class TransactionService {
           }
         }
 
+        EmailUtils.sendCancellationEmail(cancelledTransaction, {
+          cancelledByAdmin: validData.userRole === Role.ADMIN,
+        });
+
         return cancelledTransaction;
       });
 
@@ -1524,5 +1544,61 @@ export class TransactionService {
       lastDate: lastTransaction,
       yearMonthsMap,
     };
+  }
+
+  static async resolveStockIssueItem(
+    request: IResolveStockIssueRequest,
+  ): Promise<IResolveStockIssueResponse> {
+    const validData = Validator.validate(
+      TransactionValidation.RESOLVE_STOCK_ISSUE_ITEM,
+      request,
+    );
+
+    const item = await TransactionItemRepository.findById(
+      validData.transactionItemId,
+    );
+    if (!item) {
+      throw new ResponseError(
+        StatusCodes.NOT_FOUND,
+        'Item transaksi tidak ditemukan',
+      );
+    }
+
+    if (!item.isStockIssue) {
+      throw new ResponseError(
+        StatusCodes.BAD_REQUEST,
+        'Item tidak berstatus stock issue',
+      );
+    }
+
+    if (validData.stock !== item.quantity) {
+      throw new ResponseError(
+        StatusCodes.BAD_REQUEST,
+        'Input stok harus sama dengan jumlah item yang di-resolve',
+      );
+    }
+
+    const db = database;
+    let updatedItem;
+    await db.$transaction(async tx => {
+      await ProductVariantRepository.update(
+        item.variantId,
+        { stock: { increment: validData.stock } },
+        tx,
+      );
+      await ProductVariantRepository.update(
+        item.variantId,
+        { stock: { decrement: item.quantity } },
+        tx,
+      );
+      updatedItem = await TransactionItemRepository.updateById(
+        item.id,
+        { isStockIssue: false },
+        tx,
+      );
+    });
+
+    IoService.emitTransaction();
+    return updatedItem;
   }
 }

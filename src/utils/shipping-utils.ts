@@ -10,8 +10,8 @@ import {
   IRajaOngkirResponse,
   ICostCheckPayload,
   IShippingOption,
-  ICheckWaybill,      // <- kamu bikin sendiri di dtos
-  IWaybillResponse,  // <- kamu bikin sendiri di dtos
+  ICheckWaybill, // <- kamu bikin sendiri di dtos
+  IWaybillResponse, // <- kamu bikin sendiri di dtos
 } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
 import { currentEnv, Env, RAJAONGKIR_CONSTANTS } from '../constants';
@@ -33,7 +33,10 @@ export class ShippingUtils {
 
       const { meta, data } = response.data;
       if (meta.status !== 'success') {
-        throw new ResponseError(meta.code, meta.message || 'Failed to fetch provinces');
+        throw new ResponseError(
+          meta.code,
+          meta.message || 'Failed to fetch provinces',
+        );
       }
 
       return data;
@@ -42,7 +45,9 @@ export class ShippingUtils {
         appLogger.error('RajaOngkir API Error:', error.response?.data);
         const meta = (error.response?.data as IRajaOngkirResponse<null>)?.meta;
         throw new ResponseError(
-          meta?.code || error.response?.status || StatusCodes.INTERNAL_SERVER_ERROR,
+          meta?.code ||
+            error.response?.status ||
+            StatusCodes.INTERNAL_SERVER_ERROR,
           meta?.message || 'Failed to fetch provinces',
         );
       }
@@ -66,7 +71,10 @@ export class ShippingUtils {
 
       const { meta, data } = response.data;
       if (meta.status !== 'success') {
-        throw new ResponseError(meta.code, meta.message || 'Failed to fetch cities');
+        throw new ResponseError(
+          meta.code,
+          meta.message || 'Failed to fetch cities',
+        );
       }
 
       return data;
@@ -75,7 +83,9 @@ export class ShippingUtils {
         appLogger.error('RajaOngkir API Error:', error.response?.data);
         const meta = (error.response?.data as IRajaOngkirResponse<null>)?.meta;
         throw new ResponseError(
-          meta?.code || error.response?.status || StatusCodes.INTERNAL_SERVER_ERROR,
+          meta?.code ||
+            error.response?.status ||
+            StatusCodes.INTERNAL_SERVER_ERROR,
           meta?.message || 'Failed to fetch cities',
         );
       }
@@ -99,7 +109,10 @@ export class ShippingUtils {
 
       const { meta, data } = response.data;
       if (meta.status !== 'success') {
-        throw new ResponseError(meta.code, meta.message || 'Failed to fetch districts');
+        throw new ResponseError(
+          meta.code,
+          meta.message || 'Failed to fetch districts',
+        );
       }
 
       return data;
@@ -108,7 +121,9 @@ export class ShippingUtils {
         appLogger.error('RajaOngkiri API Error:', error.response?.data);
         const meta = (error.response?.data as IRajaOngkirResponse<null>)?.meta;
         throw new ResponseError(
-          meta?.code || error.response?.status || StatusCodes.INTERNAL_SERVER_ERROR,
+          meta?.code ||
+            error.response?.status ||
+            StatusCodes.INTERNAL_SERVER_ERROR,
           meta?.message || 'Failed to fetch districts',
         );
       }
@@ -132,7 +147,10 @@ export class ShippingUtils {
 
       const { meta, data } = response.data;
       if (meta.status !== 'success') {
-        throw new ResponseError(meta.code, meta.message || 'Failed to fetch subdistricts');
+        throw new ResponseError(
+          meta.code,
+          meta.message || 'Failed to fetch subdistricts',
+        );
       }
 
       return data;
@@ -141,7 +159,9 @@ export class ShippingUtils {
         appLogger.error('RajaOngkiri API Error:', error.response?.data);
         const meta = (error.response?.data as IRajaOngkirResponse<null>)?.meta;
         throw new ResponseError(
-          meta?.code || error.response?.status || StatusCodes.INTERNAL_SERVER_ERROR,
+          meta?.code ||
+            error.response?.status ||
+            StatusCodes.INTERNAL_SERVER_ERROR,
           meta?.message || 'Failed to fetch subdistricts',
         );
       }
@@ -171,7 +191,10 @@ export class ShippingUtils {
 
       const { meta, data } = response.data;
       if (meta.status !== 'success') {
-        throw new ResponseError(meta.code, meta.message || 'Failed to fetch shipping options');
+        throw new ResponseError(
+          meta.code,
+          meta.message || 'Failed to fetch shipping options',
+        );
       }
 
       return data;
@@ -180,7 +203,9 @@ export class ShippingUtils {
         appLogger.error('RajaOngkiri API Error:', error.response?.data);
         const meta = (error.response?.data as IRajaOngkirResponse<null>)?.meta;
         throw new ResponseError(
-          meta?.code || error.response?.status || StatusCodes.INTERNAL_SERVER_ERROR,
+          meta?.code ||
+            error.response?.status ||
+            StatusCodes.INTERNAL_SERVER_ERROR,
           meta?.message || 'Failed to fetch shipping options',
         );
       }
@@ -208,16 +233,24 @@ export class ShippingUtils {
 
       const { meta, data } = response.data;
       if (meta.status !== 'success') {
-        throw new ResponseError(meta.code, meta.message || 'Failed to fetch waybill');
+        throw new ResponseError(
+          meta.code,
+          meta.message || 'Failed to fetch waybill',
+        );
       }
 
       return data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        appLogger.error('RajaOngkir API Error (Waybill):', error.response?.data);
+        appLogger.error(
+          'RajaOngkir API Error (Waybill):',
+          error.response?.data,
+        );
         const meta = (error.response?.data as IRajaOngkirResponse<null>)?.meta;
         throw new ResponseError(
-          meta?.code || error.response?.status || StatusCodes.INTERNAL_SERVER_ERROR,
+          meta?.code ||
+            error.response?.status ||
+            StatusCodes.INTERNAL_SERVER_ERROR,
           meta?.message || 'Failed to fetch waybill',
         );
       }
@@ -248,9 +281,21 @@ export class ShippingUtils {
           pod_time: '14:30:00',
         },
         manifest: [
-          { manifest_description: 'Diterima di Jakarta', manifest_date: '2024-10-10', manifest_time: '08:00:00' },
-          { manifest_description: 'Proses pengiriman ke Bandung', manifest_date: '2024-10-11', manifest_time: '09:00:00' },
-          { manifest_description: 'Diterima oleh BUDI', manifest_date: '2024-10-12', manifest_time: '14:30:00' },
+          {
+            manifest_description: 'Diterima di Jakarta',
+            manifest_date: '2024-10-10',
+            manifest_time: '08:00:00',
+          },
+          {
+            manifest_description: 'Proses pengiriman ke Bandung',
+            manifest_date: '2024-10-11',
+            manifest_time: '09:00:00',
+          },
+          {
+            manifest_description: 'Diterima oleh BUDI',
+            manifest_date: '2024-10-12',
+            manifest_time: '14:30:00',
+          },
         ],
       },
       sicepat: {
@@ -266,10 +311,23 @@ export class ShippingUtils {
           destination: 'Yogyakarta',
           status: 'ON PROCESS',
         },
-        delivery_status: { status: 'ON PROCESS', pod_receiver: null, pod_date: null, pod_time: null },
+        delivery_status: {
+          status: 'ON PROCESS',
+          pod_receiver: null,
+          pod_date: null,
+          pod_time: null,
+        },
         manifest: [
-          { manifest_description: 'Diterima di Surabaya', manifest_date: '2024-10-11', manifest_time: '10:00:00' },
-          { manifest_description: 'Dalam perjalanan ke Yogyakarta', manifest_date: '2024-10-12', manifest_time: '11:15:00' },
+          {
+            manifest_description: 'Diterima di Surabaya',
+            manifest_date: '2024-10-11',
+            manifest_time: '10:00:00',
+          },
+          {
+            manifest_description: 'Dalam perjalanan ke Yogyakarta',
+            manifest_date: '2024-10-12',
+            manifest_time: '11:15:00',
+          },
         ],
       },
       jnt: {
@@ -292,9 +350,21 @@ export class ShippingUtils {
           pod_time: '12:00:00',
         },
         manifest: [
-          { manifest_description: 'Diterima di Medan', manifest_date: '2024-10-09', manifest_time: '07:30:00' },
-          { manifest_description: 'Pengiriman ke Aceh', manifest_date: '2024-10-10', manifest_time: '09:00:00' },
-          { manifest_description: 'Diterima oleh SITI', manifest_date: '2024-10-11', manifest_time: '12:00:00' },
+          {
+            manifest_description: 'Diterima di Medan',
+            manifest_date: '2024-10-09',
+            manifest_time: '07:30:00',
+          },
+          {
+            manifest_description: 'Pengiriman ke Aceh',
+            manifest_date: '2024-10-10',
+            manifest_time: '09:00:00',
+          },
+          {
+            manifest_description: 'Diterima oleh SITI',
+            manifest_date: '2024-10-11',
+            manifest_time: '12:00:00',
+          },
         ],
       },
       pos: {
@@ -310,10 +380,23 @@ export class ShippingUtils {
           destination: 'Makassar',
           status: 'ON PROCESS',
         },
-        delivery_status: { status: 'ON PROCESS', pod_receiver: null, pod_date: null, pod_time: null },
+        delivery_status: {
+          status: 'ON PROCESS',
+          pod_receiver: null,
+          pod_date: null,
+          pod_time: null,
+        },
         manifest: [
-          { manifest_description: 'Diterima di Denpasar', manifest_date: '2024-10-08', manifest_time: '09:00:00' },
-          { manifest_description: 'Dalam perjalanan ke Makassar', manifest_date: '2024-10-09', manifest_time: '14:00:00' },
+          {
+            manifest_description: 'Diterima di Denpasar',
+            manifest_date: '2024-10-08',
+            manifest_time: '09:00:00',
+          },
+          {
+            manifest_description: 'Dalam perjalanan ke Makassar',
+            manifest_date: '2024-10-09',
+            manifest_time: '14:00:00',
+          },
         ],
       },
     };

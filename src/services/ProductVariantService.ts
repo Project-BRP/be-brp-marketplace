@@ -21,10 +21,13 @@ import {
   ProductRepository,
   PackagingRepository,
   ProductVariantRepository,
+  TransactionItemRepository,
 } from '../repositories';
 import { Validator } from '../utils';
 import { ProductVariantValidation } from '../validations';
 import { db } from '../configs/database';
+import { TxDeliveryStatus, TxManualStatus } from '@prisma/client';
+import { IoService } from './IoService';
 
 export class ProductVariantService {
   static async create(
@@ -236,6 +239,45 @@ export class ProductVariantService {
           );
         }
 
+        if (validData.stock > 0) {
+          const stockIssueItems = await TransactionItemRepository.findMany({
+            variantId: updatedProductVariant.id,
+            isStockIssue: true,
+            transaction: {
+              OR: [
+                { deliveryStatus: TxDeliveryStatus.PAID },
+                { manualStatus: TxManualStatus.PAID },
+              ],
+            },
+          }, tx);
+
+          let available = updatedProductVariant.stock;
+          for (const item of stockIssueItems) {
+            if (available >= item.quantity) {
+              await ProductVariantRepository.update(
+                updatedProductVariant.id,
+                { stock: { decrement: item.quantity } },
+                tx,
+              );
+              await TransactionItemRepository.updateById(
+                item.id,
+                { isStockIssue: false },
+                tx,
+              );
+              available -= item.quantity;
+            } else {
+              break;
+            }
+          }
+
+          if (available !== updatedProductVariant.stock) {
+            updatedProductVariant = await ProductVariantRepository.findById(
+              updatedProductVariant.id,
+              tx,
+            );
+          }
+        }
+
         return {
           id: updatedProductVariant.id,
           stock: updatedProductVariant.stock,
@@ -253,7 +295,7 @@ export class ProductVariantService {
           updatedAt: updatedProductVariant.updatedAt,
         };
       });
-
+      IoService.emitTransaction();
       return beginTransaction;
     } catch (error) {
       throw error;

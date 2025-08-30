@@ -18,6 +18,8 @@ COPY ./src/utils/email-verification.html ./dist/utils/email-verification.html
 
 COPY ./src/utils/invoice-email-template.html ./dist/utils/invoice-email-template.html
 
+COPY ./src/utils/shipping-notification-template.html ./dist/utils/shipping-notification-template.html
+
 EXPOSE 3001
 
 CMD ["npm", "run", "start:test"]

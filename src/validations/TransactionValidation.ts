@@ -291,7 +291,7 @@ export class TransactionValidation {
         invalid_type_error: 'Shipping receipt tidak valid',
       })
       .min(1, 'Shipping receipt tidak boleh kosong')
-      .optional()
+      .optional(),
   });
 
   static readonly UPDATE_SHIPPING_RECEIPT: ZodType = z.object({
@@ -349,5 +349,20 @@ export class TransactionValidation {
         invalid_type_error: 'Alasan pembatalan tidak valid',
       })
       .min(1, 'Alasan pembatalan tidak boleh kosong'),
+  });
+
+  static readonly RESOLVE_STOCK_ISSUE_ITEM: ZodType = z.object({
+    transactionItemId: z
+      .string({
+        required_error: 'ID item transaksi tidak boleh kosong',
+        invalid_type_error: 'ID item transaksi tidak valid',
+      })
+      .min(1, 'ID item transaksi tidak boleh kosong'),
+    stock: z
+      .number({
+        required_error: 'Jumlah stok yang ditambahkan tidak boleh kosong',
+        invalid_type_error: 'Jumlah stok yang ditambahkan tidak valid',
+      })
+      .min(1, 'Jumlah stok yang ditambahkan minimal 1'),
   });
 }

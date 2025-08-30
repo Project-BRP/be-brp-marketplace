@@ -90,6 +90,87 @@ export class EmailUtils {
     }
   }
 
+  static async sendShippingNotificationEmail(
+    transaction: IGetTransactionResponse,
+  ): Promise<void> {
+    const templatePath = path.join(
+      __dirname,
+      'shipping-notification-template.html',
+    );
+    let emailHtml = fs.readFileSync(templatePath, 'utf-8');
+
+    const logoUrl = EmailUtils.getLogoUrl();
+    emailHtml = emailHtml.replace('{{logo_url}}', logoUrl);
+    emailHtml = emailHtml.replace('{{transaction_id}}', transaction.id);
+    emailHtml = emailHtml.replace(
+      '{{tracking_number}}',
+      transaction.shippingReceipt || '-',
+    );
+
+    const emailData: IEmailDto = {
+      from: SMPTP_CONSTANTS.SMTP_EMAIL,
+      to: transaction.userEmail,
+      subject: 'Pesanan Anda Sedang Dikirim',
+      html: emailHtml,
+    };
+
+    await SendToKafka.sendEmailMessage(emailData);
+  }
+
+  static async sendCancellationEmail(
+    transaction: IGetTransactionResponse,
+    options?: { cancelledByAdmin?: boolean },
+  ): Promise<void> {
+    const templatePath = path.join(
+      __dirname,
+      'transaction-cancel-template.html',
+    );
+    let emailHtml = fs.readFileSync(templatePath, 'utf-8');
+
+    const logoUrl = EmailUtils.getLogoUrl();
+    emailHtml = emailHtml.replace('{{logo_url}}', logoUrl);
+    emailHtml = emailHtml.replace('{{transaction_id}}', transaction.id);
+    emailHtml = emailHtml.replace(
+      '{{cancel_reason}}',
+      transaction.cancelReason || '-',
+    );
+
+    const stockIssues = (transaction.transactionItems || []).filter(
+      item => item.isStockIssue === true,
+    );
+
+    let stockIssueSection = '';
+    if (options?.cancelledByAdmin && stockIssues.length > 0) {
+      const itemsHtml = stockIssues
+        .map(item => {
+          const name = item.variant?.product?.name || 'Produk';
+          const packaging = item.variant?.packaging?.name
+            ? ` - ${item.variant.packaging.name}`
+            : '';
+          return `<li>${name}${packaging} — Qty: ${item.quantity}</li>`;
+        })
+        .join('');
+
+      stockIssueSection = `
+        <div class="stock-issue">
+          <h3>Catatan Stok Bermasalah</h3>
+          <p>Ditemukan item dengan kendala stok saat pembatalan:</p>
+          <ul>${itemsHtml}</ul>
+        </div>`;
+    }
+
+    emailHtml = emailHtml.replace('{{stock_issue_section}}', stockIssueSection);
+
+    const emailData: IEmailDto = {
+      from: SMPTP_CONSTANTS.SMTP_EMAIL,
+      to: transaction.userEmail,
+      subject: 'Transaksi Dibatalkan',
+      html: emailHtml,
+    };
+
+    await SendToKafka.sendEmailMessage(emailData);
+  }
+
   private static getLogoUrl(): string {
     const serverDomain = process.env.SERVER_DOMAIN;
     const uploadPath = process.env.UPLOADS_PATH;

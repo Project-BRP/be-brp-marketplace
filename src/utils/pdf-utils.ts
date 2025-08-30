@@ -29,6 +29,12 @@ export class PDFUtils {
         },
       });
 
+      const invoiceDir = process.env.INVOICE_PATH;
+
+      if (!fs.existsSync(invoiceDir)) {
+        fs.mkdirSync(invoiceDir, { recursive: true });
+      }
+
       const invoicePath = path.join(
         __dirname,
         '..',
