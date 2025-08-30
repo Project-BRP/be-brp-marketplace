@@ -1297,12 +1297,24 @@ export class TransactionService {
       );
     }
 
-    const updated = await TransactionRepository.update(
+    let totalPrice = transaction.totalPrice;
+
+    if (transaction.manualShippingCost) {
+      totalPrice -= transaction.manualShippingCost;
+      totalPrice += validData.manualShippingCost;
+    }
+
+    const db = database;
+    const updated = await db.$transaction(async tx => {
+      return await TransactionRepository.update(
       validData.transactionId,
       {
         manualShippingCost: validData.manualShippingCost,
+        totalPrice: totalPrice,
       },
-    );
+      tx,
+      );
+    });
 
     IoService.emitTransaction();
     return updated;
