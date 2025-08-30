@@ -176,6 +176,10 @@ export class EmailUtils {
     const uploadPath = process.env.UPLOADS_PATH;
 
     const logoDir = path.join(__dirname, '..', '..', uploadPath, 'logo');
+    if (!fs.existsSync(logoDir)) {
+      appLogger.error('Direktori logo tidak ditemukan');
+      return '';
+    }
     const logoName = fs
       .readdirSync(logoDir)
       .find(file => /\.(png|jpg|jpeg|webp)$/i.test(file));
