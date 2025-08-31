@@ -29,7 +29,7 @@ import type {
   IUpdateShippingReceiptRequest,
   IUpdateShippingReceiptResponse,
   IResolveStockIssueRequest,
-  IResolveStockIssueResponse
+  IResolveStockIssueResponse,
 } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
 import {
@@ -1561,6 +1561,27 @@ export class TransactionService {
       throw new ResponseError(
         StatusCodes.NOT_FOUND,
         'Item transaksi tidak ditemukan',
+      );
+    }
+
+    const transaction = await TransactionRepository.findById(
+      item.transactionId,
+    );
+
+    if (!transaction) {
+      throw new ResponseError(
+        StatusCodes.NOT_FOUND,
+        'Transaksi tidak ditemukan',
+      );
+    }
+
+    if (
+      transaction.deliveryStatus !== TxDeliveryStatus.PAID ||
+      transaction.manualStatus !== TxManualStatus.PAID
+    ) {
+      throw new ResponseError(
+        StatusCodes.BAD_REQUEST,
+        'Transaksi tidak dalam status yang valid untuk resolusi masalah stok',
       );
     }
 

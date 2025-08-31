@@ -172,7 +172,10 @@ export class EmailUtils {
           </div>`;
       }
 
-      emailHtml = emailHtml.replace('{{stock_issue_section}}', stockIssueSection);
+      emailHtml = emailHtml.replace(
+        '{{stock_issue_section}}',
+        stockIssueSection,
+      );
 
       const emailData: IEmailDto = {
         from: SMPTP_CONSTANTS.SMTP_EMAIL,

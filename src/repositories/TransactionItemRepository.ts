@@ -2,10 +2,7 @@ import type { Prisma } from '@prisma/client';
 import { db } from '../configs/database';
 
 export class TransactionItemRepository {
-  static async findById(
-    id: string,
-    tx: Prisma.TransactionClient = db,
-  ) {
+  static async findById(id: string, tx: Prisma.TransactionClient = db) {
     return tx.transactionItem.findUnique({
       where: { id },
       include: {

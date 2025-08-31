@@ -285,5 +285,3 @@ export interface IGetAllTransactionDateRangeResponse {
     };
   };
 }
-
-

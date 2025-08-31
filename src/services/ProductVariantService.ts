@@ -22,6 +22,7 @@ import {
   PackagingRepository,
   ProductVariantRepository,
   TransactionItemRepository,
+  TransactionRepository,
 } from '../repositories';
 import { Validator } from '../utils';
 import { ProductVariantValidation } from '../validations';
@@ -240,20 +241,35 @@ export class ProductVariantService {
         }
 
         if (validData.stock > 0) {
-          const stockIssueItems = await TransactionItemRepository.findMany({
-            variantId: updatedProductVariant.id,
-            isStockIssue: true,
-            transaction: {
-              OR: [
-                { deliveryStatus: TxDeliveryStatus.PAID },
-                { manualStatus: TxManualStatus.PAID },
-              ],
+          const stockIssueItems = await TransactionItemRepository.findMany(
+            {
+              variantId: updatedProductVariant.id,
+              isStockIssue: true,
+              transaction: {
+                OR: [
+                  { deliveryStatus: TxDeliveryStatus.PAID },
+                  { manualStatus: TxManualStatus.PAID },
+                ],
+              },
             },
-          }, tx);
+            tx,
+          );
 
           let available = updatedProductVariant.stock;
+          let transaction;
           for (const item of stockIssueItems) {
             if (available >= item.quantity) {
+              transaction = await TransactionRepository.findById(
+                item.transactionId,
+                tx,
+              );
+              if (
+                transaction.deliveryStatus !== TxDeliveryStatus.PAID ||
+                transaction.manualStatus !== TxManualStatus.PAID
+              ) {
+                continue;
+              }
+
               await ProductVariantRepository.update(
                 updatedProductVariant.id,
                 { stock: { decrement: item.quantity } },
