@@ -16,8 +16,15 @@ import {
 export class ReportController {
   static async exportData(req: Request, res: Response, next: NextFunction) {
     try {
+      const tables = req.query.tables
+        ? String(req.query.tables)
+            .split(",")
+            .map(s => s.trim())
+            .filter(Boolean)
+        : [];
+
       const request: IExportDataRequest = {
-        tables: Object.keys(req.query),
+        tables,
         startYear: req.query.startYear ? Number(req.query.startYear) : undefined,
         startMonth: req.query.startMonth ? Number(req.query.startMonth) : undefined,
         startDay: req.query.startDay ? Number(req.query.startDay) : undefined,
