@@ -134,6 +134,7 @@ export interface IGetAllTransactionsRequest {
   endMonth?: number;
   endDay?: number;
   status?: TxDeliveryStatus | TxManualStatus;
+  isStockIssue?: boolean;
 }
 
 export interface IGetAllTransactionsResponse {
@@ -149,6 +150,7 @@ export interface IGetTransactionByUserRequest {
   method?: TxMethod;
   search?: string;
   status?: TxDeliveryStatus | TxManualStatus;
+  isStockIssue?: boolean;
   page?: number;
   limit?: number;
 }

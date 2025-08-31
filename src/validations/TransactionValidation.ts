@@ -173,6 +173,10 @@ export class TransactionValidation {
         })
         .nullish()
         .optional(),
+      isStockIssue: z
+        .boolean({ invalid_type_error: 'isStockIssue tidak valid' })
+        .nullish()
+        .optional(),
     })
     .superRefine((data, ctx) => {
       // start date validation
@@ -273,6 +277,10 @@ export class TransactionValidation {
       .number({
         invalid_type_error: 'Jumlah limit tidak valid',
       })
+      .nullish()
+      .optional(),
+    isStockIssue: z
+      .boolean({ invalid_type_error: 'isStockIssue tidak valid' })
       .nullish()
       .optional(),
   });

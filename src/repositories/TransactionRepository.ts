@@ -64,6 +64,7 @@ export class TransactionRepository {
     status?: TxDeliveryStatus | TxManualStatus,
     startDate?: Date,
     endDate?: Date,
+    isStockIssue?: boolean,
     tx: Prisma.TransactionClient = db,
   ) {
     const whereCondition: Prisma.TransactionWhereInput = {};
@@ -88,6 +89,12 @@ export class TransactionRepository {
       whereCondition.createdAt = {};
       if (startDate) whereCondition.createdAt.gte = startDate;
       if (endDate) whereCondition.createdAt.lte = endDate;
+    }
+
+    if (isStockIssue !== undefined) {
+      whereCondition.transactionItems = isStockIssue
+        ? { some: { isStockIssue: true } }
+        : { none: { isStockIssue: true } };
     }
 
     return tx.transaction.findMany({
@@ -120,6 +127,7 @@ export class TransactionRepository {
     status?: TxDeliveryStatus | TxManualStatus,
     startDate?: Date,
     endDate?: Date,
+    isStockIssue?: boolean,
     tx: Prisma.TransactionClient = db,
   ) {
     const whereCondition: Prisma.TransactionWhereInput = {};
@@ -144,6 +152,12 @@ export class TransactionRepository {
       whereCondition.createdAt = {};
       if (startDate) whereCondition.createdAt.gte = startDate;
       if (endDate) whereCondition.createdAt.lte = endDate;
+    }
+
+    if (isStockIssue !== undefined) {
+      whereCondition.transactionItems = isStockIssue
+        ? { some: { isStockIssue: true } }
+        : { none: { isStockIssue: true } };
     }
 
     return tx.transaction.findMany({
@@ -176,6 +190,7 @@ export class TransactionRepository {
     status?: TxDeliveryStatus | TxManualStatus,
     startDate?: Date,
     endDate?: Date,
+    isStockIssue?: boolean,
     tx: Prisma.TransactionClient = db,
   ) {
     const whereCondition: Prisma.TransactionWhereInput = {};
@@ -200,6 +215,12 @@ export class TransactionRepository {
         { id: { contains: search, mode: 'insensitive' } },
         { userName: { contains: search, mode: 'insensitive' } },
       ];
+    }
+
+    if (isStockIssue !== undefined) {
+      whereCondition.transactionItems = isStockIssue
+        ? { some: { isStockIssue: true } }
+        : { none: { isStockIssue: true } };
     }
 
     return tx.transaction.count({
@@ -267,6 +288,7 @@ export class TransactionRepository {
     method?: TxMethod,
     search?: string,
     status?: TxDeliveryStatus | TxManualStatus,
+    isStockIssue?: boolean,
     tx: Prisma.TransactionClient = db,
   ) {
     const whereCondition: Prisma.TransactionWhereInput = { userId };
@@ -285,6 +307,12 @@ export class TransactionRepository {
         { id: { contains: search, mode: 'insensitive' } },
         { userName: { contains: search, mode: 'insensitive' } },
       ];
+    }
+
+    if (isStockIssue !== undefined) {
+      whereCondition.transactionItems = isStockIssue
+        ? { some: { isStockIssue: true } }
+        : { none: { isStockIssue: true } };
     }
 
     return tx.transaction.findMany({
@@ -314,6 +342,7 @@ export class TransactionRepository {
     method?: TxMethod,
     search?: string,
     status?: TxDeliveryStatus | TxManualStatus,
+    isStockIssue?: boolean,
     tx: Prisma.TransactionClient = db,
   ) {
     const whereCondition: Prisma.TransactionWhereInput = { userId };
@@ -332,6 +361,12 @@ export class TransactionRepository {
         { id: { contains: search, mode: 'insensitive' } },
         { userName: { contains: search, mode: 'insensitive' } },
       ];
+    }
+
+    if (isStockIssue !== undefined) {
+      whereCondition.transactionItems = isStockIssue
+        ? { some: { isStockIssue: true } }
+        : { none: { isStockIssue: true } };
     }
 
     return tx.transaction.findMany({
@@ -361,6 +396,7 @@ export class TransactionRepository {
     method?: TxMethod,
     search?: string,
     status?: TxDeliveryStatus | TxManualStatus,
+    isStockIssue?: boolean,
     tx: Prisma.TransactionClient = db,
   ) {
     const whereCondition: Prisma.TransactionWhereInput = { userId };
@@ -379,6 +415,12 @@ export class TransactionRepository {
         { id: { contains: search, mode: 'insensitive' } },
         { userName: { contains: search, mode: 'insensitive' } },
       ];
+    }
+
+    if (isStockIssue !== undefined) {
+      whereCondition.transactionItems = isStockIssue
+        ? { some: { isStockIssue: true } }
+        : { none: { isStockIssue: true } };
     }
 
     return tx.transaction.count({

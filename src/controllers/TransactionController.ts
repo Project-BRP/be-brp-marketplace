@@ -132,12 +132,21 @@ export class TransactionController {
     next: NextFunction,
   ): Promise<void> {
     try {
+      let isStockIssue: boolean | undefined = undefined;
+      if (typeof req.query.isStockIssue !== 'undefined') {
+        const v = String(req.query.isStockIssue).toLowerCase();
+        if (v === 'true') isStockIssue = true;
+        else if (v === 'false') isStockIssue = false;
+        else isStockIssue = undefined;
+      }
+
       const request: IGetAllTransactionsRequest = {
         method: req.query.method as TxMethod,
         search: req.query.search as string,
         status: req.query.status as TxDeliveryStatus | TxManualStatus,
         page: req.query.page ? parseInt(req.query.page as string, 10) : 1,
         limit: req.query.limit ? parseInt(req.query.limit as string, 10) : 10,
+        isStockIssue,
         startYear: req.query.startYear
           ? parseInt(req.query.startYear as string, 10)
           : undefined,
@@ -176,6 +185,14 @@ export class TransactionController {
     next: NextFunction,
   ): Promise<void> {
     try {
+      let isStockIssue: boolean | undefined = undefined;
+      if (typeof req.query.isStockIssue !== 'undefined') {
+        const v = String(req.query.isStockIssue).toLowerCase();
+        if (v === 'true') isStockIssue = true;
+        else if (v === 'false') isStockIssue = false;
+        else isStockIssue = undefined;
+      }
+
       const request: IGetTransactionByUserRequest = {
         userId: req.params.userId,
         currentUserId: req.user.userId,
@@ -185,6 +202,7 @@ export class TransactionController {
         page: req.query.page ? parseInt(req.query.page as string, 10) : 1,
         limit: req.query.limit ? parseInt(req.query.limit as string, 10) : 10,
         search: req.query.search as string,
+        isStockIssue,
       };
 
       const response = await TransactionService.getAllByUserId(request);

@@ -532,6 +532,7 @@ export class TransactionService {
     const search = validData.search;
     const method = validData.method;
     const status = validData.status;
+    const isStockIssue = validData.isStockIssue as boolean | undefined;
 
     // Konversi date range
     let startDate: Date | undefined;
@@ -596,6 +597,7 @@ export class TransactionService {
         status,
         startDate,
         endDate,
+        isStockIssue,
       );
 
       return {
@@ -667,6 +669,7 @@ export class TransactionService {
       status,
       startDate,
       endDate,
+      isStockIssue,
     );
 
     if (totalTransactions === 0) {
@@ -689,6 +692,7 @@ export class TransactionService {
       status,
       startDate,
       endDate,
+      isStockIssue,
     );
 
     const totalPage = Math.ceil(totalTransactions / take);
@@ -858,6 +862,7 @@ export class TransactionService {
       method,
       search,
       status,
+      validData.isStockIssue as boolean | undefined,
     );
 
     if (totalTransactions === 0) {
@@ -879,6 +884,7 @@ export class TransactionService {
       method,
       search,
       status,
+      validData.isStockIssue as boolean | undefined,
     );
 
     const totalPage = Math.ceil(totalTransactions / take);
