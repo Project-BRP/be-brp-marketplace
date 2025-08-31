@@ -13,3 +13,4 @@ export * from './TransactionService';
 export * from './ShippingService';
 export * from './CompanyInfoService';
 export * from './ReportService';
+export * from './ChatService';

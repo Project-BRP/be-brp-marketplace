@@ -108,4 +108,42 @@ export class SharpUtils {
     const relativePath = path.join('logo', filename);
     return relativePath.replace(/\\/g, '/');
   }
+
+  static async saveChatImage(
+    filePath: string,
+  ): Promise<{ path: string; width: number | null; height: number | null }> {
+    const rootDirectory = path.resolve(__dirname, '..', '..');
+    const mainDirectory = process.env.UPLOADS_PATH;
+    const relativeDirectory = path.join(mainDirectory, 'chats', 'attachments');
+    const absoluteDirectory = path.join(rootDirectory, relativeDirectory);
+
+    if (!fs.existsSync(absoluteDirectory)) {
+      fs.mkdirSync(absoluteDirectory, { recursive: true });
+    }
+
+    const timestamp = Date.now();
+    const filename = `${uuid()}_${timestamp}.webp`;
+    const outputFilePath = path.join(absoluteDirectory, filename);
+
+    // Resize to a reasonable size, keeping aspect ratio
+    const pipeline = sharp(filePath)
+      .resize({ width: 1280, height: 1280, fit: 'inside' })
+      .toFormat('webp');
+    await pipeline.toFile(outputFilePath);
+
+    // Get metadata of the saved file
+    const meta = await sharp(outputFilePath).metadata();
+
+    // Remove original temp file
+    fs.unlinkSync(filePath);
+
+    const relativePath = path
+      .join('chats', 'attachments', filename)
+      .replace(/\\/g, '/');
+    return {
+      path: relativePath,
+      width: meta.width ?? null,
+      height: meta.height ?? null,
+    };
+  }
 }

@@ -13,3 +13,6 @@ export * from './TransactionItemRepository';
 export * from './TransactionRepository';
 export * from './ShippingRepository';
 export * from './CompanyInfoRepository';
+export * from './ChatRoomRepository';
+export * from './ChatMessageRepository';
+export * from './ChatAttachmentRepository';

@@ -24,6 +24,7 @@ import {
   shippingRoute,
   companyInfoRoute,
   reportRoute,
+  chatRoute,
 } from './routes';
 
 const app: Express = express();
@@ -77,6 +78,7 @@ app.use('/api/transactions', transactionRoute);
 app.use('/api/shipping', shippingRoute);
 app.use('/api/company-info', companyInfoRoute);
 app.use('/api/reports', reportRoute);
+app.use('/api/chats', chatRoute);
 
 app.use(errorMiddleware);
 

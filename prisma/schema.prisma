@@ -39,6 +39,17 @@ enum TxManualStatus {
   CANCELLED
 }
 
+enum ChatSenderType {
+  USER
+  ADMIN
+}
+
+enum ChatAttachmentType {
+  IMAGE
+  VIDEO
+  FILE
+}
+
 model CompanyInfo {
   id            String   @id @default("COMPANY_INFO") @map("id")
   companyName   String   @map("company_name")
@@ -75,6 +86,8 @@ model User {
   updatedAt      DateTime      @updatedAt @map("updated_at")
   cart           Cart?
   transaction    Transaction[]
+  ChatRoom       ChatRoom[]
+  ChatMessage    ChatMessage[]
 
   @@index([email, name])
   @@map("users")
@@ -236,4 +249,60 @@ model TransactionItem {
 
   @@unique([transactionId, variantId], name: "unique_transaction_variant")
   @@map("transaction_items")
+}
+
+model ChatRoom {
+  id            String    @id @map("id")
+  userId        String    @map("user_id")
+  lastMessageAt DateTime? @map("last_message_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages ChatMessage[]
+
+  @@index([userId])
+  @@index([lastMessageAt])
+  @@map("chat_conversations")
+}
+
+model ChatMessage {
+  id             String         @id @map("id")
+  roomId         String         @map("room_id")
+  senderId       String         @map("sender_id")
+  senderType     ChatSenderType @map("sender_type")
+  content        String?        @map("content")
+  hasAttachments Boolean        @default(false) @map("has_attachments")
+  isReadByUser   Boolean        @default(false) @map("is_read_by_user")
+  isReadByAdmin  Boolean        @default(false) @map("is_read_by_admin")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  room        ChatRoom         @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  sender      User             @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  attachments ChatAttachment[]
+
+  @@index([roomId])
+  @@index([senderId])
+  @@index([createdAt])
+  @@map("chat_messages")
+}
+
+model ChatAttachment {
+  id        String             @id @map("id")
+  messageId String             @map("message_id")
+  type      ChatAttachmentType @map("type")
+  url       String             @map("url")
+  mimeType  String             @map("mime_type")
+  sizeBytes Int                @map("size_bytes")
+  width     Int?               @map("width")
+  height    Int?               @map("height")
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @updatedAt @map("updated_at")
+
+  message ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
+  @@index([createdAt])
+  @@map("chat_attachments")
 }

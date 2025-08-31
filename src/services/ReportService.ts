@@ -61,7 +61,10 @@ export class ReportService {
       validData.startYear !== undefined &&
       validData.startMonth !== undefined
     ) {
-      startDate = TimeUtils.getStartOfMonth(validData.startYear, validData.startMonth);
+      startDate = TimeUtils.getStartOfMonth(
+        validData.startYear,
+        validData.startMonth,
+      );
     }
     if (
       validData.endYear !== undefined &&
@@ -73,7 +76,10 @@ export class ReportService {
         validData.endMonth,
         validData.endDay,
       );
-    } else if (validData.endYear !== undefined && validData.endMonth !== undefined) {
+    } else if (
+      validData.endYear !== undefined &&
+      validData.endMonth !== undefined
+    ) {
       endDate = TimeUtils.getEndOfMonth(validData.endYear, validData.endMonth);
     }
 
@@ -126,7 +132,7 @@ export class ReportService {
         content: CsvUtils.toCsv(transactionRows),
       });
 
-      if(tables.includes('transaction_items')) {
+      if (tables.includes('transaction_items')) {
         let items = [];
         for (const tx of rows) {
           for (const item of tx.transactionItems) {
@@ -140,7 +146,10 @@ export class ReportService {
         });
       }
     }
-    if (tables.includes('transaction_items') && !tables.includes('transactions')) {
+    if (
+      tables.includes('transaction_items') &&
+      !tables.includes('transactions')
+    ) {
       const rows = await TransactionItemRepository.findManyCustom({
         createdAt: {
           gte: startDate,

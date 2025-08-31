@@ -10,7 +10,7 @@ import {
   IGetTotalActiveUsersRequest,
   IGetMonthlyRevenueRequest,
   IGetMostSoldProductsDistributionRequest,
-  IExportDataRequest
+  IExportDataRequest,
 } from '../dtos';
 
 export class ReportController {
@@ -18,15 +18,19 @@ export class ReportController {
     try {
       const tables = req.query.tables
         ? String(req.query.tables)
-            .split(",")
+            .split(',')
             .map(s => s.trim())
             .filter(Boolean)
         : [];
 
       const request: IExportDataRequest = {
         tables,
-        startYear: req.query.startYear ? Number(req.query.startYear) : undefined,
-        startMonth: req.query.startMonth ? Number(req.query.startMonth) : undefined,
+        startYear: req.query.startYear
+          ? Number(req.query.startYear)
+          : undefined,
+        startMonth: req.query.startMonth
+          ? Number(req.query.startMonth)
+          : undefined,
         startDay: req.query.startDay ? Number(req.query.startDay) : undefined,
         endYear: req.query.endYear ? Number(req.query.endYear) : undefined,
         endMonth: req.query.endMonth ? Number(req.query.endMonth) : undefined,

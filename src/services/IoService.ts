@@ -8,4 +8,8 @@ export class IoService {
   static async emitTransaction(): Promise<void> {
     io.emit('transactions');
   }
+
+  static async emitChatMessage(roomId: string): Promise<void> {
+    io.emit('chat:message', { roomId });
+  }
 }

@@ -7,3 +7,4 @@ export * from './database-constants';
 export * from './smtp-constants';
 export * from './midtrans-constants';
 export * from './rajaongkir-constants';
+export * from './attachments-type-constant';

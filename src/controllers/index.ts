@@ -12,3 +12,4 @@ export * from './TransactionController';
 export * from './ShippingController';
 export * from './CompanyInfoController';
 export * from './ReportController';
+export * from './ChatController';

@@ -12,3 +12,4 @@ export * from './TransactionRoute';
 export * from './ShippingRoute';
 export * from './CompanyInfoRoute';
 export * from './ReportRoute';
+export * from './ChatRoute';
