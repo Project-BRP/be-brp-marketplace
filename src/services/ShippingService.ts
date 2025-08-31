@@ -231,7 +231,7 @@ export class ShippingService {
       );
     }
 
-    const courier = transaction.shippingAgent;
+    const courier = transaction.shippingCode;
     const awb = transaction.shippingReceipt;
 
     const user = await UserRepository.findById(transaction.userId);
