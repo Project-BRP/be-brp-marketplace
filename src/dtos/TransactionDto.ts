@@ -287,3 +287,12 @@ export interface IGetAllTransactionDateRangeResponse {
     };
   };
 }
+
+export interface IExportTransactionsCsvRequest {
+  startYear?: number;
+  startMonth?: number;
+  startDay?: number;
+  endYear?: number;
+  endMonth?: number;
+  endDay?: number;
+}

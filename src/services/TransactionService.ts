@@ -30,6 +30,7 @@ import type {
   IUpdateShippingReceiptResponse,
   IResolveStockIssueRequest,
   IResolveStockIssueResponse,
+  IExportTransactionsCsvRequest,
 } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
 import {
@@ -532,9 +533,7 @@ export class TransactionService {
     const search = validData.search;
     const method = validData.method;
     const status = validData.status;
-    const isStockIssue = validData.isStockIssue as boolean | undefined;
 
-    // Konversi date range
     let startDate: Date | undefined;
     let endDate: Date | undefined;
 
@@ -597,7 +596,6 @@ export class TransactionService {
         status,
         startDate,
         endDate,
-        isStockIssue,
       );
 
       return {
@@ -669,7 +667,6 @@ export class TransactionService {
       status,
       startDate,
       endDate,
-      isStockIssue,
     );
 
     if (totalTransactions === 0) {
@@ -692,7 +689,6 @@ export class TransactionService {
       status,
       startDate,
       endDate,
-      isStockIssue,
     );
 
     const totalPage = Math.ceil(totalTransactions / take);
@@ -862,7 +858,6 @@ export class TransactionService {
       method,
       search,
       status,
-      validData.isStockIssue as boolean | undefined,
     );
 
     if (totalTransactions === 0) {
@@ -884,7 +879,6 @@ export class TransactionService {
       method,
       search,
       status,
-      validData.isStockIssue as boolean | undefined,
     );
 
     const totalPage = Math.ceil(totalTransactions / take);
@@ -1619,5 +1613,216 @@ export class TransactionService {
 
     IoService.emitTransaction();
     return updatedItem;
+  }
+
+  static async exportTransactionsCsv(
+    request: IExportTransactionsCsvRequest,
+  ): Promise<string> {
+    const validData = Validator.validate(
+      TransactionValidation.EXPORT_CSV,
+      request,
+    );
+    // Build date range
+    let startDate: Date | undefined;
+    let endDate: Date | undefined;
+    if (validData.startYear && validData.startMonth && validData.startDay) {
+      startDate = TimeUtils.getStartOfDay(
+        validData.startYear,
+        validData.startMonth,
+        validData.startDay,
+      );
+    } else if (validData.startYear && validData.startMonth) {
+      startDate = TimeUtils.getStartOfMonth(
+        validData.startYear,
+        validData.startMonth,
+      );
+    }
+    if (validData.endYear && validData.endMonth && validData.endDay) {
+      endDate = TimeUtils.getEndOfDay(
+        validData.endYear,
+        validData.endMonth,
+        validData.endDay,
+      );
+    } else if (validData.endYear && validData.endMonth) {
+      endDate = TimeUtils.getEndOfMonth(validData.endYear, validData.endMonth);
+    }
+    const transactions = await TransactionRepository.findAll(
+      undefined,
+      undefined,
+      undefined,
+      startDate,
+      endDate,
+      undefined,
+    );
+    const escape = (v: any) => {
+      if (v === null || v === undefined) return '';
+      const s = String(v);
+      if (s.includes('"') || s.includes(',') || s.includes('\n')) {
+        return '"' + s.replace(/"/g, '""') + '"';
+      }
+      return s;
+    };
+    const header = [
+      'id',
+      'userId',
+      'userName',
+      'userEmail',
+      'method',
+      'deliveryStatus',
+      'manualStatus',
+      'cleanPrice',
+      'priceWithPPN',
+      'totalPrice',
+      'totalWeightInKg',
+      'PPNPercentage',
+      'city',
+      'province',
+      'district',
+      'subDistrict',
+      'postalCode',
+      'shippingAddress',
+      'shippingAgent',
+      'shippingCode',
+      'shippingService',
+      'shippingEstimate',
+      'shippingCost',
+      'shippingReceipt',
+      'manualShippingCost',
+      'paymentMethod',
+      'isRefundFailed',
+      'cancelReason',
+      'createdAt',
+      'updatedAt',
+      'itemsCount',
+      'itemsDetail',
+    ];
+    const rows = transactions.map(t => {
+      const itemsCount = t.transactionItems.length;
+      const record = [
+        t.id,
+        t.userId,
+        t.userName,
+        t.userEmail,
+        t.method,
+        t.deliveryStatus || '',
+        t.manualStatus || '',
+        t.cleanPrice,
+        t.priceWithPPN,
+        t.totalPrice,
+        t.totalWeightInKg,
+        t.PPNPercentage ?? '',
+        t.city,
+        t.province,
+        t.district,
+        t.subDistrict,
+        t.postalCode,
+        t.shippingAddress,
+        t.shippingAgent ?? '',
+        t.shippingCode ?? '',
+        t.shippingService ?? '',
+        t.shippingEstimate ?? '',
+        t.shippingCost ?? '',
+        t.shippingReceipt ?? '',
+        t.manualShippingCost ?? '',
+        t.paymentMethod ?? '',
+        t.isRefundFailed,
+        t.cancelReason ?? '',
+        t.createdAt.toISOString(),
+        t.updatedAt.toISOString(),
+        itemsCount,
+      ];
+      return record.map(escape).join(',');
+    });
+    return [header.join(','), ...rows].join('\n');
+  }
+
+  static async exportTransactionItemsCsv(
+    request: IExportTransactionsCsvRequest,
+  ): Promise<string> {
+    const validData = Validator.validate(
+      TransactionValidation.EXPORT_CSV,
+      request,
+    );
+
+    // Build date range
+    let startDate: Date | undefined;
+    let endDate: Date | undefined;
+
+    if (validData.startYear && validData.startMonth && validData.startDay) {
+      startDate = TimeUtils.getStartOfDay(
+        validData.startYear,
+        validData.startMonth,
+        validData.startDay,
+      );
+    } else if (validData.startYear && validData.startMonth) {
+      startDate = TimeUtils.getStartOfMonth(
+        validData.startYear,
+        validData.startMonth,
+      );
+    }
+
+    if (validData.endYear && validData.endMonth && validData.endDay) {
+      endDate = TimeUtils.getEndOfDay(
+        validData.endYear,
+        validData.endMonth,
+        validData.endDay,
+      );
+    } else if (validData.endYear && validData.endMonth) {
+      endDate = TimeUtils.getEndOfMonth(validData.endYear, validData.endMonth);
+    }
+
+    const transactions = await TransactionRepository.findAll(
+      undefined,
+      undefined,
+      undefined,
+      startDate,
+      endDate,
+      undefined,
+    );
+
+    const escape = (v: any) => {
+      if (v === null || v === undefined) return '';
+      const s = String(v);
+      if (s.includes('"') || s.includes(',') || s.includes('\n')) {
+        return '"' + s.replace(/"/g, '""') + '"';
+      }
+      return s;
+    };
+
+    const header = [
+      'transactionId',
+      'transactionCreatedAt',
+      'itemId',
+      'variantId',
+      'productName',
+      'packagingName',
+      'variantWeightInKg',
+      'variantPriceRupiah',
+      'quantity',
+      'itemPriceRupiah',
+      'isStockIssue',
+    ];
+
+    const rows: string[] = [];
+    for (const t of transactions) {
+      for (const it of t.transactionItems) {
+        const record = [
+          t.id,
+          t.createdAt.toISOString(),
+          it.id,
+          it.variant.id,
+          it.variant.product.name,
+          it.variant.packaging?.name ?? '',
+          it.variant.weight_in_kg,
+          it.variant.priceRupiah,
+          it.quantity,
+          it.priceRupiah,
+          it.isStockIssue,
+        ];
+        rows.push(record.map(escape).join(','));
+      }
+    }
+
+    return [header.join(','), ...rows].join('\n');
   }
 }
