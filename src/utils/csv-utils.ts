@@ -1,4 +1,5 @@
 import { stringify } from 'csv-stringify/sync';
+import { DateTime } from 'luxon';
 
 export class CsvUtils {
   // Convert array of objects to CSV string with headers inferred from keys
@@ -10,7 +11,14 @@ export class CsvUtils {
       const obj: Record<string, any> = {};
       for (const [key, value] of Object.entries(row)) {
         if (value instanceof Date) {
-          obj[key] = value.toISOString();
+          // Special-case createdAt/updatedAt for Excel-friendly format: dd/MM/yyyy
+          if (key === 'createdAt' || key === 'updatedAt') {
+            obj[key] = DateTime.fromJSDate(value)
+              .setZone('Asia/Jakarta')
+              .toFormat('dd/LL/yyyy');
+          } else {
+            obj[key] = value.toISOString();
+          }
         } else if (typeof value === 'object' && value !== null) {
           obj[key] = JSON.stringify(value);
         } else {
