@@ -1109,11 +1109,6 @@ export class TransactionService {
                 );
               }
             }
-
-            if (next === (TxDeliveryStatus.SHIPPED as TxDeliveryStatus)) {
-              EmailUtils.sendShippingNotificationEmail(updatedTransaction);
-            }
-
             return updatedTransaction;
           });
 
@@ -1128,6 +1123,10 @@ export class TransactionService {
         validData.id,
         updateData,
       );
+
+      if (next === (TxDeliveryStatus.SHIPPED as TxDeliveryStatus)) {
+        EmailUtils.sendShippingNotificationEmail(updated);
+      }
 
       IoService.emitTransaction();
       return updated;
