@@ -78,4 +78,25 @@ export class ShippingValidation {
       })
       .min(1, 'Weight tidak boleh kurang dari 1'),
   });
+
+  static readonly TRACK_WAYBILL: ZodType = z.object({
+    transactionId: z
+      .string({
+        required_error: 'ID Transaksi tidak boleh kosong',
+        invalid_type_error: 'ID Transaksi tidak valid',
+      })
+      .min(1, 'ID Transaksi tidak boleh kosong'),
+    userId: z
+      .string({
+        required_error: 'ID User tidak boleh kosong',
+        invalid_type_error: 'ID User tidak valid',
+      })
+      .min(1, 'ID User tidak boleh kosong'),
+    userRole: z
+      .string({
+        required_error: 'Role User tidak boleh kosong',
+        invalid_type_error: 'Role User tidak valid',
+      })
+      .min(1, 'Role User tidak boleh kosong'),
+  });
 }

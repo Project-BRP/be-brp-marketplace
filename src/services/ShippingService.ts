@@ -1,8 +1,19 @@
 import { StatusCodes } from 'http-status-codes';
 
-import { IProvince, ICity, IDistrict, ISubDistrict } from '../dtos';
+import {
+  IProvince,
+  ICity,
+  IDistrict,
+  ISubDistrict,
+  ICheckWaybill,
+} from '../dtos';
 import { ResponseError } from '../error/ResponseError';
-import { CompanyInfoRepository, ShippingRepository } from '../repositories';
+import {
+  CompanyInfoRepository,
+  ShippingRepository,
+  TransactionRepository,
+  UserRepository,
+} from '../repositories';
 import { ShippingUtils, Validator } from '../utils';
 import { ShippingValidation } from '../validations';
 import {
@@ -12,7 +23,10 @@ import {
   IShippingOption,
   ICheckCostRequest,
   ICheckCostResponse,
-} from './../dtos/ShippingDto';
+  ITrackShippingRequest,
+  ITrackShippingResponse,
+} from '../dtos';
+import { Role } from '../constants';
 
 export class ShippingService {
   static async getProvinces(): Promise<IProvince[]> {
@@ -172,10 +186,74 @@ export class ShippingService {
       courier: 'jne:sicepat:jnt:pos',
     };
 
-    const shippingOptions = await ShippingUtils.fetchShippingOptions(payload);
+    const shippingOptions: IShippingOption[] =
+      await ShippingUtils.fetchShippingOptions(payload);
 
     return {
       shippingOptions,
     };
+  }
+
+  static async trackTransaction(
+    request: ITrackShippingRequest,
+    options?: { mock?: boolean },
+  ): Promise<ITrackShippingResponse> {
+    const validData = Validator.validate(
+      ShippingValidation.TRACK_WAYBILL,
+      request,
+    );
+
+    const transaction = await TransactionRepository.findById(
+      validData.transactionId,
+    );
+
+    if (!transaction) {
+      throw new ResponseError(
+        StatusCodes.NOT_FOUND,
+        'Transaksi tidak ditemukan',
+      );
+    }
+
+    if (!transaction.shippingAgent || !transaction.shippingReceipt) {
+      throw new ResponseError(
+        StatusCodes.BAD_REQUEST,
+        'Transaksi belum memiliki informasi resi/kurtir',
+      );
+    }
+
+    const isSelf = validData.userId === transaction.userId;
+    const isAdmin = validData.userRole === Role.ADMIN;
+
+    if (!isSelf && !isAdmin) {
+      throw new ResponseError(
+        StatusCodes.FORBIDDEN,
+        'Anda tidak memiliki akses untuk melacak transaksi ini',
+      );
+    }
+
+    const courier = transaction.shippingAgent;
+    const awb = transaction.shippingReceipt;
+
+    const user = await UserRepository.findById(transaction.userId);
+
+    if (!user) {
+      throw new ResponseError(StatusCodes.NOT_FOUND, 'User tidak ditemukan');
+    }
+
+    const last_phone_number = user.phoneNumber.slice(-5);
+
+    let waybill;
+    const payload: ICheckWaybill = {
+      awb,
+      courier,
+      last_phone_number,
+    };
+    if (options?.mock) {
+      waybill = await ShippingUtils.mockWaybill(payload);
+    } else {
+      waybill = await ShippingUtils.fetchWaybill(payload);
+    }
+
+    return { waybill };
   }
 }

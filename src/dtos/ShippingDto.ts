@@ -73,10 +73,20 @@ export interface ICheckCostResponse {
   shippingOptions: IShippingOption[];
 }
 
+export interface ITrackShippingRequest {
+  transactionId: string;
+  userId: string;
+  userRole: string;
+}
+
+export interface ITrackShippingResponse {
+  waybill: IWaybillResponse;
+}
+
 export interface ICheckWaybill {
   awb: string;
   courier: string;
-  last_phone_number?: string;
+  last_phone_number: string;
 }
 
 export interface IWaybillSummary {

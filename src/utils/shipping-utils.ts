@@ -259,152 +259,238 @@ export class ShippingUtils {
     }
   }
 
-  static async mockWaybill(courier: string): Promise<IWaybillResponse> {
-    const mocks: Record<string, IWaybillResponse> = {
+  static async mockWaybill(payload: ICheckWaybill): Promise<IWaybillResponse> {
+    const mocks: Record<
+      string,
+      Record<string, Record<string, IWaybillResponse>>
+    > = {
       jne: {
-        delivered: true,
-        summary: {
-          courier_code: 'jne',
-          courier_name: 'Jalur Nugraha Ekakurir',
-          waybill_number: 'JNE123456',
-          waybill_date: '2024-10-10',
-          shipper_name: 'TOKO ABC',
-          receiver_name: 'BUDI',
-          origin: 'Jakarta',
-          destination: 'Bandung',
-          status: 'DELIVERED',
+        JNE123456: {
+          '33333': {
+            delivered: true,
+            summary: {
+              courier_code: 'jne',
+              courier_name: 'Jalur Nugraha Ekakurir',
+              waybill_number: 'JNE123456',
+              waybill_date: '2024-10-10',
+              shipper_name: 'TOKO ABC',
+              receiver_name: 'BUDI',
+              origin: 'Jakarta',
+              destination: 'Bandung',
+              status: 'DELIVERED',
+            },
+            delivery_status: {
+              status: 'DELIVERED',
+              pod_receiver: 'BUDI',
+              pod_date: '2024-10-12',
+              pod_time: '14:30:00',
+            },
+            manifest: [
+              {
+                manifest_description: 'Diterima di Checkpoint Jakarta',
+                manifest_date: '2024-10-10',
+                manifest_time: '08:00:00',
+              },
+              {
+                manifest_description: 'Proses pengiriman ke Bandung',
+                manifest_date: '2024-10-11',
+                manifest_time: '09:00:00',
+              },
+              {
+                manifest_description: 'Diterima oleh BUDI',
+                manifest_date: '2024-10-12',
+                manifest_time: '14:30:00',
+              },
+            ],
+          },
         },
-        delivery_status: {
-          status: 'DELIVERED',
-          pod_receiver: 'BUDI',
-          pod_date: '2024-10-12',
-          pod_time: '14:30:00',
+        JNE654321: {
+          '11111': {
+            delivered: false,
+            summary: {
+              courier_code: 'jne',
+              courier_name: 'Jalur Nugraha Ekakurir',
+              waybill_number: 'JNE654321',
+              waybill_date: '2024-10-15',
+              shipper_name: 'TOKO DEF',
+              receiver_name: 'RINA',
+              origin: 'Jakarta',
+              destination: 'Semarang',
+              status: 'ON PROCESS',
+            },
+            delivery_status: {
+              status: 'ON PROCESS',
+              pod_receiver: null,
+              pod_date: null,
+              pod_time: null,
+            },
+            manifest: [
+              {
+                manifest_description: 'Diterima di Checkpoint Jakarta',
+                manifest_date: '2024-10-15',
+                manifest_time: '10:00:00',
+              },
+            ],
+          },
         },
-        manifest: [
-          {
-            manifest_description: 'Diterima di Jakarta',
-            manifest_date: '2024-10-10',
-            manifest_time: '08:00:00',
-          },
-          {
-            manifest_description: 'Proses pengiriman ke Bandung',
-            manifest_date: '2024-10-11',
-            manifest_time: '09:00:00',
-          },
-          {
-            manifest_description: 'Diterima oleh BUDI',
-            manifest_date: '2024-10-12',
-            manifest_time: '14:30:00',
-          },
-        ],
       },
       sicepat: {
-        delivered: false,
-        summary: {
-          courier_code: 'sicepat',
-          courier_name: 'SiCepat Express',
-          waybill_number: 'SCP123456',
-          waybill_date: '2024-10-11',
-          shipper_name: 'TOKO XYZ',
-          receiver_name: 'ANI',
-          origin: 'Surabaya',
-          destination: 'Yogyakarta',
-          status: 'ON PROCESS',
-        },
-        delivery_status: {
-          status: 'ON PROCESS',
-          pod_receiver: null,
-          pod_date: null,
-          pod_time: null,
-        },
-        manifest: [
-          {
-            manifest_description: 'Diterima di Surabaya',
-            manifest_date: '2024-10-11',
-            manifest_time: '10:00:00',
+        SCP123456: {
+          '': {
+            delivered: false,
+            summary: {
+              courier_code: 'sicepat',
+              courier_name: 'SiCepat Express',
+              waybill_number: 'SCP123456',
+              waybill_date: '2024-10-11',
+              shipper_name: 'TOKO XYZ',
+              receiver_name: 'ANI',
+              origin: 'Surabaya',
+              destination: 'Yogyakarta',
+              status: 'ON PROCESS',
+            },
+            delivery_status: {
+              status: 'ON PROCESS',
+              pod_receiver: null,
+              pod_date: null,
+              pod_time: null,
+            },
+            manifest: [
+              {
+                manifest_description: 'Diterima di Surabaya',
+                manifest_date: '2024-10-11',
+                manifest_time: '10:00:00',
+              },
+              {
+                manifest_description: 'Dalam perjalanan ke Yogyakarta',
+                manifest_date: '2024-10-12',
+                manifest_time: '11:15:00',
+              },
+            ],
           },
-          {
-            manifest_description: 'Dalam perjalanan ke Yogyakarta',
-            manifest_date: '2024-10-12',
-            manifest_time: '11:15:00',
-          },
-        ],
+        },
       },
       jnt: {
-        delivered: true,
-        summary: {
-          courier_code: 'jnt',
-          courier_name: 'J&T Express',
-          waybill_number: 'JNT123456',
-          waybill_date: '2024-10-09',
-          shipper_name: 'TOKO DEF',
-          receiver_name: 'SITI',
-          origin: 'Medan',
-          destination: 'Aceh',
-          status: 'DELIVERED',
+        JNT123456: {
+          '': {
+            delivered: true,
+            summary: {
+              courier_code: 'jnt',
+              courier_name: 'J&T Express',
+              waybill_number: 'JNT123456',
+              waybill_date: '2024-10-09',
+              shipper_name: 'TOKO DEF',
+              receiver_name: 'SITI',
+              origin: 'Medan',
+              destination: 'Aceh',
+              status: 'DELIVERED',
+            },
+            delivery_status: {
+              status: 'DELIVERED',
+              pod_receiver: 'SITI',
+              pod_date: '2024-10-11',
+              pod_time: '12:00:00',
+            },
+            manifest: [
+              {
+                manifest_description: 'Diterima di Medan',
+                manifest_date: '2024-10-09',
+                manifest_time: '07:30:00',
+              },
+              {
+                manifest_description: 'Pengiriman ke Aceh',
+                manifest_date: '2024-10-10',
+                manifest_time: '09:00:00',
+              },
+              {
+                manifest_description: 'Diterima oleh SITI',
+                manifest_date: '2024-10-11',
+                manifest_time: '12:00:00',
+              },
+            ],
+          },
         },
-        delivery_status: {
-          status: 'DELIVERED',
-          pod_receiver: 'SITI',
-          pod_date: '2024-10-11',
-          pod_time: '12:00:00',
-        },
-        manifest: [
-          {
-            manifest_description: 'Diterima di Medan',
-            manifest_date: '2024-10-09',
-            manifest_time: '07:30:00',
-          },
-          {
-            manifest_description: 'Pengiriman ke Aceh',
-            manifest_date: '2024-10-10',
-            manifest_time: '09:00:00',
-          },
-          {
-            manifest_description: 'Diterima oleh SITI',
-            manifest_date: '2024-10-11',
-            manifest_time: '12:00:00',
-          },
-        ],
       },
       pos: {
-        delivered: false,
-        summary: {
-          courier_code: 'pos',
-          courier_name: 'Pos Indonesia',
-          waybill_number: 'POS123456',
-          waybill_date: '2024-10-08',
-          shipper_name: 'TOKO GHI',
-          receiver_name: 'ANDI',
-          origin: 'Denpasar',
-          destination: 'Makassar',
-          status: 'ON PROCESS',
-        },
-        delivery_status: {
-          status: 'ON PROCESS',
-          pod_receiver: null,
-          pod_date: null,
-          pod_time: null,
-        },
-        manifest: [
-          {
-            manifest_description: 'Diterima di Denpasar',
-            manifest_date: '2024-10-08',
-            manifest_time: '09:00:00',
+        POS123456: {
+          '': {
+            delivered: false,
+            summary: {
+              courier_code: 'pos',
+              courier_name: 'Pos Indonesia',
+              waybill_number: 'POS123456',
+              waybill_date: '2024-10-08',
+              shipper_name: 'TOKO GHI',
+              receiver_name: 'ANDI',
+              origin: 'Denpasar',
+              destination: 'Makassar',
+              status: 'ON PROCESS',
+            },
+            delivery_status: {
+              status: 'ON PROCESS',
+              pod_receiver: null,
+              pod_date: null,
+              pod_time: null,
+            },
+            manifest: [
+              {
+                manifest_description: 'Diterima di Denpasar',
+                manifest_date: '2024-10-08',
+                manifest_time: '09:00:00',
+              },
+              {
+                manifest_description: 'Dalam perjalanan ke Makassar',
+                manifest_date: '2024-10-09',
+                manifest_time: '14:00:00',
+              },
+            ],
           },
-          {
-            manifest_description: 'Dalam perjalanan ke Makassar',
-            manifest_date: '2024-10-09',
-            manifest_time: '14:00:00',
-          },
-        ],
+        },
       },
     };
 
-    if (!mocks[courier]) {
+    if (!mocks[payload.courier]) {
       throw new ResponseError(StatusCodes.BAD_REQUEST, 'Kurir tidak didukung');
     }
 
-    return mocks[courier];
+    if (payload.courier === 'jne') {
+      if (!payload.last_phone_number) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Nomor telepon terakhir wajib diisi untuk JNE',
+        );
+      }
+      const awbRecords = mocks.jne[payload.awb];
+      if (!awbRecords) {
+        throw new ResponseError(
+          StatusCodes.NOT_FOUND,
+          'Waybill tidak ditemukan',
+        );
+      }
+      const response = awbRecords[payload.last_phone_number];
+      if (!response) {
+        throw new ResponseError(
+          StatusCodes.BAD_REQUEST,
+          'Nomor telepon tidak cocok',
+        );
+      }
+      return response;
+    } else {
+      const awbRecords = mocks[payload.courier][payload.awb];
+      if (!awbRecords) {
+        throw new ResponseError(
+          StatusCodes.NOT_FOUND,
+          'Waybill tidak ditemukan',
+        );
+      }
+      const response = awbRecords[''];
+      if (!response) {
+        throw new ResponseError(
+          StatusCodes.NOT_FOUND,
+          'Waybill tidak ditemukan',
+        );
+      }
+      return response;
+    }
   }
 }

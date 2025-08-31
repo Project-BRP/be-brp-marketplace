@@ -25,3 +25,15 @@ shippingRoute.get(
   ShippingController.getSubDistricts,
 );
 shippingRoute.post('/check-cost', authMiddleware, ShippingController.checkCost);
+
+// Tracking endpoints
+shippingRoute.get(
+  '/transactions/:transactionId/track',
+  authMiddleware,
+  ShippingController.track,
+);
+shippingRoute.get(
+  '/transactions/:transactionId/track/mock',
+  authMiddleware,
+  ShippingController.trackMock,
+);

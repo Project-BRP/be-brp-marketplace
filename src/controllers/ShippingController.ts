@@ -6,6 +6,8 @@ import {
   IGetDistrictsRequest,
   IGetSubDistrictsRequest,
   ICheckCostRequest,
+  IAuthDTO,
+  ITrackShippingRequest,
 } from '../dtos';
 import { ShippingService } from '../services';
 import { successResponse } from '../utils';
@@ -110,6 +112,54 @@ export class ShippingController {
         res,
         StatusCodes.OK,
         'Estimasi biaya pengiriman berhasil diambil',
+        response,
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async track(
+    req: IAuthDTO,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const request: ITrackShippingRequest = {
+        transactionId: req.params.transactionId,
+        userId: req.user.userId,
+        userRole: req.user.role,
+      };
+      const response = await ShippingService.trackTransaction(request);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Status pengiriman berhasil diambil',
+        response,
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async trackMock(
+    req: IAuthDTO,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const request: ITrackShippingRequest = {
+        transactionId: req.params.transactionId,
+        userId: req.user.userId,
+        userRole: req.user.role,
+      };
+      const response = await ShippingService.trackTransaction(request, {
+        mock: true,
+      });
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Status pengiriman (mock) berhasil diambil',
         response,
       );
     } catch (error) {
