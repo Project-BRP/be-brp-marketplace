@@ -14,7 +14,6 @@ import {
   ICancelTransactionRequest,
   IUpdateShippingReceiptRequest,
   IResolveStockIssueRequest,
-  IExportTransactionsCsvRequest,
 } from '../dtos';
 import { TransactionService } from '../services';
 import { successResponse } from '../utils';
@@ -247,80 +246,6 @@ export class TransactionController {
         'Status transaksi berhasil diperbarui',
         response,
       );
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  static async exportTransactionsCsv(
-    req: IAuthDTO,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
-    try {
-      const request: IExportTransactionsCsvRequest = {
-        startYear: req.query.startYear
-          ? parseInt(req.query.startYear as string, 10)
-          : undefined,
-        startMonth: req.query.startMonth
-          ? parseInt(req.query.startMonth as string, 10)
-          : undefined,
-        startDay: req.query.startDay
-          ? parseInt(req.query.startDay as string, 10)
-          : undefined,
-        endYear: req.query.endYear
-          ? parseInt(req.query.endYear as string, 10)
-          : undefined,
-        endMonth: req.query.endMonth
-          ? parseInt(req.query.endMonth as string, 10)
-          : undefined,
-        endDay: req.query.endDay
-          ? parseInt(req.query.endDay as string, 10)
-          : undefined,
-      };
-
-      const csv = await TransactionService.exportTransactionsCsv(request);
-      const filename = `transactions_${new Date().toISOString().slice(0,10)}.csv`;
-      res.setHeader('Content-Type', 'text/csv');
-      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-      res.status(StatusCodes.OK).send(csv);
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  static async exportTransactionItemsCsv(
-    req: IAuthDTO,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
-    try {
-      const request: IExportTransactionsCsvRequest = {
-        startYear: req.query.startYear
-          ? parseInt(req.query.startYear as string, 10)
-          : undefined,
-        startMonth: req.query.startMonth
-          ? parseInt(req.query.startMonth as string, 10)
-          : undefined,
-        startDay: req.query.startDay
-          ? parseInt(req.query.startDay as string, 10)
-          : undefined,
-        endYear: req.query.endYear
-          ? parseInt(req.query.endYear as string, 10)
-          : undefined,
-        endMonth: req.query.endMonth
-          ? parseInt(req.query.endMonth as string, 10)
-          : undefined,
-        endDay: req.query.endDay
-          ? parseInt(req.query.endDay as string, 10)
-          : undefined,
-      };
-
-      const csv = await TransactionService.exportTransactionItemsCsv(request);
-      const filename = `transaction_items_${new Date().toISOString().slice(0,10)}.csv`;
-      res.setHeader('Content-Type', 'text/csv');
-      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-      res.status(StatusCodes.OK).send(csv);
     } catch (error) {
       next(error);
     }

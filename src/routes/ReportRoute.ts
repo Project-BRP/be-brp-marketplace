@@ -6,6 +6,13 @@ import { Role } from '../constants';
 export const reportRoute: Router = Router();
 
 reportRoute.get(
+  '/export',
+  authMiddleware,
+  roleMiddleware([Role.ADMIN]),
+  ReportController.exportData,
+);
+
+reportRoute.get(
   '/revenue',
   authMiddleware,
   roleMiddleware([Role.ADMIN]),

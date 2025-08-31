@@ -61,4 +61,14 @@ export class TransactionItemRepository {
       orderBy: { createdAt: 'asc' },
     });
   }
+
+  static async findManyCustom(
+    where: Prisma.TransactionItemWhereInput,
+    tx: Prisma.TransactionClient = db,
+  ) {
+    return tx.transactionItem.findMany({
+      where: where,
+      orderBy: { createdAt: 'desc' },
+    });
+  }
 }

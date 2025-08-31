@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
 import { ReportService } from '../services';
-import { successResponse } from '../utils';
+import { successResponse, ZipUtils } from '../utils';
 import {
   IGetRevenueRequest,
   IGetTotalTransactionsRequest,
@@ -10,9 +10,36 @@ import {
   IGetTotalActiveUsersRequest,
   IGetMonthlyRevenueRequest,
   IGetMostSoldProductsDistributionRequest,
+  IExportDataRequest
 } from '../dtos';
 
 export class ReportController {
+  static async exportData(req: Request, res: Response, next: NextFunction) {
+    try {
+      const request: IExportDataRequest = {
+        tables: Object.keys(req.query),
+        startYear: req.query.startYear ? Number(req.query.startYear) : undefined,
+        startMonth: req.query.startMonth ? Number(req.query.startMonth) : undefined,
+        startDay: req.query.startDay ? Number(req.query.startDay) : undefined,
+        endYear: req.query.endYear ? Number(req.query.endYear) : undefined,
+        endMonth: req.query.endMonth ? Number(req.query.endMonth) : undefined,
+        endDay: req.query.endDay ? Number(req.query.endDay) : undefined,
+      };
+
+      const files = await ReportService.exportData(request);
+      const timestamp = new Date()
+        .toISOString()
+        .replace(/[-:TZ.]/g, '')
+        .slice(0, 14);
+      await ZipUtils.pipeZipToResponse(
+        res,
+        files,
+        `reports_export_${timestamp}.zip`,
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
   static async getRevenue(req: Request, res: Response, next: NextFunction) {
     try {
       const request = req.query as IGetRevenueRequest;

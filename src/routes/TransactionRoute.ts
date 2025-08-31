@@ -37,18 +37,6 @@ transactionRoute.get(
   roleMiddleware([Role.ADMIN]),
   TransactionController.getAll,
 );
-transactionRoute.get(
-  '/export/csv',
-  authMiddleware,
-  roleMiddleware([Role.ADMIN]),
-  TransactionController.exportTransactionsCsv,
-);
-transactionRoute.get(
-  '/export/csv/items',
-  authMiddleware,
-  roleMiddleware([Role.ADMIN]),
-  TransactionController.exportTransactionItemsCsv,
-);
 transactionRoute.post('/notification', TransactionController.transactionNotif);
 transactionRoute.get('/:id', authMiddleware, TransactionController.getById);
 transactionRoute.post(

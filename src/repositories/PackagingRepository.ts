@@ -23,30 +23,10 @@ export class PackagingRepository {
     });
   }
 
-  static async findAll(search?: string, tx: Prisma.TransactionClient = db) {
-    const searchCondition = search
-      ? {
-          name: {
-            contains: search,
-            mode: 'insensitive' as Prisma.QueryMode,
-          },
-        }
-      : {};
-
-    return tx.packaging.findMany({
-      where: {
-        ...searchCondition,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-  }
-
-  static async findAllWithPagination(
-    skip: number,
-    take: number,
+  static async findAll(
     search?: string,
+    startDate?: Date,
+    endDate?: Date,
     tx: Prisma.TransactionClient = db,
   ) {
     const searchCondition = search
@@ -58,9 +38,52 @@ export class PackagingRepository {
         }
       : {};
 
+    const dateCondition = {
+      createdAt: {
+        gte: startDate,
+        lte: endDate,
+      },
+    };
+
     return tx.packaging.findMany({
       where: {
         ...searchCondition,
+        ...dateCondition,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
+  static async findAllWithPagination(
+    skip: number,
+    take: number,
+    search?: string,
+    startDate?: Date,
+    endDate?: Date,
+    tx: Prisma.TransactionClient = db,
+  ) {
+    const searchCondition = search
+      ? {
+          name: {
+            contains: search,
+            mode: 'insensitive' as Prisma.QueryMode,
+          },
+        }
+      : {};
+
+    const dateCondition = {
+      createdAt: {
+        gte: startDate,
+        lte: endDate,
+      },
+    };
+
+    return tx.packaging.findMany({
+      where: {
+        ...searchCondition,
+        ...dateCondition,
       },
       skip: skip,
       take: take,

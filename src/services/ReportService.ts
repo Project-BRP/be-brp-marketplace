@@ -15,15 +15,146 @@ import type {
   IGetMonthlyRevenueResponse,
   IGetMostSoldProductsDistributionRequest,
   IGetMostSoldProductsDistributionResponse,
+  IExportDataRequest,
 } from '../dtos';
 import {
   TransactionRepository,
   UserRepository,
   ProductRepository,
+  TransactionItemRepository,
+  PackagingRepository,
+  ProductTypeRepository,
+  ProductVariantRepository,
 } from '../repositories';
-import { TimeUtils, Validator } from '../utils';
+import { CsvUtils, TimeUtils, Validator } from '../utils';
+import { db } from '../configs/database';
 
 export class ReportService {
+  static async exportData(request: IExportDataRequest) {
+    const validData = Validator.validate(ReportValidation.EXPORT_DATA, request);
+
+    const tables = validData.tables?.length
+      ? validData.tables
+      : ([
+          'users',
+          'products',
+          'product_variants',
+          'product_types',
+          'packagings',
+          'transactions',
+          'transaction_items',
+        ] as const);
+
+    let startDate: Date | undefined;
+    let endDate: Date | undefined;
+    if (
+      validData.startYear !== undefined &&
+      validData.startMonth !== undefined &&
+      validData.startDay !== undefined
+    ) {
+      startDate = TimeUtils.getStartOfDay(
+        validData.startYear,
+        validData.startMonth,
+        validData.startDay,
+      );
+    } else if (
+      validData.startYear !== undefined &&
+      validData.startMonth !== undefined
+    ) {
+      startDate = TimeUtils.getStartOfMonth(validData.startYear, validData.startMonth);
+    }
+    if (
+      validData.endYear !== undefined &&
+      validData.endMonth !== undefined &&
+      validData.endDay !== undefined
+    ) {
+      endDate = TimeUtils.getEndOfDay(
+        validData.endYear,
+        validData.endMonth,
+        validData.endDay,
+      );
+    } else if (validData.endYear !== undefined && validData.endMonth !== undefined) {
+      endDate = TimeUtils.getEndOfMonth(validData.endYear, validData.endMonth);
+    }
+
+    const files: { name: string; content: string }[] = [];
+
+    if (tables.includes('users')) {
+      const rows = await UserRepository.findAll();
+      const userRows = rows.map(
+        ({ _count, transaction, password, ...rest }) => rest,
+      );
+      files.push({ name: 'users.csv', content: CsvUtils.toCsv(userRows) });
+    }
+    if (tables.includes('products')) {
+      const rows = await ProductRepository.findAll();
+      const productRows = rows.map(
+        ({ productType, productVariants, ...rest }) => rest,
+      );
+      files.push({
+        name: 'products.csv',
+        content: CsvUtils.toCsv(productRows),
+      });
+    }
+    if (tables.includes('product_variants')) {
+      const rows = await ProductVariantRepository.findAll();
+      const productVariantRows = rows.map(({ packaging, ...rest }) => rest);
+      files.push({
+        name: 'product_variants.csv',
+        content: CsvUtils.toCsv(productVariantRows),
+      });
+    }
+    if (tables.includes('product_types')) {
+      const rows = await ProductTypeRepository.findAll();
+      files.push({ name: 'product_types.csv', content: CsvUtils.toCsv(rows) });
+    }
+    if (tables.includes('packagings')) {
+      const rows = await PackagingRepository.findAll();
+      files.push({ name: 'packagings.csv', content: CsvUtils.toCsv(rows) });
+    }
+    if (tables.includes('transactions')) {
+      const rows = await TransactionRepository.findAll(
+        undefined,
+        undefined,
+        undefined,
+        startDate,
+        endDate,
+      );
+      const transactionRows = rows.map(({ transactionItems, ...rest }) => rest);
+      files.push({
+        name: 'transactions.csv',
+        content: CsvUtils.toCsv(transactionRows),
+      });
+
+      if(tables.includes('transaction_items')) {
+        let items = [];
+        for (const tx of rows) {
+          for (const item of tx.transactionItems) {
+            items.push(item);
+          }
+        }
+        const itemRows = items.map(({ variant, ...rest }) => rest);
+        files.push({
+          name: 'transaction_items.csv',
+          content: CsvUtils.toCsv(itemRows),
+        });
+      }
+    }
+    if (tables.includes('transaction_items') && !tables.includes('transactions')) {
+      const rows = await TransactionItemRepository.findManyCustom({
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+      });
+      files.push({
+        name: 'transaction_items.csv',
+        content: CsvUtils.toCsv(rows),
+      });
+    }
+
+    return files;
+  }
   static async getRevenue(
     request: IGetRevenueRequest,
   ): Promise<IGetRevenueResponse> {

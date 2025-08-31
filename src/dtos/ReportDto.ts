@@ -66,3 +66,9 @@ export interface IGetCurrentMonthRevenueResponse {
   totalRevenue: number;
   gainPercentage: number;
 }
+
+export interface IExportDataRequest extends IDateRangeRequest {
+  tables?: string[];
+  startDay?: number;
+  endDay?: number;
+}

@@ -103,7 +103,11 @@ export class PackagingService {
     const search = validData.search;
 
     if (!take || !validData.page) {
-      const packagings = await PackagingRepository.findAll(search);
+      const packagings = await PackagingRepository.findAll(
+        search,
+        undefined,
+        undefined,
+      );
 
       return {
         totalPage: 1,
@@ -135,6 +139,8 @@ export class PackagingService {
       skip,
       take,
       search,
+      undefined,
+      undefined,
     );
 
     const totalPage = Math.ceil(totalPackagings / take);
