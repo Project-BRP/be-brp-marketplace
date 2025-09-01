@@ -68,6 +68,7 @@ export interface IGetChatRoomResponse {
   lastMessageAt?: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  totalUnreadMessages: number;
 }
 
 export interface IGetAllChatRoomsResponse {
@@ -99,4 +100,12 @@ export interface IGetChatRoomDetailByUserIdRequest {
   currentUserId: string;
   currentUserRole: Role;
   userId: string;
+}
+
+export interface IGetTotalUnreadMessagesAdminResponse {
+  totalUnreadMessages: number;
+}
+
+export interface IGetTotalUnreadMessagesUserResponse {
+  totalUnreadMessages: number;
 }

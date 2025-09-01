@@ -29,6 +29,32 @@ export class ChatController {
     }
   }
 
+  static async getAdminUnreadTotal(
+    req: IAuthDTO,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const result = await ChatService.getAdminUnreadTotal();
+      successResponse(res, StatusCodes.OK, 'Total unread untuk admin', result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getUserUnreadTotal(
+    req: IAuthDTO,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const result = await ChatService.getUserUnreadTotal(req.user!.userId);
+      successResponse(res, StatusCodes.OK, 'Total unread untuk user', result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async getUserPresence(
     req: IAuthDTO,
     res: Response,

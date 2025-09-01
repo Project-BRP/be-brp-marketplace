@@ -1,6 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import { v4 as uuid } from 'uuid';
 import { ChatSenderType } from '@prisma/client';
+import fs from 'fs';
 
 import type {
   ICreateChatMessageRequest,
@@ -11,6 +12,7 @@ import type {
   IGetChatRoomDetailResponse,
   IDeleteChatRoomRequest,
   IGetChatRoomDetailByUserIdRequest,
+  IGetTotalUnreadMessagesAdminResponse,
 } from '../dtos';
 import { ResponseError } from '../error/ResponseError';
 import { db as database } from '../configs/database';
@@ -171,6 +173,9 @@ export class ChatService {
 
     if (!take || !page) {
       const rooms = await ChatRoomRepository.findAll(search);
+      const roomIds = rooms.map(r => r.id);
+      const unreadMap =
+        await ChatMessageRepository.countUnreadForAdminByRooms(roomIds);
       return {
         totalPage: 1,
         currentPage: 1,
@@ -187,6 +192,7 @@ export class ChatService {
           lastMessageAt: r.lastMessageAt ?? null,
           createdAt: r.createdAt,
           updatedAt: r.updatedAt,
+          totalUnreadMessages: unreadMap[r.id] ?? 0,
         })),
       };
     }
@@ -205,6 +211,9 @@ export class ChatService {
       take,
       search,
     );
+    const roomIds = rooms.map(r => r.id);
+    const unreadMap =
+      await ChatMessageRepository.countUnreadForAdminByRooms(roomIds);
 
     const totalPage = Math.ceil(total / take);
     const currentPage = Math.ceil(skip! / take) + 1;
@@ -225,8 +234,21 @@ export class ChatService {
         lastMessageAt: r.lastMessageAt ?? null,
         createdAt: r.createdAt,
         updatedAt: r.updatedAt,
+        totalUnreadMessages: unreadMap[r.id] ?? 0,
       })),
     };
+  }
+
+  static async getAdminUnreadTotal(): Promise<IGetTotalUnreadMessagesAdminResponse> {
+    const total = await ChatMessageRepository.countUnreadForAdminTotal();
+    return { totalUnreadMessages: total };
+  }
+
+  static async getUserUnreadTotal(
+    userId: string,
+  ): Promise<IGetTotalUnreadMessagesAdminResponse> {
+    const total = await ChatMessageRepository.countUnreadForUserTotal(userId);
+    return { totalUnreadMessages: total };
   }
 
   static async getRoomDetail(
@@ -236,9 +258,7 @@ export class ChatService {
       roomId: request.roomId,
     });
 
-    let room = await ChatRoomRepository.findByIdWithMessages(
-      validData.roomId,
-    );
+    let room = await ChatRoomRepository.findByIdWithMessages(validData.roomId);
     if (!room) {
       throw new ResponseError(
         StatusCodes.NOT_FOUND,
@@ -390,7 +410,6 @@ export class ChatService {
     }
 
     try {
-      const fs = await import('fs');
       for (const msg of room.messages || []) {
         for (const att of msg.attachments || []) {
           if (att.url && fs.existsSync(att.url)) {
@@ -408,5 +427,4 @@ export class ChatService {
 
     await ChatRoomRepository.delete(validData.roomId);
   }
-
 }

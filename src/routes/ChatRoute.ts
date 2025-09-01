@@ -8,11 +8,22 @@ import { validateImagesArrayMiddleware } from '../middlewares';
 
 export const chatRoute: Router = Router();
 
-// Presence endpoints
 chatRoute.get(
   '/presence/admin',
   authMiddleware,
   ChatController.getAdminPresence,
+);
+chatRoute.get(
+  '/unread/total',
+  authMiddleware,
+  roleMiddleware([Role.ADMIN]),
+  ChatController.getAdminUnreadTotal,
+);
+chatRoute.get(
+  '/unread/user/total',
+  authMiddleware,
+  roleMiddleware([Role.USER]),
+  ChatController.getUserUnreadTotal,
 );
 chatRoute.get(
   '/presence/user/:userId',
