@@ -52,7 +52,8 @@ export class UserRepository {
   static async findAllWithPagination(
     skip: number,
     take: number,
-    search?: string,
+    search?: string | null,
+    isActive?: boolean | null,
     tx: Prisma.TransactionClient = db,
   ) {
     const searchCondition = search
@@ -77,9 +78,28 @@ export class UserRepository {
     const cancelled = TxDeliveryStatus.CANCELLED;
     const unpaid = TxManualStatus.UNPAID;
 
+    const thirtyDaysAgo = new Date(
+      TimeUtils.now().getTime() - 30 * 24 * 60 * 60 * 1000,
+    );
+    const activityCriteria: Prisma.TransactionWhereInput = {
+      createdAt: { gte: thirtyDaysAgo },
+      OR: [
+        { deliveryStatus: { notIn: [cancelled, unpaid] } },
+        { manualStatus: { notIn: [cancelled, unpaid] } },
+      ],
+    };
+
+    const activityFilter =
+      isActive === undefined || isActive === null
+        ? {}
+        : isActive
+        ? { transaction: { some: activityCriteria } }
+        : { transaction: { none: activityCriteria } };
+
     return tx.user.findMany({
       where: {
         ...searchCondition,
+        ...activityFilter,
       },
       skip,
       take,
@@ -87,17 +107,7 @@ export class UserRepository {
       include: {
         _count: { select: { transaction: true } },
         transaction: {
-          where: {
-            createdAt: {
-              gte: new Date(
-                TimeUtils.now().getTime() - 30 * 24 * 60 * 60 * 1000,
-              ),
-            },
-            OR: [
-              { deliveryStatus: { notIn: [cancelled, unpaid] } },
-              { manualStatus: { notIn: [cancelled, unpaid] } },
-            ],
-          },
+          where: activityCriteria,
           select: { id: true },
           take: 1,
         },
@@ -105,7 +115,11 @@ export class UserRepository {
     });
   }
 
-  static async findAll(search?: string, tx: Prisma.TransactionClient = db) {
+  static async findAll(
+    search?: string | null,
+    isActive?: boolean | null,
+    tx: Prisma.TransactionClient = db,
+  ) {
     const searchCondition = search
       ? {
           OR: [
@@ -126,9 +140,28 @@ export class UserRepository {
     const cancelled = TxDeliveryStatus.CANCELLED;
     const unpaid = TxManualStatus.UNPAID;
 
+    const thirtyDaysAgo = new Date(
+      TimeUtils.now().getTime() - 30 * 24 * 60 * 60 * 1000,
+    );
+    const activityCriteria: Prisma.TransactionWhereInput = {
+      createdAt: { gte: thirtyDaysAgo },
+      OR: [
+        { deliveryStatus: { notIn: [cancelled, unpaid] } },
+        { manualStatus: { notIn: [cancelled, unpaid] } },
+      ],
+    };
+
+    const activityFilter =
+      isActive === undefined || isActive === null
+        ? {}
+        : isActive
+        ? { transaction: { some: activityCriteria } }
+        : { transaction: { none: activityCriteria } };
+
     return tx.user.findMany({
       where: {
         ...searchCondition,
+        ...activityFilter,
       },
       orderBy: {
         createdAt: 'desc',
@@ -140,17 +173,7 @@ export class UserRepository {
           },
         },
         transaction: {
-          where: {
-            createdAt: {
-              gte: new Date(
-                TimeUtils.now().getTime() - 30 * 24 * 60 * 60 * 1000,
-              ),
-            },
-            OR: [
-              { deliveryStatus: { notIn: [cancelled, unpaid] } },
-              { manualStatus: { notIn: [cancelled, unpaid] } },
-            ],
-          },
+          where: activityCriteria,
           select: { id: true },
           take: 1,
         },
@@ -158,7 +181,11 @@ export class UserRepository {
     });
   }
 
-  static async count(search?: string, tx: Prisma.TransactionClient = db) {
+  static async count(
+    search?: string | null,
+    isActive?: boolean | null,
+    tx: Prisma.TransactionClient = db,
+  ) {
     const searchCondition = search
       ? {
           name: {
@@ -168,9 +195,29 @@ export class UserRepository {
         }
       : {};
 
+    const cancelled = TxDeliveryStatus.CANCELLED;
+    const unpaid = TxManualStatus.UNPAID;
+    const thirtyDaysAgo = new Date(
+      TimeUtils.now().getTime() - 30 * 24 * 60 * 60 * 1000,
+    );
+    const activityCriteria: Prisma.TransactionWhereInput = {
+      createdAt: { gte: thirtyDaysAgo },
+      OR: [
+        { deliveryStatus: { notIn: [cancelled, unpaid] } },
+        { manualStatus: { notIn: [cancelled, unpaid] } },
+      ],
+    };
+    const activityFilter =
+      isActive === undefined || isActive === null
+        ? {}
+        : isActive
+        ? { transaction: { some: activityCriteria } }
+        : { transaction: { none: activityCriteria } };
+
     return tx.user.count({
       where: {
         ...searchCondition,
+        ...activityFilter,
       },
     });
   }

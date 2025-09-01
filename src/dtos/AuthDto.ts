@@ -45,6 +45,7 @@ export interface IGetAllUserRequest {
   search?: string;
   page?: number;
   limit?: number;
+  isActive?: boolean | null;
 }
 
 export interface IGetAllUserResponse {

@@ -81,6 +81,12 @@ export class AuthValidation {
       })
       .nullish()
       .optional(),
+    isActive: z
+      .boolean({
+        invalid_type_error: 'Parameter isActive tidak valid',
+      })
+      .nullish()
+      .optional(),
   });
 
   static readonly UPDATE: ZodType = z

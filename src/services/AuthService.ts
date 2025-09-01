@@ -191,9 +191,10 @@ export class AuthService {
     const take = validData.limit;
     const skip = (validData.page - 1) * take;
     const search = validData.search;
+    const isActive = validData.isActive ?? null;
 
     if (!take || !validData.page) {
-      const users = await UserRepository.findAll(search);
+      const users = await UserRepository.findAll(search, isActive);
       return {
         totalPage: 1,
         currentPage: 1,
@@ -212,7 +213,7 @@ export class AuthService {
       };
     }
 
-    const totalUsers = await UserRepository.count(search);
+    const totalUsers = await UserRepository.count(search, isActive);
     if (totalUsers === 0) {
       return {
         totalPage: 1,
@@ -229,6 +230,7 @@ export class AuthService {
       skip,
       take,
       search,
+      isActive,
     );
     const totalPage = Math.ceil(totalUsers / take);
     const currentPage = Math.ceil(skip / take) + 1;

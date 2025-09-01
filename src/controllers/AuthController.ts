@@ -118,10 +118,17 @@ export class AuthController {
     next: NextFunction,
   ): Promise<void> {
     try {
+      let isActive: boolean | null = null;
+      if (typeof req.query.isActive === 'string') {
+        const q = (req.query.isActive as string).toLowerCase();
+        if (q === 'true' || q === '1') isActive = true;
+        else if (q === 'false' || q === '0') isActive = false;
+      }
       const request = {
         search: req.query.search ? (req.query.search as string) : null,
         page: req.query.page ? parseInt(req.query.page as string, 10) : null,
         limit: req.query.limit ? parseInt(req.query.limit as string, 10) : null,
+        isActive,
       } as IGetAllUserRequest;
       const response = await AuthService.getAll(request);
 
