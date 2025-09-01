@@ -22,9 +22,11 @@
     "seed:all:test": "dotenv -e .env.testing ts-node prisma/seeders/index.ts all",
     "seed:users:test": "dotenv -e .env.testing ts-node prisma/seeders/index.ts users",
     "seed:product-types:test": "dotenv -e .env.testing ts-node prisma/seeders/index.ts productTypes",
+    "seed:chats:test": "dotenv -e .env.testing ts-node prisma/seeders/index.ts chats",
     "seed:all": "dotenv -e .env.development ts-node prisma/seeders/index.ts all",
     "seed:users": "dotenv -e .env.development ts-node prisma/seeders/index.ts users",
     "seed:product-types": "dotenv -e .env.development ts-node prisma/seeders/index.ts productTypes",
+    "seed:chats": "dotenv -e .env.development ts-node prisma/seeders/index.ts chats",
     "start:test": "cross-env NODE_ENV=testing ts-node dist/index.js",
     "start:dev": "cross-env NODE_ENV=development ts-node dist/index.js",
     "start:prod": "cross-env NODE_ENV=production ts-node dist/index.js"

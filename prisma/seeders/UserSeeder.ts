@@ -11,7 +11,7 @@ export const userSeeder = async () => {
       id: `USR-${uuid()}`,
       name: 'Test User',
       email: 'testuser@example.com',
-      password: await PasswordUtils.hashPassword('test1234'),
+      password: await PasswordUtils.hashPassword('Test1234'),
       role: Role.USER,
       phoneNumber: '+6281111111111',
     },
@@ -27,7 +27,7 @@ export const userSeeder = async () => {
       id: `USR-${uuid()}`,
       name: 'Test Admin',
       email: 'testadmin@example.com',
-      password: await PasswordUtils.hashPassword('admin1234'),
+      password: await PasswordUtils.hashPassword('Admin1234'),
       role: Role.ADMIN,
       phoneNumber: '+6281222222222',
     },
@@ -48,6 +48,21 @@ export const userSeeder = async () => {
       phoneNumber: '+6281444444444',
     },
   ];
+
+  // Generate many additional regular users
+  const extraUsersCount = 150;
+  for (let i = 1; i <= extraUsersCount; i++) {
+    const idx = i.toString().padStart(3, '0');
+    users.push({
+      id: `USR-${uuid()}`,
+      name: `User ${idx}`,
+      email: `user${idx}@example.com`,
+      // Must be >=8 chars, include uppercase and number
+      password: await PasswordUtils.hashPassword('User1234'),
+      role: Role.USER,
+      phoneNumber: `+62812${(10000000 + i).toString()}`,
+    });
+  }
 
   for (const user of users) {
     try {
