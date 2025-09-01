@@ -1,11 +1,10 @@
 import type { NextFunction, Response } from 'express';
-import type { IAuthDTO } from '../dtos';
+import type { IAuthDTO, ICreateChatMessageRequest, IGetAllChatRoomsRequest, IGetChatRoomDetailRequest } from '../dtos';
 import { StatusCodes } from 'http-status-codes';
 import fs from 'fs';
 
 import { ChatService } from '../services/ChatService';
-import { successResponse } from '../utils';
-import { SharpUtils } from '../utils/sharp-utils';
+import { successResponse, SharpUtils } from '../utils';
 import { AttachmentType, Role } from '../constants';
 
 export class ChatController {
@@ -15,11 +14,13 @@ export class ChatController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const response = await ChatService.getAllRooms({
+      const request: IGetAllChatRoomsRequest = {
         search: (req.query.search as string) || null,
         page: req.query.page ? parseInt(req.query.page as string, 10) : null,
         limit: req.query.limit ? parseInt(req.query.limit as string, 10) : null,
-      });
+      };
+
+      const response = await ChatService.getAllRooms(request);
 
       successResponse(
         res,
@@ -38,12 +39,13 @@ export class ChatController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const response = await ChatService.getRoomDetail({
+      const request: IGetChatRoomDetailRequest = {
         currentUserId: req.user!.userId,
         currentUserRole: req.user!.role as Role,
         roomId: req.params.roomId,
-      });
+      };
 
+      const response = await ChatService.getRoomDetail(request);
       successResponse(
         res,
         StatusCodes.OK,
@@ -109,13 +111,15 @@ export class ChatController {
         }
       }
 
-      const response = await ChatService.createMessage({
+      const request: ICreateChatMessageRequest = {
         currentUserId: req.user?.userId,
         currentUserRole: req.user?.role as Role,
         userId: req.query.userId as string,
         content: req.body.content,
         attachments: attachmentsMeta,
-      });
+      };
+
+      const response = await ChatService.createMessage(request);
 
       successResponse(
         res,
