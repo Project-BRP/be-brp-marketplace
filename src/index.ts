@@ -10,6 +10,7 @@ import { appLogger } from './configs/logger';
 import { currentEnv, Env, CLIENT_URL } from './constants';
 import { errorMiddleware } from './middlewares/error-middleware';
 import { socketAuthMiddleware } from './middlewares';
+import { registerSocketHandlers } from './sockets/register-socket';
 import {
   healthRoute,
   authRoute,
@@ -88,13 +89,7 @@ app.use(errorMiddleware);
 
 const port = Number(process.env.PORT_SERVER) || 5000;
 
-io.on('connection', socket => {
-  console.log('A user connected:', socket.id);
-
-  socket.on('disconnect', () => {
-    console.log('User  disconnected:', socket.id);
-  });
-});
+registerSocketHandlers(io);
 
 httpServer.listen(port, '0.0.0.0', () => {
   appLogger.info(`Server is running on port ${port}`);

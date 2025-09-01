@@ -1,13 +1,60 @@
 import type { NextFunction, Response } from 'express';
-import type { IAuthDTO, ICreateChatMessageRequest, IGetAllChatRoomsRequest, IGetChatRoomDetailRequest } from '../dtos';
+import type {
+  IAuthDTO,
+  ICreateChatMessageRequest,
+  IDeleteChatRoomRequest,
+  IGetAllChatRoomsRequest,
+  IGetChatRoomDetailByUserIdRequest,
+  IGetChatRoomDetailRequest,
+} from '../dtos';
 import { StatusCodes } from 'http-status-codes';
 import fs from 'fs';
 
 import { ChatService } from '../services/ChatService';
 import { successResponse, SharpUtils } from '../utils';
 import { AttachmentType, Role } from '../constants';
+import { IoService } from '../services/IoService';
 
 export class ChatController {
+  static async getAdminPresence(
+    req: IAuthDTO,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const isOnline = IoService.isAnyAdminOnline();
+      successResponse(res, StatusCodes.OK, 'Status admin', { isOnline });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getUserPresence(
+    req: IAuthDTO,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const userId = req.params.userId as string;
+      const isOnline = IoService.isUserOnline(userId);
+      successResponse(res, StatusCodes.OK, 'Status user', { userId, isOnline });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getOnlineUsers(
+    req: IAuthDTO,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const userIds = IoService.getOnlineUserIds();
+      successResponse(res, StatusCodes.OK, 'Daftar user online', { userIds });
+    } catch (error) {
+      next(error);
+    }
+  }
   static async getAllRooms(
     req: IAuthDTO,
     res: Response,
@@ -57,13 +104,40 @@ export class ChatController {
     }
   }
 
+  static async getRoomDetailByUserId(
+    req: IAuthDTO,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const request: IGetChatRoomDetailByUserIdRequest = {
+        currentUserId: req.user!.userId,
+        currentUserRole: req.user!.role as Role,
+        userId: req.user!.userId,
+      };
+
+      const response = await ChatService.getRoomDetailByUserId(request);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Detail chat room berhasil diambil',
+        response,
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async deleteRoom(
     req: IAuthDTO,
     res: Response,
     next: NextFunction,
   ): Promise<void> {
     try {
-      await ChatService.deleteRoom({ roomId: req.params.roomId });
+      const request: IDeleteChatRoomRequest = {
+        roomId: req.params.roomId,
+      };
+      await ChatService.deleteRoom(request);
       successResponse(res, StatusCodes.OK, 'Chat room berhasil dihapus');
     } catch (error) {
       next(error);

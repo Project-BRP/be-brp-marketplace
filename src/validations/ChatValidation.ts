@@ -34,6 +34,12 @@ export class ChatValidation {
       .min(1, 'Room ID tidak boleh kosong'),
   });
 
+  static readonly GET_ROOM_DETAIL_BY_USER: ZodType = z.object({
+    userId: z
+      .string({ invalid_type_error: 'User ID tidak valid' })
+      .min(1, 'User ID tidak boleh kosong'),
+  });
+
   static readonly DELETE_ROOM: ZodType = z.object({
     roomId: z
       .string({ invalid_type_error: 'Room ID tidak valid' })

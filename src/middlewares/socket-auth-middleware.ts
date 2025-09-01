@@ -2,9 +2,9 @@ import type { Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
 
 import { UserRepository } from '../repositories';
-import { JwtToken } from '../utils';
+import { JwtToken, socketCookieExtractor } from '../utils';
 import { ResponseError } from '../error/ResponseError';
-import { socketCookieExtractor } from '../utils';
+import { Role } from '../constants';
 
 export const socketAuthMiddleware = async (
   socket: Socket,
@@ -52,6 +52,10 @@ export const socketAuthMiddleware = async (
     };
 
     socket.join(`user:${user.id}`);
+
+    if (user.role === Role.ADMIN) {
+      socket.join('admins');
+    }
 
     return next();
   } catch (error) {

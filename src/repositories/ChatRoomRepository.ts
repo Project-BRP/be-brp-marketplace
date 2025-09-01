@@ -28,6 +28,24 @@ export class ChatRoomRepository {
     });
   }
 
+  static async findByUserIdWithMessages(
+    userId: string,
+    tx: Prisma.TransactionClient = db,
+  ) {
+    return tx.chatRoom.findFirst({
+      where: { userId },
+      include: {
+        user: true,
+        messages: {
+          orderBy: { createdAt: 'asc' },
+          include: {
+            attachments: true,
+          },
+        },
+      },
+    });
+  }
+
   static async create(
     data: Prisma.ChatRoomCreateInput,
     tx: Prisma.TransactionClient = db,

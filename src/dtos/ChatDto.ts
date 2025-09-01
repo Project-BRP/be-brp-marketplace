@@ -94,3 +94,9 @@ export interface IGetChatRoomDetailResponse {
 export interface IDeleteChatRoomRequest {
   roomId: string;
 }
+
+export interface IGetChatRoomDetailByUserIdRequest {
+  currentUserId: string;
+  currentUserRole: Role;
+  userId: string;
+}

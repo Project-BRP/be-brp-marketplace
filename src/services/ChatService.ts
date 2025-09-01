@@ -10,7 +10,8 @@ import type {
   IGetChatRoomDetailRequest,
   IGetChatRoomDetailResponse,
   IDeleteChatRoomRequest,
-} from '../dtos/ChatDto';
+  IGetChatRoomDetailByUserIdRequest,
+} from '../dtos';
 import { ResponseError } from '../error/ResponseError';
 import { db as database } from '../configs/database';
 import {
@@ -19,10 +20,9 @@ import {
   ChatRoomRepository,
   UserRepository,
 } from '../repositories';
-import { Validator } from '../utils';
+import { Validator, TimeUtils } from '../utils';
 import { ChatValidation } from '../validations/ChatValidation';
 import { AttachmentType, Role } from '../constants';
-import { TimeUtils } from '../utils';
 import { IoService } from './IoService';
 import { appLogger } from '../configs/logger';
 
@@ -89,11 +89,13 @@ export class ChatService {
           room: { connect: { id: room.id } },
           sender: { connect: { id: senderId } },
           senderType:
-            senderRole === 'ADMIN' ? ChatSenderType.ADMIN : ChatSenderType.USER,
+            senderRole === Role.ADMIN
+              ? ChatSenderType.ADMIN
+              : ChatSenderType.USER,
           content: validData.content?.trim() || null,
           hasAttachments,
-          isReadByUser: senderRole === 'ADMIN' ? false : true,
-          isReadByAdmin: senderRole === 'ADMIN' ? true : false,
+          isReadByUser: senderRole === Role.ADMIN ? false : true,
+          isReadByAdmin: senderRole === Role.ADMIN ? true : false,
         },
         tx,
       );
@@ -230,11 +232,13 @@ export class ChatService {
   static async getRoomDetail(
     request: IGetChatRoomDetailRequest,
   ): Promise<IGetChatRoomDetailResponse> {
-    const valid = Validator.validate(ChatValidation.GET_ROOM_DETAIL, {
+    const validData = Validator.validate(ChatValidation.GET_ROOM_DETAIL, {
       roomId: request.roomId,
     });
 
-    const room = await ChatRoomRepository.findByIdWithMessages(valid.roomId);
+    let room = await ChatRoomRepository.findByIdWithMessages(
+      validData.roomId,
+    );
     if (!room) {
       throw new ResponseError(
         StatusCodes.NOT_FOUND,
@@ -248,6 +252,90 @@ export class ChatService {
     ) {
       throw new ResponseError(StatusCodes.FORBIDDEN, 'Tidak memiliki akses');
     }
+
+    try {
+      if (request.currentUserRole === Role.ADMIN) {
+        await ChatMessageRepository.markReadByAdmin(validData.roomId);
+      } else {
+        await ChatMessageRepository.markReadByUser(validData.roomId);
+      }
+      room = await ChatRoomRepository.findByIdWithMessages(validData.roomId);
+    } catch {}
+
+    return {
+      id: room.id,
+      user: {
+        id: room.user.id,
+        email: room.user.email,
+        name: room.user.name,
+        phoneNumber: room.user.phoneNumber,
+        role: room.user.role,
+        profilePicture: room.user.profilePicture ?? null,
+      },
+      lastMessageAt: room.lastMessageAt ?? null,
+      createdAt: room.createdAt,
+      updatedAt: room.updatedAt,
+      messages: (room.messages || []).map(m => ({
+        id: m.id,
+        roomId: m.roomId,
+        senderId: m.senderId,
+        senderType: m.senderType,
+        content: m.content ?? null,
+        hasAttachments: m.hasAttachments,
+        isReadByUser: m.isReadByUser,
+        isReadByAdmin: m.isReadByAdmin,
+        createdAt: m.createdAt,
+        updatedAt: m.updatedAt,
+        attachments: (m.attachments || []).map(att => ({
+          id: att.id,
+          url: att.url,
+          mimeType: att.mimeType,
+          type: att.type as AttachmentType,
+          sizeBytes: att.sizeBytes,
+          width: att.width ?? undefined,
+          height: att.height ?? undefined,
+          createdAt: att.createdAt,
+          updatedAt: att.updatedAt,
+        })),
+      })),
+    };
+  }
+
+  static async getRoomDetailByUserId(
+    request: IGetChatRoomDetailByUserIdRequest,
+  ): Promise<IGetChatRoomDetailResponse> {
+    const validData = Validator.validate(
+      ChatValidation.GET_ROOM_DETAIL_BY_USER,
+      {
+        userId: request.userId,
+      },
+    );
+
+    if (
+      request.currentUserRole !== Role.ADMIN &&
+      request.currentUserId !== validData.userId
+    ) {
+      throw new ResponseError(StatusCodes.FORBIDDEN, 'Tidak memiliki akses');
+    }
+
+    let room = await ChatRoomRepository.findByUserIdWithMessages(
+      validData.userId,
+    );
+    if (!room) {
+      throw new ResponseError(
+        StatusCodes.NOT_FOUND,
+        'Ruang chat tidak ditemukan',
+      );
+    }
+
+    try {
+      if (request.currentUserRole === Role.ADMIN) {
+        await ChatMessageRepository.markReadByAdmin(room.id);
+      } else {
+        await ChatMessageRepository.markReadByUser(room.id);
+      }
+      room = await ChatRoomRepository.findByIdWithMessages(room.id);
+    } catch {}
 
     return {
       id: room.id,
@@ -289,9 +377,11 @@ export class ChatService {
   }
 
   static async deleteRoom(request: IDeleteChatRoomRequest): Promise<void> {
-    const valid = Validator.validate(ChatValidation.DELETE_ROOM, request);
+    const validData = Validator.validate(ChatValidation.DELETE_ROOM, request);
 
-    const room = await ChatRoomRepository.findByIdWithMessages(valid.roomId);
+    const room = await ChatRoomRepository.findByIdWithMessages(
+      validData.roomId,
+    );
     if (!room) {
       throw new ResponseError(
         StatusCodes.NOT_FOUND,
@@ -316,6 +406,7 @@ export class ChatService {
       appLogger.error('Gagal membersihkan file lampiran:', e);
     }
 
-    await ChatRoomRepository.delete(valid.roomId);
+    await ChatRoomRepository.delete(validData.roomId);
   }
+
 }
