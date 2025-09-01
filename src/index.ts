@@ -48,10 +48,10 @@ export const io = new Server(httpServer, {
   cors: {
     origin: origin,
     methods: ['GET', 'POST'],
+    credentials: true,
   },
 });
 
-// Socket.IO authentication middleware
 io.use(socketAuthMiddleware);
 
 app.use(cookieParser());
