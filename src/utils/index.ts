@@ -10,3 +10,5 @@ export * from './time-utils';
 export * from './email-utils';
 export * from './csv-utils';
 export * from './zip-utils';
+export * from './file-type-utils';
+export * from './socket-cookie-extractor';

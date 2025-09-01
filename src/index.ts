@@ -9,6 +9,7 @@ import { Server } from 'socket.io';
 import { appLogger } from './configs/logger';
 import { currentEnv, Env, CLIENT_URL } from './constants';
 import { errorMiddleware } from './middlewares/error-middleware';
+import { socketAuthMiddleware } from './middlewares';
 import {
   healthRoute,
   authRoute,
@@ -49,6 +50,9 @@ export const io = new Server(httpServer, {
     methods: ['GET', 'POST'],
   },
 });
+
+// Socket.IO authentication middleware
+io.use(socketAuthMiddleware);
 
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));

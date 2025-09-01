@@ -9,7 +9,7 @@ export class IoService {
     io.emit('transactions');
   }
 
-  static async emitChatMessage(roomId: string): Promise<void> {
-    io.emit('chat:message', { roomId });
+  static async emitChatMessage(roomId: string, userId: string): Promise<void> {
+    io.to(`user:${userId}`).emit('chat:message', { roomId });
   }
 }

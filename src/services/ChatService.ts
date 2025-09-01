@@ -127,7 +127,7 @@ export class ChatService {
       return { room, message: fullMessage! };
     });
 
-    IoService.emitChatMessage(created.room.id);
+    IoService.emitChatMessage(created.room.id, created.room.userId);
 
     return {
       roomId: created.room.id,
@@ -236,7 +236,10 @@ export class ChatService {
 
     const room = await ChatRoomRepository.findByIdWithMessages(valid.roomId);
     if (!room) {
-      throw new ResponseError(StatusCodes.NOT_FOUND, 'Ruang chat tidak ditemukan');
+      throw new ResponseError(
+        StatusCodes.NOT_FOUND,
+        'Ruang chat tidak ditemukan',
+      );
     }
 
     if (
@@ -290,7 +293,10 @@ export class ChatService {
 
     const room = await ChatRoomRepository.findByIdWithMessages(valid.roomId);
     if (!room) {
-      throw new ResponseError(StatusCodes.NOT_FOUND, 'Ruang chat tidak ditemukan');
+      throw new ResponseError(
+        StatusCodes.NOT_FOUND,
+        'Ruang chat tidak ditemukan',
+      );
     }
 
     try {

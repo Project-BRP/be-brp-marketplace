@@ -21,7 +21,12 @@ export class ChatController {
         limit: req.query.limit ? parseInt(req.query.limit as string, 10) : null,
       });
 
-      successResponse(res, StatusCodes.OK, 'Daftar chat room berhasil diambil', response);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Daftar chat room berhasil diambil',
+        response,
+      );
     } catch (error) {
       next(error);
     }
@@ -39,7 +44,12 @@ export class ChatController {
         roomId: req.params.roomId,
       });
 
-      successResponse(res, StatusCodes.OK, 'Detail chat room berhasil diambil', response);
+      successResponse(
+        res,
+        StatusCodes.OK,
+        'Detail chat room berhasil diambil',
+        response,
+      );
     } catch (error) {
       next(error);
     }

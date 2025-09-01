@@ -47,17 +47,29 @@ export class ChatRoomRepository {
     return tx.chatRoom.delete({ where: { id } });
   }
 
-  static async countAll(
-    search?: string,
-    tx: Prisma.TransactionClient = db,
-  ) {
+  static async countAll(search?: string, tx: Prisma.TransactionClient = db) {
     const searchCondition = search
       ? {
           user: {
             OR: [
-              { name: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
-              { email: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
-              { phoneNumber: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
+              {
+                name: {
+                  contains: search,
+                  mode: 'insensitive' as Prisma.QueryMode,
+                },
+              },
+              {
+                email: {
+                  contains: search,
+                  mode: 'insensitive' as Prisma.QueryMode,
+                },
+              },
+              {
+                phoneNumber: {
+                  contains: search,
+                  mode: 'insensitive' as Prisma.QueryMode,
+                },
+              },
             ],
           },
         }
@@ -66,17 +78,29 @@ export class ChatRoomRepository {
     return tx.chatRoom.count({ where: { ...searchCondition } });
   }
 
-  static async findAll(
-    search?: string,
-    tx: Prisma.TransactionClient = db,
-  ) {
+  static async findAll(search?: string, tx: Prisma.TransactionClient = db) {
     const searchCondition = search
       ? {
           user: {
             OR: [
-              { name: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
-              { email: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
-              { phoneNumber: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
+              {
+                name: {
+                  contains: search,
+                  mode: 'insensitive' as Prisma.QueryMode,
+                },
+              },
+              {
+                email: {
+                  contains: search,
+                  mode: 'insensitive' as Prisma.QueryMode,
+                },
+              },
+              {
+                phoneNumber: {
+                  contains: search,
+                  mode: 'insensitive' as Prisma.QueryMode,
+                },
+              },
             ],
           },
         }
@@ -99,9 +123,24 @@ export class ChatRoomRepository {
       ? {
           user: {
             OR: [
-              { name: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
-              { email: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
-              { phoneNumber: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
+              {
+                name: {
+                  contains: search,
+                  mode: 'insensitive' as Prisma.QueryMode,
+                },
+              },
+              {
+                email: {
+                  contains: search,
+                  mode: 'insensitive' as Prisma.QueryMode,
+                },
+              },
+              {
+                phoneNumber: {
+                  contains: search,
+                  mode: 'insensitive' as Prisma.QueryMode,
+                },
+              },
             ],
           },
         }
