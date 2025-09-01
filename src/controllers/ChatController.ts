@@ -9,6 +9,55 @@ import { SharpUtils } from '../utils/sharp-utils';
 import { AttachmentType, Role } from '../constants';
 
 export class ChatController {
+  static async getAllRooms(
+    req: IAuthDTO,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const response = await ChatService.getAllRooms({
+        search: (req.query.search as string) || null,
+        page: req.query.page ? parseInt(req.query.page as string, 10) : null,
+        limit: req.query.limit ? parseInt(req.query.limit as string, 10) : null,
+      });
+
+      successResponse(res, StatusCodes.OK, 'Daftar chat room berhasil diambil', response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getRoomDetail(
+    req: IAuthDTO,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const response = await ChatService.getRoomDetail({
+        currentUserId: req.user!.userId,
+        currentUserRole: req.user!.role as Role,
+        roomId: req.params.roomId,
+      });
+
+      successResponse(res, StatusCodes.OK, 'Detail chat room berhasil diambil', response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async deleteRoom(
+    req: IAuthDTO,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      await ChatService.deleteRoom({ roomId: req.params.roomId });
+      successResponse(res, StatusCodes.OK, 'Chat room berhasil dihapus');
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async createMessage(
     req: IAuthDTO,
     res: Response,

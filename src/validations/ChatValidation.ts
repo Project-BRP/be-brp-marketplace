@@ -11,4 +11,32 @@ export class ChatValidation {
       .min(1, 'Konten tidak boleh kosong')
       .optional(),
   });
+
+  static readonly GET_ALL_ROOMS: ZodType = z.object({
+    search: z.string().nullable().optional(),
+    page: z
+      .number({ invalid_type_error: 'Halaman tidak valid' })
+      .int('Halaman tidak valid')
+      .positive('Halaman tidak valid')
+      .nullable()
+      .optional(),
+    limit: z
+      .number({ invalid_type_error: 'Batas tidak valid' })
+      .int('Batas tidak valid')
+      .positive('Batas tidak valid')
+      .nullable()
+      .optional(),
+  });
+
+  static readonly GET_ROOM_DETAIL: ZodType = z.object({
+    roomId: z
+      .string({ invalid_type_error: 'Room ID tidak valid' })
+      .min(1, 'Room ID tidak boleh kosong'),
+  });
+
+  static readonly DELETE_ROOM: ZodType = z.object({
+    roomId: z
+      .string({ invalid_type_error: 'Room ID tidak valid' })
+      .min(1, 'Room ID tidak boleh kosong'),
+  });
 }

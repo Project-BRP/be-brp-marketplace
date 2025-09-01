@@ -5,6 +5,11 @@ import { ChatSenderType } from '@prisma/client';
 import type {
   ICreateChatMessageRequest,
   ICreateChatMessageResponse,
+  IGetAllChatRoomsRequest,
+  IGetAllChatRoomsResponse,
+  IGetChatRoomDetailRequest,
+  IGetChatRoomDetailResponse,
+  IDeleteChatRoomRequest,
 } from '../dtos/ChatDto';
 import { ResponseError } from '../error/ResponseError';
 import { db as database } from '../configs/database';
@@ -14,11 +19,12 @@ import {
   ChatRoomRepository,
   UserRepository,
 } from '../repositories';
-import { Validator } from '../utils/validator';
+import { Validator } from '../utils';
 import { ChatValidation } from '../validations/ChatValidation';
 import { AttachmentType, Role } from '../constants';
-import { TimeUtils } from 'utils';
+import { TimeUtils } from '../utils';
 import { IoService } from './IoService';
+import { appLogger } from '../configs/logger';
 
 export class ChatService {
   static async createMessage(
@@ -35,7 +41,7 @@ export class ChatService {
     const senderRole = request.currentUserRole;
 
     const targetUserId =
-      senderRole === Role.ADMIN ? request.userId : request.currentUserId;
+      senderRole === Role.ADMIN ? validData.userId : request.currentUserId;
     if (!targetUserId) {
       throw new ResponseError(
         StatusCodes.BAD_REQUEST,
@@ -69,7 +75,7 @@ export class ChatService {
       const hasAttachments = (request.attachments || []).length > 0;
       if (
         !hasAttachments &&
-        (!request.content || request.content.trim().length === 0)
+        (!validData.content || validData.content.trim().length === 0)
       ) {
         throw new ResponseError(
           StatusCodes.BAD_REQUEST,
@@ -84,7 +90,7 @@ export class ChatService {
           sender: { connect: { id: senderId } },
           senderType:
             senderRole === 'ADMIN' ? ChatSenderType.ADMIN : ChatSenderType.USER,
-          content: request.content?.trim() || null,
+          content: validData.content?.trim() || null,
           hasAttachments,
           isReadByUser: senderRole === 'ADMIN' ? false : true,
           isReadByAdmin: senderRole === 'ADMIN' ? true : false,
@@ -149,5 +155,161 @@ export class ChatService {
         })),
       },
     };
+  }
+
+  static async getAllRooms(
+    request: IGetAllChatRoomsRequest,
+  ): Promise<IGetAllChatRoomsResponse> {
+    const validData = Validator.validate(ChatValidation.GET_ALL_ROOMS, request);
+
+    const take = validData.limit ?? undefined;
+    const page = validData.page ?? undefined;
+    const skip = take && page ? (page - 1) * take : undefined;
+    const search = validData.search ?? undefined;
+
+    if (!take || !page) {
+      const rooms = await ChatRoomRepository.findAll(search);
+      return {
+        totalPage: 1,
+        currentPage: 1,
+        rooms: rooms.map(r => ({
+          id: r.id,
+          user: {
+            id: r.user.id,
+            email: r.user.email,
+            name: r.user.name,
+            phoneNumber: r.user.phoneNumber,
+            role: r.user.role,
+            profilePicture: r.user.profilePicture ?? null,
+          },
+          lastMessageAt: r.lastMessageAt ?? null,
+          createdAt: r.createdAt,
+          updatedAt: r.updatedAt,
+        })),
+      };
+    }
+
+    const total = await ChatRoomRepository.countAll(search);
+    if (total === 0) {
+      return { totalPage: 1, currentPage: 1, rooms: [] };
+    }
+
+    if (skip! >= total) {
+      throw new ResponseError(StatusCodes.BAD_REQUEST, 'Halaman tidak valid');
+    }
+
+    const rooms = await ChatRoomRepository.findAllWithPagination(
+      skip!,
+      take,
+      search,
+    );
+
+    const totalPage = Math.ceil(total / take);
+    const currentPage = Math.ceil(skip! / take) + 1;
+
+    return {
+      totalPage,
+      currentPage,
+      rooms: rooms.map(r => ({
+        id: r.id,
+        user: {
+          id: r.user.id,
+          email: r.user.email,
+          name: r.user.name,
+          phoneNumber: r.user.phoneNumber,
+          role: r.user.role,
+          profilePicture: r.user.profilePicture ?? null,
+        },
+        lastMessageAt: r.lastMessageAt ?? null,
+        createdAt: r.createdAt,
+        updatedAt: r.updatedAt,
+      })),
+    };
+  }
+
+  static async getRoomDetail(
+    request: IGetChatRoomDetailRequest,
+  ): Promise<IGetChatRoomDetailResponse> {
+    const valid = Validator.validate(ChatValidation.GET_ROOM_DETAIL, {
+      roomId: request.roomId,
+    });
+
+    const room = await ChatRoomRepository.findByIdWithMessages(valid.roomId);
+    if (!room) {
+      throw new ResponseError(StatusCodes.NOT_FOUND, 'Ruang chat tidak ditemukan');
+    }
+
+    if (
+      request.currentUserRole !== Role.ADMIN &&
+      room.userId !== request.currentUserId
+    ) {
+      throw new ResponseError(StatusCodes.FORBIDDEN, 'Tidak memiliki akses');
+    }
+
+    return {
+      id: room.id,
+      user: {
+        id: room.user.id,
+        email: room.user.email,
+        name: room.user.name,
+        phoneNumber: room.user.phoneNumber,
+        role: room.user.role,
+        profilePicture: room.user.profilePicture ?? null,
+      },
+      lastMessageAt: room.lastMessageAt ?? null,
+      createdAt: room.createdAt,
+      updatedAt: room.updatedAt,
+      messages: (room.messages || []).map(m => ({
+        id: m.id,
+        roomId: m.roomId,
+        senderId: m.senderId,
+        senderType: m.senderType,
+        content: m.content ?? null,
+        hasAttachments: m.hasAttachments,
+        isReadByUser: m.isReadByUser,
+        isReadByAdmin: m.isReadByAdmin,
+        createdAt: m.createdAt,
+        updatedAt: m.updatedAt,
+        attachments: (m.attachments || []).map(att => ({
+          id: att.id,
+          url: att.url,
+          mimeType: att.mimeType,
+          type: att.type as AttachmentType,
+          sizeBytes: att.sizeBytes,
+          width: att.width ?? undefined,
+          height: att.height ?? undefined,
+          createdAt: att.createdAt,
+          updatedAt: att.updatedAt,
+        })),
+      })),
+    };
+  }
+
+  static async deleteRoom(request: IDeleteChatRoomRequest): Promise<void> {
+    const valid = Validator.validate(ChatValidation.DELETE_ROOM, request);
+
+    const room = await ChatRoomRepository.findByIdWithMessages(valid.roomId);
+    if (!room) {
+      throw new ResponseError(StatusCodes.NOT_FOUND, 'Ruang chat tidak ditemukan');
+    }
+
+    try {
+      const fs = await import('fs');
+      for (const msg of room.messages || []) {
+        for (const att of msg.attachments || []) {
+          if (att.url && fs.existsSync(att.url)) {
+            try {
+              fs.unlinkSync(att.url);
+            } catch (e) {
+              appLogger.error('Gagal menghapus file lampiran:', att.url, e);
+            }
+          }
+        }
+      }
+    } catch (e) {
+      appLogger.error('Gagal membersihkan file lampiran:', e);
+    }
+
+    await ChatRoomRepository.delete(valid.roomId);
   }
 }

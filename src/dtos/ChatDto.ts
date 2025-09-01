@@ -46,3 +46,51 @@ export interface ICreateChatMessageResponse {
   roomId: string;
   message: IChatMessageDTO;
 }
+
+export interface IGetAllChatRoomsRequest {
+  search?: string | null;
+  page?: number | null;
+  limit?: number | null;
+}
+
+export interface IChatRoomUserDTO {
+  id: string;
+  email: string;
+  name: string;
+  phoneNumber: string;
+  role: Role;
+  profilePicture?: string | null;
+}
+
+export interface IGetChatRoomResponse {
+  id: string;
+  user: IChatRoomUserDTO;
+  lastMessageAt?: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IGetAllChatRoomsResponse {
+  totalPage: number;
+  currentPage: number;
+  rooms: IGetChatRoomResponse[];
+}
+
+export interface IGetChatRoomDetailRequest {
+  currentUserId: string;
+  currentUserRole: Role;
+  roomId: string;
+}
+
+export interface IGetChatRoomDetailResponse {
+  id: string;
+  user: IChatRoomUserDTO;
+  lastMessageAt?: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  messages: IChatMessageDTO[];
+}
+
+export interface IDeleteChatRoomRequest {
+  roomId: string;
+}
