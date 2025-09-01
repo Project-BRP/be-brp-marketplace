@@ -5,6 +5,7 @@ import { UserRepository } from '../repositories';
 import { JwtToken, socketCookieExtractor } from '../utils';
 import { ResponseError } from '../error/ResponseError';
 import { Role } from '../constants';
+import { StatusCodes } from 'http-status-codes';
 
 export const socketAuthMiddleware = async (
   socket: Socket,
@@ -36,14 +37,14 @@ export const socketAuthMiddleware = async (
     }
 
     if (!token) {
-      return next(new ResponseError(401, 'Unauthorized!'));
+      return next(new ResponseError(StatusCodes.UNAUTHORIZED, 'Unauthorized!'));
     }
 
     const decoded = JwtToken.verifyToken(token);
     const user = await UserRepository.findById(decoded.userId);
 
     if (!user) {
-      return next(new ResponseError(401, 'Unauthorized!'));
+      return next(new ResponseError(StatusCodes.UNAUTHORIZED, 'Unauthorized!'));
     }
 
     socket.data.user = {
@@ -62,9 +63,9 @@ export const socketAuthMiddleware = async (
     if (error instanceof ResponseError) {
       return next(error);
     } else if (error instanceof jwt.JsonWebTokenError) {
-      return next(new ResponseError(401, 'Unauthorized!'));
+      return next(new ResponseError(StatusCodes.UNAUTHORIZED, 'Unauthorized!'));
     }
 
-    return next(new ResponseError(500, 'Internal Server Error!'));
+    return next(new ResponseError(StatusCodes.INTERNAL_SERVER_ERROR, 'Internal Server Error!'));
   }
 };
