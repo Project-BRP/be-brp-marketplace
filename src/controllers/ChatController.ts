@@ -74,12 +74,8 @@ export class ChatController {
     res: Response,
     next: NextFunction,
   ): Promise<void> {
-    try {
-      const userIds = IoService.getOnlineUserIds();
-      successResponse(res, StatusCodes.OK, 'Daftar user online', { userIds });
-    } catch (error) {
-      next(error);
-    }
+    // Deprecated endpoint; removed from routes
+    successResponse(res, StatusCodes.NOT_FOUND, 'Endpoint tidak tersedia');
   }
   static async getAllRooms(
     req: IAuthDTO,

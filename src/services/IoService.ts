@@ -34,20 +34,4 @@ export class IoService {
       return false;
     }
   }
-
-  static getOnlineUserIds(): string[] {
-    try {
-      const online = new Set<string>();
-      for (const [, socket] of io.sockets.sockets) {
-        const data: any = (socket as any).data;
-        const u = data?.user;
-        if (u?.userId && u?.role !== Role.ADMIN) {
-          online.add(u.userId);
-        }
-      }
-      return Array.from(online);
-    } catch {
-      return [];
-    }
-  }
 }
