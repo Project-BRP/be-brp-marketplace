@@ -15,6 +15,18 @@ export class IoService {
     io.to('admins').emit('chat:message', { roomId });
   }
 
+  static async emitChatRead(
+    roomId: string,
+    userId: string,
+    by: Role.ADMIN | Role.USER,
+  ): Promise<void> {
+    if (by === Role.ADMIN) {
+      io.to(`user:${userId}`).emit('chat:read', { roomId, by });
+    } else {
+      io.to('admins').emit('chat:read', { roomId, by });
+    }
+  }
+
   static isUserOnline(userId: string): boolean {
     try {
       const room = io.sockets.adapter.rooms.get(`user:${userId}`);

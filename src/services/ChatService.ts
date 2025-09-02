@@ -276,8 +276,14 @@ export class ChatService {
     try {
       if (request.currentUserRole === Role.ADMIN) {
         await ChatMessageRepository.markReadByAdmin(validData.roomId);
+        try {
+          await IoService.emitChatRead(validData.roomId, room.userId, Role.ADMIN);
+        } catch {}
       } else {
         await ChatMessageRepository.markReadByUser(validData.roomId);
+        try {
+          await IoService.emitChatRead(validData.roomId, room.userId, Role.USER);
+        } catch {}
       }
       room = await ChatRoomRepository.findByIdWithMessages(validData.roomId);
     } catch {}
@@ -351,8 +357,14 @@ export class ChatService {
     try {
       if (request.currentUserRole === Role.ADMIN) {
         await ChatMessageRepository.markReadByAdmin(room.id);
+        try {
+          await IoService.emitChatRead(room.id, room.userId, Role.ADMIN);
+        } catch {}
       } else {
         await ChatMessageRepository.markReadByUser(room.id);
+        try {
+          await IoService.emitChatRead(room.id, room.userId, Role.USER);
+        } catch {}
       }
       room = await ChatRoomRepository.findByIdWithMessages(room.id);
     } catch {}
