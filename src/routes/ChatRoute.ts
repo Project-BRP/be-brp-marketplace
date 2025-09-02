@@ -32,6 +32,12 @@ chatRoute.get(
   ChatController.getUserPresence,
 );
 chatRoute.get(
+  '/presence/users',
+  authMiddleware,
+  roleMiddleware([Role.ADMIN]),
+  ChatController.getOnlineUsers,
+);
+chatRoute.get(
   '/rooms',
   authMiddleware,
   roleMiddleware([Role.ADMIN]),

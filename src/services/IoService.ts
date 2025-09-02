@@ -34,4 +34,21 @@ export class IoService {
       return false;
     }
   }
+
+  static getOnlineUsers(): { userId: string }[] {
+    try {
+      const onlineSet = new Set<string>();
+      for (const [, socket] of io.sockets.sockets) {
+        const data: any = (socket as any).data;
+        const userId: string | undefined = data?.user?.userId;
+        const role = data?.user?.role;
+        if (userId && role !== Role.ADMIN) {
+          onlineSet.add(userId);
+        }
+      }
+      return Array.from(onlineSet).map(userId => ({ userId }));
+    } catch {
+      return [];
+    }
+  }
 }
