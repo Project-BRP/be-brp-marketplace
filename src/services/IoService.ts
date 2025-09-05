@@ -10,22 +10,12 @@ export class IoService {
     io.emit('transactions');
   }
 
-  static async emitChatMessage(roomId: string, userId: string): Promise<void> {
-    io.to(`user:${userId}`).emit('chat:message', { roomId });
+  static async emitChatMessage(roomId: string, userId?: string): Promise<void> {
+    if (userId) {
+      io.to(`user:${userId}`).emit('chat:message', { roomId });
+    }
     io.to('admins').emit('chat:message', { roomId });
     io.to('admins').emit('chat:message:all');
-  }
-
-  static async emitChatRead(
-    roomId: string,
-    userId: string,
-    by: Role.ADMIN | Role.USER,
-  ): Promise<void> {
-    if (by === Role.ADMIN) {
-      io.to(`user:${userId}`).emit('chat:read', { roomId, by });
-    } else {
-      io.to('admins').emit('chat:read', { roomId, by });
-    }
   }
 
   static isUserOnline(userId: string): boolean {

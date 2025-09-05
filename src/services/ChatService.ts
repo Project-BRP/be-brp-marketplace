@@ -272,17 +272,19 @@ export class ChatService {
     ) {
       throw new ResponseError(StatusCodes.FORBIDDEN, 'Tidak memiliki akses');
     }
-
+    let updatedMessages;
     try {
       if (request.currentUserRole === Role.ADMIN) {
-        await ChatMessageRepository.markReadByAdmin(validData.roomId);
-        try {
-          await IoService.emitChatRead(validData.roomId, room.userId, Role.ADMIN);
-        } catch {}
+        updatedMessages = await ChatMessageRepository.markReadByAdmin(validData.roomId);
+        if (updatedMessages.count > 0) {
+          try {
+            await IoService.emitChatMessage(validData.roomId, room.userId);
+          } catch {}
+        }
       } else {
-        await ChatMessageRepository.markReadByUser(validData.roomId);
+        updatedMessages = await ChatMessageRepository.markReadByUser(validData.roomId);
         try {
-          await IoService.emitChatRead(validData.roomId, room.userId, Role.USER);
+          await IoService.emitChatMessage(validData.roomId);
         } catch {}
       }
       room = await ChatRoomRepository.findByIdWithMessages(validData.roomId);
@@ -354,16 +356,19 @@ export class ChatService {
       );
     }
 
+    let updatedMessages;
     try {
       if (request.currentUserRole === Role.ADMIN) {
-        await ChatMessageRepository.markReadByAdmin(room.id);
-        try {
-          await IoService.emitChatRead(room.id, room.userId, Role.ADMIN);
-        } catch {}
+        updatedMessages = await ChatMessageRepository.markReadByAdmin(room.id);
+        if (updatedMessages.count > 0) {
+          try {
+            await IoService.emitChatMessage(room.id, room.userId);
+          } catch {}
+        }
       } else {
-        await ChatMessageRepository.markReadByUser(room.id);
+        updatedMessages = await ChatMessageRepository.markReadByUser(room.id);
         try {
-          await IoService.emitChatRead(room.id, room.userId, Role.USER);
+          await IoService.emitChatMessage(room.id);
         } catch {}
       }
       room = await ChatRoomRepository.findByIdWithMessages(room.id);
