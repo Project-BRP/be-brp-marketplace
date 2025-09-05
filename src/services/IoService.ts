@@ -13,7 +13,7 @@ export class IoService {
   static async emitChatMessage(roomId: string, userId: string): Promise<void> {
     io.to(`user:${userId}`).emit('chat:message', { roomId });
     io.to('admins').emit('chat:message', { roomId });
-    io.to('admins').emit('chat:rooms:update');
+    io.to('admins').emit('chat:message:all');
   }
 
   static async emitChatRead(
