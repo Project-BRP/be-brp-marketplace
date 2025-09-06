@@ -4,7 +4,7 @@ import { authMiddleware } from '../middlewares';
 import { upload } from '../configs/multer';
 import { roleMiddleware } from '../middlewares';
 import { Role } from '../constants';
-import { validateImagesArrayMiddleware } from '../middlewares';
+import { uploadArraysMiddleware } from '../middlewares';
 
 export const chatRoute: Router = Router();
 
@@ -58,7 +58,6 @@ chatRoute.delete(
 chatRoute.post(
   '/messages',
   authMiddleware,
-  upload.array('attachments', 5),
-  validateImagesArrayMiddleware,
+  uploadArraysMiddleware('attachments', 5),
   ChatController.createMessage,
 );
