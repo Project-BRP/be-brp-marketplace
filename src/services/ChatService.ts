@@ -133,7 +133,7 @@ export class ChatService {
 
     IoService.emitChatMessage(
       created.room.id,
-      created.message.senderId,
+      created.room.userId,
       created.message.senderType,
     );
 
