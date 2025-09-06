@@ -4,15 +4,30 @@ import { StatusCodes } from 'http-status-codes';
 import multer, { FileFilterCallback } from 'multer';
 
 import { ResponseError } from '../error/ResponseError';
+import fs from 'fs';
+import path from 'path';
 
 const dir = process.env.UPLOADS_PATH;
 
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
-    callback(null, dir); // Direktori penyimpanan file
+    if (!dir) {
+      return callback(
+        new ResponseError(
+          StatusCodes.INTERNAL_SERVER_ERROR,
+          'Internal Server Error!',
+        ),
+        null,
+      );
+    }
+    // Ensure directory exists, create if not
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    callback(null, dir);
   },
   filename: (req, file, callback) => {
-    const filename = `${Date.now()}-${file.originalname}`; // Nama file yang diupload
+    const filename = `${Date.now()}-${file.originalname}`;
     callback(null, filename);
   },
 });
