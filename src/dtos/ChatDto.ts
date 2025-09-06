@@ -1,5 +1,10 @@
-import type { Role, ChatSenderType } from '@prisma/client';
+import { Role, ChatSenderType } from '@prisma/client';
 import { AttachmentType } from '../constants';
+
+export enum MsgSender {
+  USER = 'USER',
+  ADMIN = 'ADMIN',
+}
 
 export interface ICreateChatMessageRequest {
   currentUserId: string;

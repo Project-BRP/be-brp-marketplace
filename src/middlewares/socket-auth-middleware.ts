@@ -66,6 +66,11 @@ export const socketAuthMiddleware = async (
       return next(new ResponseError(StatusCodes.UNAUTHORIZED, 'Unauthorized!'));
     }
 
-    return next(new ResponseError(StatusCodes.INTERNAL_SERVER_ERROR, 'Internal Server Error!'));
+    return next(
+      new ResponseError(
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        'Internal Server Error!',
+      ),
+    );
   }
 };

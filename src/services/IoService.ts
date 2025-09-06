@@ -1,5 +1,7 @@
 import { Role } from '../constants';
 import { io } from '../index';
+import { MsgSender } from '../dtos';
+import { ChatSenderType } from '@prisma/client';
 
 export class IoService {
   static async emitNewTransaction(): Promise<void> {
@@ -10,14 +12,22 @@ export class IoService {
     io.emit('transactions');
   }
 
-  static async emitChatMessage(roomId: string, userId?: string): Promise<void> {
+  static async emitChatMessage(
+    roomId: string,
+    userId?: string,
+    sentBy?: ChatSenderType,
+  ): Promise<void> {
     if (userId) {
       io.to(`user:${userId}`).emit('chat:message', { roomId });
+      if (sentBy !== (MsgSender.USER as ChatSenderType)) {
+        io.to(`user:${userId}`).emit('chat:message:all');
+      }
     }
     io.to('admins').emit('chat:message', { roomId });
-    io.to('admins').emit('chat:message:all');
+    if (sentBy !== (MsgSender.ADMIN as ChatSenderType)) {
+      io.to('admins').emit('chat:message:all');
+    }
   }
-
   static isUserOnline(userId: string): boolean {
     try {
       const room = io.sockets.adapter.rooms.get(`user:${userId}`);

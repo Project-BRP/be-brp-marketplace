@@ -93,8 +93,8 @@ export class UserRepository {
       isActive === undefined || isActive === null
         ? {}
         : isActive
-        ? { transaction: { some: activityCriteria } }
-        : { transaction: { none: activityCriteria } };
+          ? { transaction: { some: activityCriteria } }
+          : { transaction: { none: activityCriteria } };
 
     return tx.user.findMany({
       where: {
@@ -155,8 +155,8 @@ export class UserRepository {
       isActive === undefined || isActive === null
         ? {}
         : isActive
-        ? { transaction: { some: activityCriteria } }
-        : { transaction: { none: activityCriteria } };
+          ? { transaction: { some: activityCriteria } }
+          : { transaction: { none: activityCriteria } };
 
     return tx.user.findMany({
       where: {
@@ -211,8 +211,8 @@ export class UserRepository {
       isActive === undefined || isActive === null
         ? {}
         : isActive
-        ? { transaction: { some: activityCriteria } }
-        : { transaction: { none: activityCriteria } };
+          ? { transaction: { some: activityCriteria } }
+          : { transaction: { none: activityCriteria } };
 
     return tx.user.count({
       where: {

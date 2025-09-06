@@ -131,7 +131,11 @@ export class ChatService {
       return { room, message: fullMessage! };
     });
 
-    IoService.emitChatMessage(created.room.id, created.room.userId);
+    IoService.emitChatMessage(
+      created.room.id,
+      created.message.senderId,
+      created.message.senderType,
+    );
 
     return {
       roomId: created.room.id,
@@ -275,14 +279,18 @@ export class ChatService {
     let updatedMessages;
     try {
       if (request.currentUserRole === Role.ADMIN) {
-        updatedMessages = await ChatMessageRepository.markReadByAdmin(validData.roomId);
+        updatedMessages = await ChatMessageRepository.markReadByAdmin(
+          validData.roomId,
+        );
         if (updatedMessages.count > 0) {
           try {
             await IoService.emitChatMessage(validData.roomId, room.userId);
           } catch {}
         }
       } else {
-        updatedMessages = await ChatMessageRepository.markReadByUser(validData.roomId);
+        updatedMessages = await ChatMessageRepository.markReadByUser(
+          validData.roomId,
+        );
         try {
           await IoService.emitChatMessage(validData.roomId);
         } catch {}
