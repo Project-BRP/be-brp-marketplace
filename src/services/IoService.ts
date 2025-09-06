@@ -16,15 +16,22 @@ export class IoService {
     roomId: string,
     userId?: string,
     sentBy?: ChatSenderType,
+    readBy?: Role,
   ): Promise<void> {
     if (userId) {
       io.to(`user:${userId}`).emit('chat:message', { roomId });
-      if (sentBy !== (MsgSender.USER as ChatSenderType)) {
+      if (
+        (sentBy && sentBy !== (MsgSender.USER as ChatSenderType)) ||
+        readBy === Role.USER
+      ) {
         io.to(`user:${userId}`).emit('chat:message:all');
       }
     }
     io.to('admins').emit('chat:message', { roomId });
-    if (sentBy !== (MsgSender.ADMIN as ChatSenderType)) {
+    if (
+      (sentBy && sentBy !== (MsgSender.ADMIN as ChatSenderType)) ||
+      readBy === Role.ADMIN
+    ) {
       io.to('admins').emit('chat:message:all');
     }
   }

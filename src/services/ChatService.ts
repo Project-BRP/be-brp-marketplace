@@ -284,7 +284,7 @@ export class ChatService {
         );
         if (updatedMessages.count > 0) {
           try {
-            await IoService.emitChatMessage(validData.roomId, room.userId);
+            await IoService.emitChatMessage(validData.roomId, room.userId, undefined, Role.ADMIN);
           } catch {}
         }
       } else {
@@ -292,7 +292,7 @@ export class ChatService {
           validData.roomId,
         );
         try {
-          await IoService.emitChatMessage(validData.roomId);
+          await IoService.emitChatMessage(validData.roomId, undefined, undefined, Role.USER);
         } catch {}
       }
       room = await ChatRoomRepository.findByIdWithMessages(validData.roomId);
@@ -370,13 +370,13 @@ export class ChatService {
         updatedMessages = await ChatMessageRepository.markReadByAdmin(room.id);
         if (updatedMessages.count > 0) {
           try {
-            await IoService.emitChatMessage(room.id, room.userId);
+            await IoService.emitChatMessage(room.id, room.userId, undefined, Role.ADMIN);
           } catch {}
         }
       } else {
         updatedMessages = await ChatMessageRepository.markReadByUser(room.id);
         try {
-          await IoService.emitChatMessage(room.id);
+          await IoService.emitChatMessage(room.id, undefined, undefined, Role.USER);
         } catch {}
       }
       room = await ChatRoomRepository.findByIdWithMessages(room.id);
