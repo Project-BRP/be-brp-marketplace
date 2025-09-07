@@ -35,7 +35,7 @@ export class IoService {
       io.to('admins').emit('chat:message:all');
     }
   }
-  
+
   static isUserOnline(userId: string): boolean {
     try {
       const room = io.sockets.adapter.rooms.get(`user:${userId}`);
