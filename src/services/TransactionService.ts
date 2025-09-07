@@ -1574,7 +1574,7 @@ export class TransactionService {
     }
 
     if (
-      transaction.deliveryStatus !== TxDeliveryStatus.PAID ||
+      transaction.deliveryStatus !== TxDeliveryStatus.PAID &&
       transaction.manualStatus !== TxManualStatus.PAID
     ) {
       throw new ResponseError(

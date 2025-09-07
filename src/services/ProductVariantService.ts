@@ -264,7 +264,7 @@ export class ProductVariantService {
                 tx,
               );
               if (
-                transaction.deliveryStatus !== TxDeliveryStatus.PAID ||
+                transaction.deliveryStatus !== TxDeliveryStatus.PAID &&
                 transaction.manualStatus !== TxManualStatus.PAID
               ) {
                 continue;
