@@ -17,6 +17,7 @@ export class IoService {
     userId?: string,
     sentBy?: ChatSenderType,
     readBy?: Role,
+    isAdminNotifed?: boolean,
   ): Promise<void> {
     if (userId) {
       io.to(`user:${userId}`).emit('chat:message', { roomId });
@@ -27,12 +28,14 @@ export class IoService {
         io.to(`user:${userId}`).emit('chat:message:all');
       }
     }
-    io.to('admins').emit('chat:message', { roomId });
-    if (
-      (sentBy && sentBy !== (MsgSender.ADMIN as ChatSenderType)) ||
-      readBy === Role.ADMIN
-    ) {
-      io.to('admins').emit('chat:message:all');
+    if (isAdminNotifed) {
+      io.to('admins').emit('chat:message', { roomId });
+      if (
+        (sentBy && sentBy !== (MsgSender.ADMIN as ChatSenderType)) ||
+        readBy === Role.ADMIN
+      ) {
+        io.to('admins').emit('chat:message:all');
+      }
     }
   }
 

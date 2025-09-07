@@ -135,6 +135,8 @@ export class ChatService {
       created.room.id,
       created.room.userId,
       created.message.senderType,
+      undefined,
+      true
     );
 
     return {
@@ -289,6 +291,7 @@ export class ChatService {
               room.userId,
               undefined,
               Role.ADMIN,
+              true
             );
           } catch {}
         }
@@ -303,6 +306,7 @@ export class ChatService {
               undefined,
               undefined,
               Role.USER,
+              true
             );
           } catch {}
         }
@@ -387,6 +391,7 @@ export class ChatService {
               room.userId,
               undefined,
               Role.ADMIN,
+              true
             );
           } catch {}
         }
@@ -399,6 +404,7 @@ export class ChatService {
               undefined,
               undefined,
               Role.USER,
+              true
             );
           } catch {}
         }
@@ -474,6 +480,7 @@ export class ChatService {
       appLogger.error('Gagal membersihkan file lampiran:', e);
     }
 
-    await ChatRoomRepository.delete(validData.roomId);
+    await ChatRoomRepository.delete(room.id);
+    IoService.emitChatMessage(room.id, room.userId, undefined, undefined, false);
   }
 }
