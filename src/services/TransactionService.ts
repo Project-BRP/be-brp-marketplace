@@ -786,12 +786,40 @@ export class TransactionService {
     const status = validData.status;
     const isStockIssue = validData.isStockIssue;
 
+    let startDate: Date | undefined;
+    let endDate: Date | undefined;
+
+    if (validData.startYear && validData.startMonth && validData.startDay) {
+      startDate = TimeUtils.getStartOfDay(
+        validData.startYear,
+        validData.startMonth,
+        validData.startDay,
+      );
+    } else if (validData.startYear && validData.startMonth) {
+      startDate = TimeUtils.getStartOfMonth(
+        validData.startYear,
+        validData.startMonth,
+      );
+    }
+
+    if (validData.endYear && validData.endMonth && validData.endDay) {
+      endDate = TimeUtils.getEndOfDay(
+        validData.endYear,
+        validData.endMonth,
+        validData.endDay,
+      );
+    } else if (validData.endYear && validData.endMonth) {
+      endDate = TimeUtils.getEndOfMonth(validData.endYear, validData.endMonth);
+    }
+
     if (!take || !page) {
       const transactions = await TransactionRepository.findByUserId(
         validData.userId,
         method,
         search,
         status,
+        startDate,
+        endDate,
         isStockIssue,
       );
 
@@ -863,6 +891,8 @@ export class TransactionService {
       method,
       search,
       status,
+      startDate,
+      endDate,
       isStockIssue,
     );
 
@@ -885,6 +915,8 @@ export class TransactionService {
       method,
       search,
       status,
+      startDate,
+      endDate,
       isStockIssue,
     );
 

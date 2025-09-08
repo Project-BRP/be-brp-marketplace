@@ -151,6 +151,12 @@ export interface IGetTransactionByUserRequest {
   search?: string;
   status?: TxDeliveryStatus | TxManualStatus;
   isStockIssue?: boolean;
+  startYear?: number;
+  startMonth?: number;
+  startDay?: number;
+  endYear?: number;
+  endMonth?: number;
+  endDay?: number;
   page?: number;
   limit?: number;
 }

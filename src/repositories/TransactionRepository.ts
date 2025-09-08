@@ -288,6 +288,8 @@ export class TransactionRepository {
     method?: TxMethod,
     search?: string,
     status?: TxDeliveryStatus | TxManualStatus,
+    startDate?: Date,
+    endDate?: Date,
     isStockIssue?: boolean,
     tx: Prisma.TransactionClient = db,
   ) {
@@ -307,6 +309,12 @@ export class TransactionRepository {
         { id: { contains: search, mode: 'insensitive' } },
         { userName: { contains: search, mode: 'insensitive' } },
       ];
+    }
+
+    if (startDate || endDate) {
+      whereCondition.createdAt = {};
+      if (startDate) whereCondition.createdAt.gte = startDate;
+      if (endDate) whereCondition.createdAt.lte = endDate;
     }
 
     if (isStockIssue !== undefined) {
@@ -342,6 +350,8 @@ export class TransactionRepository {
     method?: TxMethod,
     search?: string,
     status?: TxDeliveryStatus | TxManualStatus,
+    startDate?: Date,
+    endDate?: Date,
     isStockIssue?: boolean,
     tx: Prisma.TransactionClient = db,
   ) {
@@ -361,6 +371,12 @@ export class TransactionRepository {
         { id: { contains: search, mode: 'insensitive' } },
         { userName: { contains: search, mode: 'insensitive' } },
       ];
+    }
+
+    if (startDate || endDate) {
+      whereCondition.createdAt = {};
+      if (startDate) whereCondition.createdAt.gte = startDate;
+      if (endDate) whereCondition.createdAt.lte = endDate;
     }
 
     if (isStockIssue !== undefined) {
@@ -396,6 +412,8 @@ export class TransactionRepository {
     method?: TxMethod,
     search?: string,
     status?: TxDeliveryStatus | TxManualStatus,
+    startDate?: Date,
+    endDate?: Date,
     isStockIssue?: boolean,
     tx: Prisma.TransactionClient = db,
   ) {
@@ -415,6 +433,12 @@ export class TransactionRepository {
         { id: { contains: search, mode: 'insensitive' } },
         { userName: { contains: search, mode: 'insensitive' } },
       ];
+    }
+
+    if (startDate || endDate) {
+      whereCondition.createdAt = {};
+      if (startDate) whereCondition.createdAt.gte = startDate;
+      if (endDate) whereCondition.createdAt.lte = endDate;
     }
 
     if (isStockIssue !== undefined) {
