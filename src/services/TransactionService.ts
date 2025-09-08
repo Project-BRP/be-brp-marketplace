@@ -532,6 +532,7 @@ export class TransactionService {
     const search = validData.search;
     const method = validData.method;
     const status = validData.status;
+    const isStockIssue = validData.isStockIssue;
 
     let startDate: Date | undefined;
     let endDate: Date | undefined;
@@ -595,6 +596,7 @@ export class TransactionService {
         status,
         startDate,
         endDate,
+        isStockIssue,
       );
 
       return {
@@ -666,6 +668,7 @@ export class TransactionService {
       status,
       startDate,
       endDate,
+      isStockIssue
     );
 
     if (totalTransactions === 0) {
@@ -688,6 +691,7 @@ export class TransactionService {
       status,
       startDate,
       endDate,
+      isStockIssue
     );
 
     const totalPage = Math.ceil(totalTransactions / take);
