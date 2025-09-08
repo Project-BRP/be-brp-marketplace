@@ -780,6 +780,7 @@ export class TransactionService {
     const search = validData.search;
     const method = validData.method;
     const status = validData.status;
+    const isStockIssue = validData.isStockIssue;
 
     if (!take || !page) {
       const transactions = await TransactionRepository.findByUserId(
@@ -787,6 +788,7 @@ export class TransactionService {
         method,
         search,
         status,
+        isStockIssue,
       );
 
       return {
@@ -857,6 +859,7 @@ export class TransactionService {
       method,
       search,
       status,
+      isStockIssue,
     );
 
     if (totalTransactions === 0) {
@@ -878,6 +881,7 @@ export class TransactionService {
       method,
       search,
       status,
+      isStockIssue,
     );
 
     const totalPage = Math.ceil(totalTransactions / take);
