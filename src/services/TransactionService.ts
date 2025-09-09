@@ -1398,8 +1398,9 @@ export class TransactionService {
 
     if (transaction.manualShippingCost) {
       totalPrice -= transaction.manualShippingCost;
-      totalPrice += validData.manualShippingCost;
     }
+
+    totalPrice += validData.manualShippingCost;
 
     const db = database;
     const updated = await db.$transaction(async tx => {
