@@ -57,7 +57,7 @@ export class AuthController {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
-        maxAge: JWT_CONFIG.JWT_EXPIRES_IN,
+        maxAge: JWT_CONFIG.JWT_EXPIRES_IN * 1000,
       });
 
       // jika memutuskan menggunakan header, hapus set cookie diatas
@@ -81,7 +81,7 @@ export class AuthController {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
-        maxAge: JWT_CONFIG.JWT_EXPIRES_IN,
+        maxAge: JWT_CONFIG.JWT_EXPIRES_IN * 1000,
       });
 
       successResponse(res, StatusCodes.OK, 'Login Sukses');

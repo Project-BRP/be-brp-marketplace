@@ -136,7 +136,7 @@ export class ChatService {
       created.room.userId,
       created.message.senderType,
       undefined,
-      true
+      true,
     );
 
     return {
@@ -291,7 +291,7 @@ export class ChatService {
               room.userId,
               undefined,
               Role.ADMIN,
-              true
+              true,
             );
           } catch {}
         }
@@ -306,7 +306,7 @@ export class ChatService {
               undefined,
               undefined,
               Role.USER,
-              true
+              true,
             );
           } catch {}
         }
@@ -391,7 +391,7 @@ export class ChatService {
               room.userId,
               undefined,
               Role.ADMIN,
-              true
+              true,
             );
           } catch {}
         }
@@ -404,7 +404,7 @@ export class ChatService {
               undefined,
               undefined,
               Role.USER,
-              true
+              true,
             );
           } catch {}
         }
@@ -481,6 +481,12 @@ export class ChatService {
     }
 
     await ChatRoomRepository.delete(room.id);
-    IoService.emitChatMessage(room.id, room.userId, undefined, undefined, false);
+    IoService.emitChatMessage(
+      room.id,
+      room.userId,
+      undefined,
+      undefined,
+      false,
+    );
   }
 }

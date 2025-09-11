@@ -668,7 +668,7 @@ export class TransactionService {
       status,
       startDate,
       endDate,
-      isStockIssue
+      isStockIssue,
     );
 
     if (totalTransactions === 0) {
@@ -691,7 +691,7 @@ export class TransactionService {
       status,
       startDate,
       endDate,
-      isStockIssue
+      isStockIssue,
     );
 
     const totalPage = Math.ceil(totalTransactions / take);

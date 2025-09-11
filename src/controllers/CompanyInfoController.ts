@@ -14,7 +14,7 @@ export class CompanyInfoController {
     try {
       const request = req.body as ICreateCompanyInfoRequest;
       const response = await CompanyInfoService.createCompanyInfo(request);
-      return successResponse(
+      successResponse(
         res,
         StatusCodes.CREATED,
         'Informasi perusahaan berhasil dibuat',
@@ -33,7 +33,7 @@ export class CompanyInfoController {
     try {
       const request = req.body as IUpdateCompanyInfoRequest;
       const response = await CompanyInfoService.updateCompanyInfo(request);
-      return successResponse(
+      successResponse(
         res,
         StatusCodes.OK,
         'Informasi perusahaan berhasil diperbarui',
@@ -47,7 +47,7 @@ export class CompanyInfoController {
   static async getCompanyInfo(req: Request, res: Response, next: NextFunction) {
     try {
       const response = await CompanyInfoService.getCompanyInfo();
-      return successResponse(
+      successResponse(
         res,
         StatusCodes.OK,
         'Informasi perusahaan berhasil diambil',

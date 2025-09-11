@@ -55,7 +55,7 @@ export class ReportController {
     try {
       const request = req.query as IGetRevenueRequest;
       const response = await ReportService.getRevenue(request);
-      return successResponse(
+      successResponse(
         res,
         StatusCodes.OK,
         'Revenue berhasil diperoleh',
@@ -74,7 +74,7 @@ export class ReportController {
     try {
       const request = req.query as IGetTotalTransactionsRequest;
       const response = await ReportService.getTotalTransactions(request);
-      return successResponse(
+      successResponse(
         res,
         StatusCodes.OK,
         'Total transaksi berhasil diperoleh',
@@ -93,7 +93,7 @@ export class ReportController {
     try {
       const request = req.query as IGetTotalProductsSoldRequest;
       const response = await ReportService.getTotalProductsSold(request);
-      return successResponse(
+      successResponse(
         res,
         StatusCodes.OK,
         'Total produk terjual berhasil diperoleh',
@@ -112,7 +112,7 @@ export class ReportController {
     try {
       const request = req.query as IGetTotalActiveUsersRequest;
       const response = await ReportService.getTotalActiveUsers(request);
-      return successResponse(
+      successResponse(
         res,
         StatusCodes.OK,
         'Total pengguna aktif berhasil diperoleh',
@@ -131,7 +131,7 @@ export class ReportController {
     try {
       const request = req.query as IGetMonthlyRevenueRequest;
       const response = await ReportService.getMonthlyRevenue(request);
-      return successResponse(
+      successResponse(
         res,
         StatusCodes.OK,
         'Data pendapatan bulanan berhasil diperoleh',
@@ -151,7 +151,7 @@ export class ReportController {
       const request = req.query as IGetMostSoldProductsDistributionRequest;
       const response =
         await ReportService.getMostSoldProductsDistribution(request);
-      return successResponse(
+      successResponse(
         res,
         StatusCodes.OK,
         'Data distribusi produk terlaris berhasil diperoleh',
@@ -169,7 +169,7 @@ export class ReportController {
   ) {
     try {
       const response = await ReportService.getTodayTotalTransactions();
-      return successResponse(
+      successResponse(
         res,
         StatusCodes.OK,
         'Data total transaksi hari ini berhasil diperoleh',
@@ -187,7 +187,7 @@ export class ReportController {
   ) {
     try {
       const response = await ReportService.getCurrentMonthRevenue();
-      return successResponse(
+      successResponse(
         res,
         StatusCodes.OK,
         'Data pendapatan bulan ini berhasil diperoleh',
@@ -205,7 +205,7 @@ export class ReportController {
   ) {
     try {
       const response = await ReportService.getTotalProducts();
-      return successResponse(
+      successResponse(
         res,
         StatusCodes.OK,
         'Total produk berhasil diperoleh',

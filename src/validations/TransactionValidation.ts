@@ -229,146 +229,148 @@ export class TransactionValidation {
       }
     });
 
-  static readonly GET_ALL_BY_USER: ZodType = z.object({
-    userId: z
-      .string({
-        required_error: 'User ID tidak boleh kosong',
-        invalid_type_error: 'User ID tidak valid',
-      })
-      .min(1, 'User ID tidak boleh kosong'),
-    currentUserId: z
-      .string({
-        required_error: 'Current User ID tidak boleh kosong',
-        invalid_type_error: 'Current User ID tidak valid',
-      })
-      .min(1, 'Current User ID tidak boleh kosong'),
-    currentUserRole: z
-      .string({
-        required_error: 'Current User Role tidak boleh kosong',
-        invalid_type_error: 'Current User Role tidak valid',
-      })
-      .min(1, 'Current User Role tidak boleh kosong'),
-    method: z
-      .enum(['DELIVERY', 'MANUAL'], {
-        required_error: 'Metode transaksi tidak boleh kosong',
-        invalid_type_error: 'Metode transaksi tidak valid',
-      })
-      .nullish()
-      .optional(),
-    search: z
-      .string({
-        invalid_type_error: 'Pencarian tidak valid',
-      })
-      .nullish()
-      .optional(),
-    status: z
-      .string({
-        invalid_type_error: 'Status tidak valid',
-      })
-      .nullish()
-      .optional(),
-    page: z
-      .number({
-        invalid_type_error: 'Jumlah halaman tidak valid',
-      })
-      .nullish()
-      .optional(),
-    limit: z
-      .number({
-        invalid_type_error: 'Jumlah limit tidak valid',
-      })
-      .nullish()
-      .optional(),
-    startYear: z.coerce
-      .number({
-        invalid_type_error: 'Start year tidak valid',
-      })
-      .nullish()
-      .optional(),
-    startMonth: z.coerce
-      .number({
-        invalid_type_error: 'Start month tidak valid',
-      })
-      .nullish()
-      .optional(),
-    startDay: z.coerce
-      .number({
-        invalid_type_error: 'Start day tidak valid',
-      })
-      .nullish()
-      .optional(),
-    endYear: z.coerce
-      .number({
-        invalid_type_error: 'End year tidak valid',
-      })
-      .nullish()
-      .optional(),
-    endMonth: z.coerce
-      .number({
-        invalid_type_error: 'End month tidak valid',
-      })
-      .nullish()
-      .optional(),
-    endDay: z.coerce
-      .number({
-        invalid_type_error: 'End day tidak valid',
-      })
-      .nullish()
-      .optional(),
-    isStockIssue: z
-      .boolean({ invalid_type_error: 'isStockIssue tidak valid' })
-      .nullish()
-      .optional(),
-  }).superRefine((data, ctx) => {
-    // start date validation
-    if (data.startYear !== undefined && data.startMonth === undefined) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Start month wajib diisi jika start year diisi',
-        path: ['startMonth'],
-      });
-    }
-    if (data.startDay !== undefined) {
-      if (data.startYear === undefined) {
+  static readonly GET_ALL_BY_USER: ZodType = z
+    .object({
+      userId: z
+        .string({
+          required_error: 'User ID tidak boleh kosong',
+          invalid_type_error: 'User ID tidak valid',
+        })
+        .min(1, 'User ID tidak boleh kosong'),
+      currentUserId: z
+        .string({
+          required_error: 'Current User ID tidak boleh kosong',
+          invalid_type_error: 'Current User ID tidak valid',
+        })
+        .min(1, 'Current User ID tidak boleh kosong'),
+      currentUserRole: z
+        .string({
+          required_error: 'Current User Role tidak boleh kosong',
+          invalid_type_error: 'Current User Role tidak valid',
+        })
+        .min(1, 'Current User Role tidak boleh kosong'),
+      method: z
+        .enum(['DELIVERY', 'MANUAL'], {
+          required_error: 'Metode transaksi tidak boleh kosong',
+          invalid_type_error: 'Metode transaksi tidak valid',
+        })
+        .nullish()
+        .optional(),
+      search: z
+        .string({
+          invalid_type_error: 'Pencarian tidak valid',
+        })
+        .nullish()
+        .optional(),
+      status: z
+        .string({
+          invalid_type_error: 'Status tidak valid',
+        })
+        .nullish()
+        .optional(),
+      page: z
+        .number({
+          invalid_type_error: 'Jumlah halaman tidak valid',
+        })
+        .nullish()
+        .optional(),
+      limit: z
+        .number({
+          invalid_type_error: 'Jumlah limit tidak valid',
+        })
+        .nullish()
+        .optional(),
+      startYear: z.coerce
+        .number({
+          invalid_type_error: 'Start year tidak valid',
+        })
+        .nullish()
+        .optional(),
+      startMonth: z.coerce
+        .number({
+          invalid_type_error: 'Start month tidak valid',
+        })
+        .nullish()
+        .optional(),
+      startDay: z.coerce
+        .number({
+          invalid_type_error: 'Start day tidak valid',
+        })
+        .nullish()
+        .optional(),
+      endYear: z.coerce
+        .number({
+          invalid_type_error: 'End year tidak valid',
+        })
+        .nullish()
+        .optional(),
+      endMonth: z.coerce
+        .number({
+          invalid_type_error: 'End month tidak valid',
+        })
+        .nullish()
+        .optional(),
+      endDay: z.coerce
+        .number({
+          invalid_type_error: 'End day tidak valid',
+        })
+        .nullish()
+        .optional(),
+      isStockIssue: z
+        .boolean({ invalid_type_error: 'isStockIssue tidak valid' })
+        .nullish()
+        .optional(),
+    })
+    .superRefine((data, ctx) => {
+      // start date validation
+      if (data.startYear !== undefined && data.startMonth === undefined) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Start year wajib diisi jika start day diisi',
-          path: ['startYear'],
-        });
-      }
-      if (data.startMonth === undefined) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Start month wajib diisi jika start day diisi',
+          message: 'Start month wajib diisi jika start year diisi',
           path: ['startMonth'],
         });
       }
-    }
-    // end date validation
-    if (data.endYear !== undefined && data.endMonth === undefined) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'End month wajib diisi jika end year diisi',
-        path: ['endMonth'],
-      });
-    }
-    if (data.endDay !== undefined) {
-      if (data.endYear === undefined) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'End year wajib diisi jika end day diisi',
-          path: ['endYear'],
-        });
+      if (data.startDay !== undefined) {
+        if (data.startYear === undefined) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Start year wajib diisi jika start day diisi',
+            path: ['startYear'],
+          });
+        }
+        if (data.startMonth === undefined) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Start month wajib diisi jika start day diisi',
+            path: ['startMonth'],
+          });
+        }
       }
-      if (data.endMonth === undefined) {
+      // end date validation
+      if (data.endYear !== undefined && data.endMonth === undefined) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'End month wajib diisi jika end day diisi',
+          message: 'End month wajib diisi jika end year diisi',
           path: ['endMonth'],
         });
       }
-    }
-  });
+      if (data.endDay !== undefined) {
+        if (data.endYear === undefined) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'End year wajib diisi jika end day diisi',
+            path: ['endYear'],
+          });
+        }
+        if (data.endMonth === undefined) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'End month wajib diisi jika end day diisi',
+            path: ['endMonth'],
+          });
+        }
+      }
+    });
 
   static readonly UPDATE: ZodType = z.object({
     id: z
